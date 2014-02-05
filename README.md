@@ -1,3 +1,5 @@
+#####a window manager for web browsers
+
     ,--.   ,--.,--.   ,--.      ,--.        
     |  |   |  ||   `.'   |      `--' ,---.  
     |  |.'.|  ||  |'.'|  |      ,--.(  .-'  
@@ -5,13 +7,14 @@
     '--'   '--'`--'   `--''--'.-'  /`----'  
                               '---'         
 
-a window manager for web browsers
+#### Installation
 
+npm install
+bower install
 
+#### TODOS
 
 def space* - the region of the browser that is visible to the USER
-
-TODO:
 
   consolidateAll: Move all Window instances of all Workspace(s) into current Workspace (note: this is a noOp when only one workspace exists)
   
