@@ -17,7 +17,10 @@ wmJs.Views = wmJs.Views || {};
 
         registerSubscriptions: function () {
             $.subscribe('launcher.getUniqueWindows', 
-                        _.partial(this.recieveUniqueWindows,this));
+                        _.partial(this.receiveUniqueWindows,this));
+
+            $.subscribe('launcher.getRunningInstances', 
+                        _.partial(this.receiveRunningInstances,this));            
         },
 
         initialize: function () {
@@ -44,13 +47,28 @@ wmJs.Views = wmJs.Views || {};
             });        	
         },
 
-        recieveUniqueWindows: function (self,evt,args) {
+        receiveUniqueWindows: function (self,evt,args) {
         	self.$launcherList = self.$windowcontent.find('.launcher-list');
         	self.$launcherList.html('');
 
         	args.result.forEach(function (e,i) {
         		self.$launcherList.append(self.launcherButton(e));
         	});
+            self.requestRunningInstances();
+        },
+
+        requestRunningInstances: function () {
+            $.publish(WM.topics.windowConfigRequest, {
+                publishTo: 'launcher.getRunningInstances', 
+                resource: 'WindowConfigList', 
+                transform: function (obj) {
+                    return { result: obj };
+                } 
+            });              
+        },
+
+        receiveRunningInstances: function (self,evt,args) {
+            console.log(args.result.data);           
         }
 
     });
