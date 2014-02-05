@@ -1,0 +1,135 @@
+
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+     -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+       -o-border-radius: $radius;
+          border-radius: $radius;
+}
+
+.window  {
+    @include border-radius(12px);
+    border: 1px solid black;
+}
+
+.blank-window {
+    width: 100%;
+}
+
+
+.fc-widget-header, .fc-widget-content {
+    @include border-radius(5px); 
+    border: 1px solid #ddd;     
+}
+
+.calendar {
+    width: 500px;
+    @include border-radius(12px);
+    padding: 5px 5px 5px 5px;   
+}
+
+.tabs {
+    width: 500px;
+    border: 1px solid #ddd;
+    @include border-radius(12px);
+    padding: 5px 5px 5px 5px;       
+}
+
+.resizable-content {
+    @include border-radius(4px);       
+    border: 1px solid #d4d1bf;
+} 
+
+#appx {
+    width: 1800px;
+    height: 2000px;
+}                 
+
+.view-select {
+    padding-left: 7%;
+    padding-top: 1%;
+    padding-right: 7%;
+}
+
+.view-select2 {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.dropdown-pager {
+    margin-left: 30px;
+}
+
+.nav-save {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 5px;
+}
+
+.module-panel {
+    margin-left: 1%;
+    margin-right: 1%;
+    margin-top: 1%;    
+    width: 99%;
+    height: 110px;
+    padding-right: 1%;
+    overflow: hidden;
+    position: relative;
+    @include border-radius(4px);
+    border: 1px solid #d4d1bf;    
+}
+
+.module-btn-toggle {
+    width: 100%;
+    text-align: center;
+}
+
+.module-status {
+    margin-top: 4px;
+}
+
+.model-select {
+    padding-left: 7%;
+    padding-right: 7%;
+}
+
+.collection-actions {
+    padding-left: 7%; 
+}
+
+.collection-edit-contents {
+    padding-left: 7%;
+    padding-right: 7%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    @include border-radius(4px);
+    /*overflow: scroll;*/        
+    border: 1px solid #d4d1bf;       
+}
+
+.collection-edit-contents-container {
+    margin-left: 1%;
+    margin-right: 1%;    
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.crud-form-control {
+    margin-bottom: 1%;
+}
+
+.btn-window-action {
+    padding: 1px 1px;
+    font-size: 11px;
+}
+
+.btn-launcher {
+    width: 100%;
+}
+
+.launcher-group {
+    width: 100%;
+}
+.launcher-group > .dropdown-menu {
+  width: 300px;
+}

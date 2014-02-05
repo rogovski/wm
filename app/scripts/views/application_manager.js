@@ -194,10 +194,8 @@ wmJs.Views = wmJs.Views || {};
          * slice in templates
          */
         viewReady: function (self,evt,args) {
-
-            self.$el.html('');
             self.applyWorkspaceConfiguration();
-
+            self.$el.html('');
             self.WindowConfigList.data.forEach(function (e,i) {
                 e.instance = self.WindowFactory(e.factoryKey, {
                     parentView: self.el,
@@ -206,6 +204,7 @@ wmJs.Views = wmJs.Views || {};
                 self.$el.append(e.instance.el);
                 e.instance.render({resetTemplate: true});
             });
+            
         }, 
 
         /**
@@ -228,8 +227,8 @@ wmJs.Views = wmJs.Views || {};
         },
 
         applyWorkspaceConfiguration: function () {
-            this.$el.css('width', this.WorkspaceConfig.width)
-                    .css('height', this.WorkspaceConfig.height);
+            this.$el.css('width', this.WorkspaceConfig.data.width)
+                    .css('height', this.WorkspaceConfig.data.height);
         }
 
     });

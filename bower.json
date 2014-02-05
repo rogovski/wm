@@ -7,7 +7,8 @@
     "underscore": "~1.4.3",
     "backbone": "~1.0.0",
     "modernizr": "~2.6.2",
-    "jquery-ui": "~1.10.3"
+    "jquery-ui": "~1.10.3",
+    "backbone.localstorage": "~1.1.7"
   },
   "devDependencies": {}
 }
