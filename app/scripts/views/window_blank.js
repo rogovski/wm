@@ -9,6 +9,8 @@ wmJs.Views = wmJs.Views || {};
 
         template: JST['app/scripts/templates/window_blank.ejs'],
 
+        window_display_name: 'blank window',
+
         window_render: function () {
         	this.$windowcontent.html(this.template());
         }
