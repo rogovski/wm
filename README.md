@@ -1,4 +1,4 @@
-#####a window manager for web browsers
+####a window manager for web browsers
 
     ,--.   ,--.,--.   ,--.      ,--.        
     |  |   |  ||   `.'   |      `--' ,---.  

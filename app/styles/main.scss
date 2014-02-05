@@ -135,8 +135,8 @@ body {
 }
 
 .window-content {
-    min-height: 200px;
-    min-width: 200px;
+    min-height: 100px;
+    min-width: 50px;
 }
 
 .window > .row {
@@ -238,4 +238,12 @@ body {
 .btn-window-action {
     padding: 1px 1px;
     font-size: 11px;
+}
+
+.btn-launcher {
+    width: 100%;
+}
+
+.launcher-group {
+    width: 100%;
 }

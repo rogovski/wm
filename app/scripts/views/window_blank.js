@@ -9,8 +9,6 @@ wmJs.Views = wmJs.Views || {};
 
         template: JST['app/scripts/templates/window_blank.ejs'],
 
-        window_display_name: 'blank window',
-
         window_render: function () {
         	this.$windowcontent.html(this.template());
         }
@@ -18,6 +16,6 @@ wmJs.Views = wmJs.Views || {};
     });
 
     WM.WindowedApplicationFactory
-      .registerApplication('blank_window',
+      .registerApplication('blank_window', 'blank window',
       					   wmJs.Views.WindowBlankView);
 })();

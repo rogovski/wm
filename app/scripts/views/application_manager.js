@@ -13,9 +13,17 @@ wmJs.Views = wmJs.Views || {};
         template: JST['app/scripts/templates/application_manager.ejs'],
 
         registerSubscriptions: function () {
-            $.subscribe(WM.topics.viewInitialized, _.partial(this.workspaceInit,this));
-            $.subscribe(WM.topics.workspaceLoaded, _.partial(this.windowsInit,this));
-            $.subscribe(WM.topics.workspaceWindowsLoaded, _.partial(this.viewReady, this));
+            $.subscribe(WM.topics.viewInitialized, 
+                        _.partial(this.workspaceInit,this));
+
+            $.subscribe(WM.topics.workspaceLoaded,
+                        _.partial(this.windowsInit,this));
+
+            $.subscribe(WM.topics.workspaceWindowsLoaded, 
+                        _.partial(this.viewReady, this));
+
+            $.subscribe(WM.topics.windowConfigRequest, 
+                        _.partial(this.handleWmDataRequest, this));
         },
         /*
          * ApplicationManagerView gets initialized with the following:
@@ -47,6 +55,14 @@ wmJs.Views = wmJs.Views || {};
             this.WindowFactory = 
                 config.WindowFactory ||
                 WM.Exception.ConfigPropertyMissing('WindowFactory');
+
+            /**
+             * WindowTypes is a function that returns the display name
+             * and factoryKey of all types registered in the factory
+             */
+            this.WindowTypes = 
+                config.WindowTypes ||
+                WM.Exception.ConfigPropertyMissing('WindowTypes');
 
             /**
              * WindowConfigList is one of the follwing:
@@ -191,6 +207,25 @@ wmJs.Views = wmJs.Views || {};
                 e.instance.render({resetTemplate: true});
             });
         }, 
+
+        /**
+         * handles requests for configuration data 
+         * @args {object}
+         * @args.publishTo {string} -contains topic to publish to after processing is complete
+         * @args.resource {string}  -key of requested resource
+         * @args.transform {function} -transformation to apply to reasource before returning to sender 
+         */
+        handleWmDataRequest: function (self,evt,args) {
+            var options = args || {};
+
+            if(options.publishTo && options.resource){
+                var res = self[options.resource] || null;
+
+                $.publish(options.publishTo, 
+                    options.transform && _.isFunction(options.transform) 
+                        ? options.transform(res) : res);
+            }
+        },
 
         applyWorkspaceConfiguration: function () {
             this.$el.css('width', this.WorkspaceConfig.width)

@@ -30,7 +30,7 @@ window.WM.BlankWindowFactory = (function () {
 			var config = options || {};
 			return {
 				id: 		ident,
-				display: 	'blank window '+ident,
+				display: 	config.display || 'blank window',
 				affixed: 	config.affixed || false,
 				draggable: 	config.draggable || true,
 				visible: 	config.visible || true,
@@ -79,5 +79,6 @@ window.WM.topics = {
 	viewInitialized: "viewInitialized",
 	workspaceLoaded: "workspaceLoaded",
 	workspaceWindowsLoaded: "workspaceWindowsLoaded",
-	workspaceRenderAll: "workspaceRenderAll"
+	workspaceRenderAll: "workspaceRenderAll",
+	windowConfigRequest: "windowConfigRequest"
 };
