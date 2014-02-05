@@ -80,8 +80,7 @@ wmJs.Views = wmJs.Views || {};
         },
 
         /**
-         * TODO:
-         * if 
+         * first step in the pipeline. get workspace info
          */
         workspaceInit: function (self,evt,args) {
             /**
@@ -97,7 +96,7 @@ wmJs.Views = wmJs.Views || {};
              * an in memory object
              */
             var wsObj = self.WorkspaceConfig.url(self.currentWorkspace);
-            if(wsId instanceof Object){
+            if(wsObj instanceof Object){
                 self.WorkspaceConfig.data = wsObj;
                 $.publish(WM.topics.workspaceLoaded);
                 return;
@@ -127,15 +126,32 @@ wmJs.Views = wmJs.Views || {};
                 });           
         },
 
+        /**
+         * second step in the pipeline. get window info in workspace
+         */
         windowsInit: function (self,evt,args) {
             /**
-             * workspace configuration was an in-memory object
+             * window configuration list was an in-memory object
              */
             if(typeof(self.WindowConfigList.url) == 'undefined'){                    
                 $.publish(WM.topics.workspaceWindowsLoaded);
                 return;
             }
 
+            /**
+             * window configuration list is a function that looks up
+             * an in memory object
+             */
+            var winLsObj = self.WindowConfigList.url(self.currentWorkspace);
+            if(winLsObj instanceof Object){
+                self.WindowConfigList.data = winLsObj;
+                $.publish(WM.topics.workspaceWindowsLoaded);
+                return;
+            }
+
+            /**
+             * window configuration list is a server side object
+             */ 
             $.when($.ajax({ 
                 url: self.WindowConfigList.url(
                         self.currentWorkspace)})).then(
@@ -157,6 +173,10 @@ wmJs.Views = wmJs.Views || {};
                 });           
         },
 
+        /**
+         * third step in the pipeline. initialize all windows and 
+         * slice in templates
+         */
         viewReady: function (self,evt,args) {
 
             self.$el.html('');
@@ -169,7 +189,7 @@ wmJs.Views = wmJs.Views || {};
                 });
                 self.$el.append(e.instance.el);
                 e.instance.render({resetTemplate: true});
-            });         
+            });
         }, 
 
         applyWorkspaceConfiguration: function () {

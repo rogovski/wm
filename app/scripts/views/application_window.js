@@ -75,8 +75,7 @@ wmJs.Views = wmJs.Views || {};
             if(this.config.affixed) {
                 this.$windowcontainer.css('position', 'fixed');
                 this.deactivate(this.$btnPin);
-            }
-            else {
+            } else {
                 this.$windowcontainer.css('position', 'absolute');
                 this.activate(this.$btnPin);
             }
@@ -84,8 +83,7 @@ wmJs.Views = wmJs.Views || {};
             if(this.config.draggable) {
               this.$windowcontainer.draggable({ disabled: false });
               this.activate(this.$btnDraggable);
-            }
-            else {
+            } else {
               this.$windowcontainer.draggable({ disabled: true });
               this.deactivate(this.$btnDraggable);
             }
@@ -102,8 +100,7 @@ wmJs.Views = wmJs.Views || {};
                 this.$windowcontainer.css('position', 'absolute');
                 this.activate(this.$btnPin);
                 this.config.affixed = false;
-            }
-            else {
+            } else {
                 this.$windowcontainer.css('position', 'fixed');
                 this.deactivate(this.$btnPin);
                 this.config.affixed = true;
@@ -116,8 +113,7 @@ wmJs.Views = wmJs.Views || {};
               this.$windowcontainer.draggable({ disabled: false });
               this.activate(this.$btnDraggable);
               this.config.draggable = true;
-            }
-            else {
+            } else {
               this.$windowcontainer.draggable({ disabled: true });
               this.deactivate(this.$btnDraggable);
               this.config.draggable = false;
