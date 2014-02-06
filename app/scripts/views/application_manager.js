@@ -34,12 +34,16 @@ wmJs.Views = wmJs.Views || {};
         //       cache them in memory
 
         initialize2: function (config) {
+            config || WM.Exception.ConfigPropertyMissing('initialize');
+            
             if(typeof(config.appDataSource) == 'undefined') {
-                // TODO: throw exception
+                // TODO: throw more descriptive exception
+                throw new Error('init2 appDataSource');
             }
 
             if(typeof(config.appFactory) == 'undefined') {
-                // TODO: throw exception
+                // TODO: throw more descriptive exception
+                throw new Error('init2 appFactory');
             }                    
         },
 

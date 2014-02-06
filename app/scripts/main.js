@@ -14,7 +14,7 @@ window.wmJs = {
 
         /*
         var wm2 = new wmJs.Views.ApplicationManagerView({
-            appDataSource:      null,
+            appDataSource:      new wmJs.Persistence.InMemoryPersist(),
             appFactory:         null,
             appMessages:        null, 
         });
