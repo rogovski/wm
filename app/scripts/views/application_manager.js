@@ -25,6 +25,24 @@ wmJs.Views = wmJs.Views || {};
             $.subscribe(WM.topics.windowConfigRequest, 
                         _.partial(this.handleWmDataRequest, this));
         },
+        // using config.persistance, get persistentbackend
+        // using persistentbackend get list of WindowedApplication
+        // using persistentbackend get default Workspace
+        // using persistentbackend get all app instances, 
+        //       group all instance by workspace,
+        //       foreach workspace, group by appId
+        //       cache them in memory
+
+        initialize2: function (config) {
+            if(typeof(config.appDataSource) == 'undefined') {
+                // TODO: throw exception
+            }
+
+            if(typeof(config.appFactory) == 'undefined') {
+                // TODO: throw exception
+            }                    
+        },
+
         /*
          * ApplicationManagerView gets initialized with the following:
          * WorkspaceConfig -height and width of #app

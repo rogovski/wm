@@ -1,3 +1,89 @@
+//wmJs.Data = wmJs.Data || {}
+
+(function () {
+	'use strict';
+
+	/**
+	 * represents a class of windowed applications
+	 * every element in a collection of WindowedApplicationDefaults
+	 * is unique
+	 */
+	var WindowedApplicationDefaults = {
+		id: null,
+		display: 'blank window',
+		factoryKey: 'blank_window',
+		maxInstances: '*'
+	};
+
+	wmJs.Data.WindowedApplication = (function () {
+		return {
+			create: function ( existing_data ) {
+				var existingData = existing_data || {},
+				    defaults 	 = _.clone( WindowedApplicationDefaults ),
+				    id           = typeof(existingData.id) == 'undefined' ? 
+				    			   _.uniqueId( 'app' ) : existingData.id;
+
+				return _.extend( defaults, existingData, { id: id } );
+			}
+		};
+	})();
+
+	/**
+	 * represents an instance of a class of windowed applications
+	 */
+	var WindowedApplicationInstanceDefaults = {
+		id: 		 null,
+		display:     'window',
+		workspaceId: null,
+		appId: 	     null,
+		affixed: 	 false,
+		draggable: 	 true,
+		visible: 	 true,
+		height: 	 200,
+		width: 		 200,
+		left: 		 50,
+		top: 		 50,
+		state: 		 {},
+	};
+
+	wmJs.Data.WindowedApplicationInstance = (function () {
+		return {
+			create: function ( existing_data ) {
+				var existingData = existing_data || {},
+				    defaults 	 = _.clone( WindowedApplicationInstanceDefaults ),
+				    id           = typeof( existingData.id ) == 'undefined' ? 
+				    			   _.uniqueId( 'appInst' ) : existingData.id;
+
+				return _.extend( defaults, existingData, { id: id } );
+			}
+		};
+	})();
+
+	/**
+	 * represents an instance of a workspace
+	 */
+	var WorkspaceDefaults = {
+		id: null, 
+		display:'default', 
+		height: 2000, 
+		width: 2000
+	};
+
+	wmJs.Data.Workspace = (function () {
+		return {
+			create: function ( existing_data ) {
+				var existingData = existing_data || {},
+				    defaults 	 = _.clone( WorkspaceDefaults ),
+				    id           = typeof( existingData.id ) == 'undefined' ? 
+				    			   _.uniqueId( 'workspace' ) : existingData.id;
+
+				return _.extend( defaults, existingData, { id: id } );
+			}
+		};
+	})();
+
+})();
+
 window.WM = window.WM || {}
 
 /**

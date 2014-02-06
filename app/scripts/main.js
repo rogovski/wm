@@ -11,6 +11,15 @@ window.wmJs = {
     Data: {},
     init: function () {
         'use strict';
+
+        /*
+        var wm2 = new wmJs.Views.ApplicationManagerView({
+            appDataSource:      null,
+            appFactory:         null,
+            appMessages:        null, 
+        });
+        */
+
         var wm = new wmJs.Views.ApplicationManagerView(
 
             window.Stubs.testData() //testData()
