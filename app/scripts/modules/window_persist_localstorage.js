@@ -1,7 +1,7 @@
 (function () {
     'use strict';
     
-  wmJs.LocalStoragePersist = wmJs.PersistentBackend.extend({
+  wmJs.Persistence.LocalStoragePersist = wmJs.Persistence.PersistentBackend.extend({
     initialize: function (options) {
       console.log('init');
     },

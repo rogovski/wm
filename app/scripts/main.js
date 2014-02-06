@@ -6,6 +6,9 @@ window.wmJs = {
     Collections: {},
     Views: {},
     Routers: {},
+    Factories: {},
+    Persistence: {},
+    Data: {},
     init: function () {
         'use strict';
         var wm = new wmJs.Views.ApplicationManagerView(

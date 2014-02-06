@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    wmJs.InMemoryPersist = wmJs.PersistentBackend.extend({
+    wmJs.Persistence.InMemoryPersist = wmJs.Persistence.PersistentBackend.extend({
 
         _db: {
             windows: [],

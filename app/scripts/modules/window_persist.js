@@ -1,7 +1,7 @@
 
 (function () {
 
-	wmJs.AbstractPersistentBackend = function (options) {
+	wmJs.Persistence.AbstractPersistentBackend = function (options) {
 	    this.config = options || {};
 
 	    if(!_.isUndefined(this.initialize)){
@@ -45,17 +45,17 @@
 	    }
 	};
 
-	wmJs.PersistentBackend = (function () {
+	wmJs.Persistence.PersistentBackend = (function () {
 	    return {
 	        extend: function (obj) {
 
 	            var child = function (options) {
-	              wmJs.AbstractPersistentBackend.apply(this, [options]);
+	              wmJs.Persistence.AbstractPersistentBackend.apply(this, [options]);
 	            };
 
 	            _.extend(
 	              child.prototype, 
-	              wmJs.AbstractPersistentBackend.prototype, 
+	              wmJs.Persistence.AbstractPersistentBackend.prototype, 
 	              obj);
 
 	            return child;
