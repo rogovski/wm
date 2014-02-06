@@ -45,7 +45,7 @@
         <script src="bower_components/jquery/jquery.js"></script>
         <script src="bower_components/underscore/underscore.js"></script>
         <script src="bower_components/backbone/backbone.js"></script>
-        <script src="bower_components/backbone.localstorage/backbone.localstorage.js"></script>
+        <script src="bower_components/store.js/store.min.js"></script>
         <script src='bower_components/jquery-ui/ui/jquery-ui.js'></script>
         <script src="scripts/vendor/tiny-pubsub.js"></script>        
         <!-- endbuild -->
@@ -68,7 +68,10 @@
         <!-- build:js({.tmp,app}) scripts/main.js -->
         <script src="scripts/main.js"></script>
         <script src="scripts/modules/window_data.js"></script>
-        <script src="scripts/modules/windowed_application_factory.js"></script>        
+        <script src="scripts/modules/windowed_application_factory.js"></script>   
+        <script src="scripts/modules/window_persist.js"></script>   
+        <script src="scripts/modules/window_persist_inmemory.js"></script>     
+        <script src="scripts/modules/window_persist_localstorage.js"></script>        
         <script src="scripts/templates.js"></script>
         <script src="scripts/views/application_manager.js"></script>
         <script src="scripts/views/application_window.js"></script>
