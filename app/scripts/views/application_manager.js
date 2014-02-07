@@ -25,17 +25,33 @@ wmJs.Views = wmJs.Views || {};
             $.subscribe(WM.topics.windowConfigRequest, 
                         _.partial(this.handleWmDataRequest, this));
         },
-        // using config.persistance, get persistentbackend
-        // using persistentbackend get list of WindowedApplication
-        // using persistentbackend get default Workspace
-        // using persistentbackend get all app instances, 
-        //       group all instance by workspace,
-        //       foreach workspace, group by appId
-        //       cache them in memory
 
+       /**
+        * using appDataSource get list of WindowedApplication
+        *          this.WindowedApplications <- list of WindowedApplication
+        *
+        * using appDataSource get list of Workspace
+        *          this.Workspaces <- list of Workspace
+        *
+        * using this.Workspaces get default workspace
+        *          this.CurrentWorkspace <- default workspace
+        *
+        * using appDataSource get all app instances, 
+        *       group all instance by workspace,
+        *       foreach workspace, group by appId
+        *       cache them in memory
+        *          this.appInstances <- all app instances (with grouping)
+        *
+        * using this.WindowedApplications register all applications with appFactory
+        *
+        * filter this.appInstances by this.CurrentWorkspace
+        *        var currentIntances <- filtered
+        *        foreach el in currentInstances
+        *            
+        */   
         initialize2: function (config) {
             config || WM.Exception.ConfigPropertyMissing('initialize');
-            
+
             if(typeof(config.appDataSource) == 'undefined') {
                 // TODO: throw more descriptive exception
                 throw new Error('init2 appDataSource');
