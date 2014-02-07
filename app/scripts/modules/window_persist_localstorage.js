@@ -10,7 +10,7 @@
       console.log('set');
     },
 
-    get_window: function () {
+    get_window: function (id) {
       console.log('get');
     },
 
