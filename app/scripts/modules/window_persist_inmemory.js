@@ -19,12 +19,12 @@
         create_window: function (data) {
             var obj = wmJs.Data.WindowedApplicationInstance.create(data);
             this._db.windows.push( { key: obj.id, value: obj } );
-            return    
         },
 
         set_window: function (id, data) {
             var item = _.findWhere( this._db.windows, { key: id } );
-            console.log(item);         
+            item.value = data;
+            console.log(this.get_window(id));         
         },
 
         get_window: function (id) {
