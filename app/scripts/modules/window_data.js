@@ -44,6 +44,7 @@
 		left: 		 50,
 		top: 		 50,
 		state: 		 {},
+		instance:    null
 	};
 
 	wmJs.Data.WindowedApplicationInstance = (function () {

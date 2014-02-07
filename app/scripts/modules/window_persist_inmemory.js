@@ -12,7 +12,7 @@
             console.log('init');
         },
 
-        set_window: function (id, data) {
+        set_window: function (workspaceId, appId, instanceId, data) {
             console.log('set');
         },
 

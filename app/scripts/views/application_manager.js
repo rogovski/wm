@@ -13,16 +13,16 @@ wmJs.Views = wmJs.Views || {};
         template: JST['app/scripts/templates/application_manager.ejs'],
 
         registerSubscriptions: function () {
-            $.subscribe(WM.topics.viewInitialized, 
+            $.subscribe(WM.topics.viewInitialized,
                         _.partial(this.workspaceInit,this));
 
             $.subscribe(WM.topics.workspaceLoaded,
                         _.partial(this.windowsInit,this));
 
-            $.subscribe(WM.topics.workspaceWindowsLoaded, 
+            $.subscribe(WM.topics.workspaceWindowsLoaded,
                         _.partial(this.viewReady, this));
 
-            $.subscribe(WM.topics.windowConfigRequest, 
+            $.subscribe(WM.topics.windowConfigRequest,
                         _.partial(this.handleWmDataRequest, this));
         },
 
@@ -60,7 +60,9 @@ wmJs.Views = wmJs.Views || {};
             if(typeof(config.appFactory) == 'undefined') {
                 // TODO: throw more descriptive exception
                 throw new Error('init2 appFactory');
-            }                    
+            }
+
+
         },
 
         /*
