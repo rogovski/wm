@@ -16,6 +16,6 @@ wmJs.Views = wmJs.Views || {};
     });
 
     WM.WindowedApplicationFactory
-      .registerApplication('blank_window', 'blank window',
+      .registerApplication('blank_window', 'blank window', '*',
       					   wmJs.Views.WindowBlankView);
 })();

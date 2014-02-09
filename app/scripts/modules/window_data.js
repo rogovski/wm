@@ -10,9 +10,11 @@
 	 */
 	var WindowedApplicationDefaults = {
 		id: null,
-		display: 'blank window',
-		factoryKey: 'blank_window',
-		maxInstances: '*'
+		values: {
+			display: 'blank window',
+			factoryKey: 'blank_window',
+			maxInstances: '*'			
+		}
 	};
 
 	wmJs.Data.WindowedApplication = (function () {
@@ -21,9 +23,10 @@
 				var existingData = existing_data || {},
 				    defaults 	 = _.clone( WindowedApplicationDefaults ),
 				    id           = typeof(existingData.id) == 'undefined' ? 
-				    			   _.uniqueId( 'app' ) : existingData.id;
+				    			   _.uniqueId( 'app' ) : existingData.id,
+				    values       = _.extend( defaults.values, existingData, { } );
 
-				return _.extend( defaults, existingData, { id: id } );
+				return {id: id, values: values};
 			}
 		};
 	})();
@@ -33,18 +36,21 @@
 	 */
 	var WindowedApplicationInstanceDefaults = {
 		id: 		 null,
-		display:     'window',
-		workspaceId: null,
-		appId: 	     null,
-		affixed: 	 false,
-		draggable: 	 true,
-		visible: 	 true,
-		height: 	 200,
-		width: 		 200,
-		left: 		 50,
-		top: 		 50,
-		state: 		 {},
-		instance:    null
+		values: {
+			display:     'window',
+			workspaceId: null,
+			appId: 	     null,
+			affixed: 	 false,
+			draggable: 	 true,
+			visible: 	 true,
+			height: 	 200,
+			width: 		 200,
+			left: 		 50,
+			top: 		 50,
+			state: 		 {},
+			instance:    null			
+		}
+
 	};
 
 	wmJs.Data.WindowedApplicationInstance = (function () {
@@ -53,9 +59,10 @@
 				var existingData = existing_data || {},
 				    defaults 	 = _.clone( WindowedApplicationInstanceDefaults ),
 				    id           = typeof( existingData.id ) == 'undefined' ? 
-				    			   _.uniqueId( 'appInst' ) : existingData.id;
+				    			   _.uniqueId( 'appInst' ) : existingData.id,
+				    values       = _.extend( defaults.values, existingData, { } );
 
-				return _.extend( defaults, existingData, { id: id } );
+				return {id: id, values: values};
 			}
 		};
 	})();
@@ -64,10 +71,13 @@
 	 * represents an instance of a workspace
 	 */
 	var WorkspaceDefaults = {
-		id: null, 
-		display:'default', 
-		height: 2000, 
-		width: 2000
+		id: null,
+		values: {
+			display:'default',
+			isDefault: false, 
+			height: 2000, 
+			width: 2000			
+		}
 	};
 
 	wmJs.Data.Workspace = (function () {
@@ -76,9 +86,10 @@
 				var existingData = existing_data || {},
 				    defaults 	 = _.clone( WorkspaceDefaults ),
 				    id           = typeof( existingData.id ) == 'undefined' ? 
-				    			   _.uniqueId( 'workspace' ) : existingData.id;
+				    			   _.uniqueId( 'workspace' ) : existingData.id,
+				    values       = _.extend( defaults.values, existingData, { } );
 
-				return _.extend( defaults, existingData, { id: id } );
+				return {id: id, values: values};
 			}
 		};
 	})();

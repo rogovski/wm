@@ -74,6 +74,6 @@ wmJs.Views = wmJs.Views || {};
     });
 
     WM.WindowedApplicationFactory
-      .registerApplication('window_launcher', 'launcher',
+      .registerApplication('window_launcher', 'launcher', '*',
       					   wmJs.Views.WindowExampleLauncherView);
 })();

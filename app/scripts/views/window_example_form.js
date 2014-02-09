@@ -16,6 +16,6 @@ wmJs.Views = wmJs.Views || {};
     });
 
     WM.WindowedApplicationFactory
-      .registerApplication('window_form', 'input form',
+      .registerApplication('window_form', 'input form', '*',
       					   wmJs.Views.WindowExampleFormView);
 })();

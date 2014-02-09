@@ -122,11 +122,19 @@ window.Stubs.testData3 = function () {
     var win1 = wmJs.Data.WindowedApplicationInstance.create({
         left: 376, 
         top: 50                                     
-    });    
+    });
+
     var db = new wmJs.Persistence.InMemoryPersist({
-        windows: [{key: win0.id, value: win0}, {key: win1.id, value: win1}],
+        windows: [win0,win1],
         workspaces: [
             wmJs.Data.Workspace.create()
+        ],
+        applications: [
+            wmJs.Data.WindowedApplication.create({factoryKey: 'blank_window', display: 'blank window'}),
+            wmJs.Data.WindowedApplication.create({factoryKey: 'window_form', display: 'window form'}),
+            wmJs.Data.WindowedApplication.create({factoryKey: 'window_launcher', display: 'window launcher'}),
+            wmJs.Data.WindowedApplication.create({factoryKey: 'window_logger', display: 'window logger'}),
+            wmJs.Data.WindowedApplication.create({factoryKey: 'window_timer', display: 'timer'})
         ]
     });
     return db;

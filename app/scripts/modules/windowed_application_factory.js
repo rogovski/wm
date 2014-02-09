@@ -24,7 +24,11 @@ wmJs.Factories = wmJs.Factories || {}
              */
              registeredApplicationsInfo: function () {
                  return  _.map(types, function (obj) { 
-                    return { factoryKey: obj.key, display: obj.display }; 
+                    return { 
+                        factoryKey: obj.key, 
+                        display: obj.display, 
+                        maxInstances: obj.maxInstances 
+                    }; 
                 });
              },
 
@@ -33,12 +37,17 @@ wmJs.Factories = wmJs.Factories || {}
              * @param {string} type -the lookup name of the object
              * @param {function} WindowedApplication -the object's constructor
              */
-            registerApplication: function ( type, display, WindowedApplication ) {
+            registerApplication: function ( type, display, maxInstances, WindowedApplication ) {
                 var proto = WindowedApplication.prototype;
      
                 // only register classes that fulfill the contract
                 if ( proto.window_render && proto.windowTemplate ) {
-                    types[type] = { key: type, display: display, ctor: WindowedApplication };
+                    types[type] = { 
+                        key: type, 
+                        display: display, 
+                        maxInstances: maxInstances, 
+                        ctor: WindowedApplication 
+                    };
                 }
      
                 return wmJs.Factories.WindowedApplicationFactory;
@@ -77,7 +86,11 @@ window.WM.WindowedApplicationFactory = (function () {
          */
          registeredApplicationsInfo: function () {
              return  _.map(types, function (obj) { 
-                return { factoryKey: obj.key, display: obj.display }; 
+                return { 
+                    factoryKey: obj.key, 
+                    display: obj.display, 
+                    maxInstances: obj.maxInstances 
+                }; 
             });
          },
 
@@ -86,12 +99,17 @@ window.WM.WindowedApplicationFactory = (function () {
          * @param {string} type -the lookup name of the object
          * @param {function} WindowedApplication -the object's constructor
          */
-        registerApplication: function ( type, display, WindowedApplication ) {
+        registerApplication: function ( type, display, maxInstances, WindowedApplication ) {
             var proto = WindowedApplication.prototype;
  
             // only register classes that fulfill the contract
             if ( proto.window_render && proto.windowTemplate ) {
-                types[type] = { key: type, display: display, ctor: WindowedApplication };
+                types[type] = { 
+                    key: type, 
+                    display: display, 
+                    maxInstances: maxInstances, 
+                    ctor: WindowedApplication
+                };
             }
  
             return WM.WindowedApplicationFactory;

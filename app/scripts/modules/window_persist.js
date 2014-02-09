@@ -20,6 +20,12 @@
 	        }
 	    }
 
+	    if(_.isUndefined(this.get_all_windows)){
+	        this.get_all_windows = function () {
+	          throw new Error('AbstractPersistentBackend is abstract');
+	        }
+	    }
+
 	    if(_.isUndefined(this.remove_window)){
 	        this.remove_window = function () {
 	          throw new Error('AbstractPersistentBackend is abstract');

@@ -16,6 +16,6 @@ wmJs.Views = wmJs.Views || {};
     });
 
     WM.WindowedApplicationFactory
-      .registerApplication('window_logger', 'logger',
+      .registerApplication('window_logger', 'logger', '*',
       					   wmJs.Views.WindowExampleLoggerView);
 })();

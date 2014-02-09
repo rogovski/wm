@@ -16,26 +16,38 @@
             console.log('init');
         },
 
+        /**********************************************************************
+        /* WINDOWS
+        /*********************************************************************/
         create_window: function (data) {
             var obj = wmJs.Data.WindowedApplicationInstance.create(data);
             this._db.windows.push( { key: obj.id, value: obj } );
         },
 
         set_window: function (id, data) {
-            var item = _.findWhere( this._db.windows, { key: id } );
-            item.value = data;
-            console.log(this.get_window(id));         
+            var item = _.findWhere( this._db.windows, { id: id } );
+            _.extend(item.values, data, {});    
         },
 
         get_window: function (id) {
-            var item = _.findWhere( this._db.windows, { key: id } );
-            console.log(item);             
+            var item = _.findWhere( this._db.windows, { id: id } );
+            console.log(item);  
+            return 'get_window';           
+        },
+
+        get_all_windows: function () {
+            console.log(this._db.windows);  
+            return 'get_window';           
         },
 
         remove_window: function () {
             console.log('remove');
         },
 
+
+        /**********************************************************************
+        /* WORKSPACES
+        /*********************************************************************/
         set_workspace: function (id, data) {
             console.log('set');
         },
@@ -47,6 +59,11 @@
         remove_workspace: function () {
             console.log('remove');
         }
+
+
+        /**********************************************************************
+        /* APPLICATIONS
+        /*********************************************************************/        
 
     }); 
 
