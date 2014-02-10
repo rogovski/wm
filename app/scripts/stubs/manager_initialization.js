@@ -115,26 +115,78 @@ window.Stubs.testData2 = function () {
 
 
 window.Stubs.testData3 = function () {
-    var win0 = wmJs.Data.WindowedApplicationInstance.create({
-        left: 150, 
-        top: 50                                    
-    });
-    var win1 = wmJs.Data.WindowedApplicationInstance.create({
-        left: 376, 
-        top: 50                                     
-    });
+
+    var app1 = wmJs.Data.WindowedApplication.create({factoryKey: 'blank_window', display: 'blank window'}),
+        app2 = wmJs.Data.WindowedApplication.create({factoryKey: 'window_form', display: 'window form'}),
+        app3 = wmJs.Data.WindowedApplication.create({factoryKey: 'window_launcher', display: 'window launcher'}),
+        app4 = wmJs.Data.WindowedApplication.create({factoryKey: 'window_logger', display: 'window logger'}),
+        app5 = wmJs.Data.WindowedApplication.create({factoryKey: 'window_timer', display: 'timer'}),
+
+        ws0  = wmJs.Data.Workspace.create({isDefault: true}),
+        ws1  = wmJs.Data.Workspace.create({isDefault: false, display: 'todo'}),
+
+
+        win1 = wmJs.Data.WindowedApplicationInstance.create({
+            left: 150, 
+            top: 50,
+            appId: app1.id,
+            workspaceId: ws0.id            
+        }),
+
+        win2 = wmJs.Data.WindowedApplicationInstance.create({
+            left: 376, 
+            top: 50,
+            appId: app4.id,
+            workspaceId: ws0.id                  
+        }),
+
+        win3 = wmJs.Data.WindowedApplicationInstance.create({
+            left: 600, 
+            top: 50,
+            appId: app5.id,
+            workspaceId: ws0.id
+        }),
+
+        win4 = wmJs.Data.WindowedApplicationInstance.create({
+            left: 7, 
+            top: 50, 
+            height: 540, 
+            width:127, 
+            appId: app3.id,
+            workspaceId: ws0.id
+        }),
+
+        win5 = wmJs.Data.WindowedApplicationInstance.create({
+            left: 160, 
+            top: 320, 
+            height: 340, 
+            width:637, 
+            appId: app2.id,
+            workspaceId: ws0.id
+        }),
+
+        win6 = wmJs.Data.WindowedApplicationInstance.create({
+            left: 827, 
+            top: 50,
+            width: 240,
+            height: 611,
+            appId: app4.id,
+            workspaceId: ws0.id                  
+        });    
+
+
+
+
 
     var db = new wmJs.Persistence.InMemoryPersist({
-        windows: [win0,win1],
+        windows: [
+            win1,win2,win3, win4, win5, win6
+        ],
         workspaces: [
-            wmJs.Data.Workspace.create()
+            ws0,ws1
         ],
         applications: [
-            wmJs.Data.WindowedApplication.create({factoryKey: 'blank_window', display: 'blank window'}),
-            wmJs.Data.WindowedApplication.create({factoryKey: 'window_form', display: 'window form'}),
-            wmJs.Data.WindowedApplication.create({factoryKey: 'window_launcher', display: 'window launcher'}),
-            wmJs.Data.WindowedApplication.create({factoryKey: 'window_logger', display: 'window logger'}),
-            wmJs.Data.WindowedApplication.create({factoryKey: 'window_timer', display: 'timer'})
+            app1,app2,app3,app4,app5
         ]
     });
     return db;

@@ -6,14 +6,14 @@
         _db: {
             windows: [],
             workspaces: [],
+            applications: []
         },
 
         initialize: function (options) {
             // TODO: error checks
-            this._db.windows = options.windows;
-            this._db.workspaces = options.workspaces;
-
-            console.log('init');
+            this._db.windows = options.windows || {};
+            this._db.workspaces = options.workspaces || {};
+            this._db.applications = options.applications || {};
         },
 
         /**********************************************************************
@@ -35,9 +35,9 @@
             return 'get_window';           
         },
 
-        get_all_windows: function () {
-            console.log(this._db.windows);  
-            return 'get_window';           
+        get_all_windows: function (self, evt, args) {
+            $.publish(wmJs.Data.Topics.applicationInstancesResponse, 
+                      {result: self._db.windows, replyFor: args.replyTo});     
         },
 
         remove_window: function () {
@@ -56,15 +56,23 @@
             console.log('get');
         },
 
+        get_all_workspaces: function (self, evt, args) {
+            $.publish(wmJs.Data.Topics.workspacesResponse, 
+                      {result: self._db.workspaces, replyFor: args.replyTo});                
+        },
+
         remove_workspace: function () {
             console.log('remove');
-        }
+        },
 
 
         /**********************************************************************
         /* APPLICATIONS
         /*********************************************************************/        
-
+        get_all_applications: function (self, evt, args) {
+            $.publish(wmJs.Data.Topics.applicationsResponse, 
+                      {result: self._db.applications, replyFor: args.replyTo});   
+        }
     }); 
 
 })();

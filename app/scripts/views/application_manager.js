@@ -8,12 +8,18 @@ wmJs.Views = wmJs.Views || {};
 
     wmJs.Views.ApplicationManagerView = Backbone.View.extend({
 
+        applications: null,
+
         currentWorkspace: null,
+
+        workspaces: null,
+
+        instances: null,
 
         template: JST['app/scripts/templates/application_manager.ejs'],
 
         registerSubscriptions: function () {
-            $.subscribe(WM.topics.viewInitialized,
+            /*$.subscribe(WM.topics.viewInitialized,
                         _.partial(this.workspaceInit,this));
 
             $.subscribe(WM.topics.workspaceLoaded,
@@ -24,6 +30,20 @@ wmJs.Views = wmJs.Views || {};
 
             $.subscribe(WM.topics.windowConfigRequest,
                         _.partial(this.handleWmDataRequest, this));
+*/
+
+            $.subscribe(wmJs.Data.Topics.applicationsResponse,
+                         _.partial(this.applicationsInit,this));
+
+            $.subscribe(wmJs.Data.Topics.workspacesResponse,
+                         _.partial(this.workspacesInit,this));
+
+            $.subscribe(wmJs.Data.Topics.applicationInstancesResponse,
+                         _.partial(this.appInstancesInit,this));
+
+            $.subscribe(wmJs.Data.Topics.currentWorkspaceRequest,
+                         _.partial(this.publishCurrentWorkspace,this));
+
         },
 
        /**
@@ -49,21 +69,6 @@ wmJs.Views = wmJs.Views || {};
         *        foreach el in currentInstances
         *            
         */   
-        initialize2: function (config) {
-            config || WM.Exception.ConfigPropertyMissing('initialize');
-
-            if(typeof(config.appDataSource) == 'undefined') {
-                // TODO: throw more descriptive exception
-                throw new Error('init2 appDataSource');
-            }
-
-            if(typeof(config.appFactory) == 'undefined') {
-                // TODO: throw more descriptive exception
-                throw new Error('init2 appFactory');
-            }
-
-
-        },
 
         /*
          * ApplicationManagerView gets initialized with the following:
@@ -74,16 +79,35 @@ wmJs.Views = wmJs.Views || {};
          *                   to be used by WindowFactory 
          */
         initialize: function (config) {
-        	config || WM.Exception.ConfigPropertyMissing('initialize');
+        	config                 || 
+                wmJs.Exception.ConfigPropertyMissing('initialize');
+
+            config.appDataSource   || 
+                wmJs.Exception.ConfigPropertyMissing('initialize:appDataSource');
+
+            config.appFactory      ||
+                wmJs.Exception.ConfigPropertyMissing('initialize:appFactory');
+
+            config.appMessages     ||
+                wmJs.Exception.ConfigPropertyMissing('initialize:appMessages'); 
+
 
             /**
-             * WorkspaceConfig is one of the follwing:
-             * - an in memory object that gives a single configuration
-             * - a function that takes a workspace id and returns an
-             *   an element of an in memory list of workspace objects
-             * - an ajax get request that takes a workspace id an
-             *   returns a single configuration object from a provided url
+             * appDataSource is meant to be one of the follwing:
+             * - an in memory store
+             * - an interface to the browsers local storage
+             * - an interface to ajax calls to a backend server
+             * ------------------------------------------------------
+             * all of the out-of-the-box behaviors implement the interface
+             * described by AbstractPersistentBackend, all custom stoage schemes
+             * should do the same. all methods in AbstractPersistentBackend return
+             * values via $.publish(...), so be sure to subscribe to the proper
+             * topics.
              */
+
+            this.registerSubscriptions();
+
+            return;
             this.WorkspaceConfig = 
                 config.WorkspaceConfig ||
                 WM.Exception.ConfigPropertyMissing('WorkspaceConfig');
@@ -132,120 +156,76 @@ wmJs.Views = wmJs.Views || {};
         },
 
         render: function () {
-            $.publish(WM.topics.viewInitialized);
+            $.publish(wmJs.Data.Topics.workspacesRequest, {replyTo: this.cid});            
         },
 
         /**
-         * first step in the pipeline. get workspace info
+         * handle response from persistence layer for all workspaces
          */
-        workspaceInit: function (self,evt,args) {
-            /**
-             * workspace configuration is an in-memory object
-             */
-            if(typeof(self.WorkspaceConfig.url) == 'undefined'){                   
-                $.publish(WM.topics.workspaceLoaded);
-                return;
-            }
+        workspacesInit: function (self,evt,args) {
+            if(_.isUndefined(args.replyFor) || args.replyFor != self.cid) return;
 
-            /**
-             * workspace configuration is a function that looks up
-             * an in memory object
-             */
-            var wsObj = self.WorkspaceConfig.url(self.currentWorkspace);
-            if(wsObj instanceof Object){
-                self.WorkspaceConfig.data = wsObj;
-                $.publish(WM.topics.workspaceLoaded);
-                return;
-            }
+            self.workspaces       = args.result;
+            self.currentWorkspace = _.filter(self.workspaces, function (obj) {
+                return obj.values.isDefault === true;
+            })[0];
 
-            /**
-             * workspace configuration is a server side object
-             */            
-            $.when($.ajax({ 
-                url: self.WorkspaceConfig.url(
-                        self.currentWorkspace)})).then(
-               /**
-                * if successful set WorkspaceConfig.data
-                * then trigger the next phase of view
-                * initialization
-                */                    
-                function (res) {
-                    self.WorkspaceConfig.data = res;
-                    $.publish(WM.topics.workspaceLoaded); 
-                },
-
-               /**
-                * TODO: figure out error cases
-                */
-                function (res) {
-                    console.log(res);
-                });           
+            $.publish(wmJs.Data.Topics.applicationsRequest, {replyTo: self.cid});
         },
 
         /**
-         * second step in the pipeline. get window info in workspace
+         * handle response from persistence layer for all applications
          */
-        windowsInit: function (self,evt,args) {
-            /**
-             * window configuration list was an in-memory object
-             */
-            if(typeof(self.WindowConfigList.url) == 'undefined'){                    
-                $.publish(WM.topics.workspaceWindowsLoaded);
-                return;
-            }
+        applicationsInit: function (self,evt,args) {
+            if(_.isUndefined(args.replyFor) || args.replyFor != self.cid) return;
 
-            /**
-             * window configuration list is a function that looks up
-             * an in memory object
-             */
-            var winLsObj = self.WindowConfigList.url(self.currentWorkspace);
-            if(winLsObj instanceof Object){
-                self.WindowConfigList.data = winLsObj;
-                $.publish(WM.topics.workspaceWindowsLoaded);
-                return;
-            }
-
-            /**
-             * window configuration list is a server side object
-             */ 
-            $.when($.ajax({ 
-                url: self.WindowConfigList.url(
-                        self.currentWorkspace)})).then(
-               /**
-                * if successful set WorkspaceConfig.data
-                * then trigger the next phase of view
-                * initialization
-                */                    
-                function (res) {
-                    self.WindowConfigList.data = res;
-                    $.publish(WM.topics.workspaceWindowsLoaded); 
-                },
-
-               /**
-                * TODO: figure out error cases
-                */
-                function (res) {
-                    console.log(res);
-                });           
+            self.applications = args.result;
+            $.publish(wmJs.Data.Topics.applicationInstancesRequest, {replyTo: self.cid});
         },
 
         /**
-         * third step in the pipeline. initialize all windows and 
+         * handle response from persistence layer for all app instances
+         */
+        appInstancesInit: function (self,evt,args) {
+            if(_.isUndefined(args.replyFor) || args.replyFor != self.cid) return;
+
+            self.instances = args.result;
+            _.each(self.instances, function (e) {
+
+                var app = _.filter(self.applications, function (a) {
+                    return a.id == e.values.appId;
+                })[0];            
+
+                e.instance = wmJs.Factories.WindowedApplicationFactory.getWindowedApplication(
+                    app.values.factoryKey, {
+                        parentView: self.el,
+                        config:e.values
+                    });
+            });
+            self.viewReady();
+        },
+
+        /**
+         * final step in the pipeline. initialize all windows and 
          * slice in templates
          */
-        viewReady: function (self,evt,args) {
-            self.applyWorkspaceConfiguration();
-            self.$el.html('');
-            self.WindowConfigList.data.forEach(function (e,i) {
-                e.instance = self.WindowFactory(e.factoryKey, {
-                    parentView: self.el,
-                    config: e
-                });
-                self.$el.append(e.instance.el);
-                e.instance.render({resetTemplate: true});
+        viewReady: function () {
+            this.applyWorkspaceConfiguration();
+            this.$el.html('');
+
+            var self = this;
+            _.each(this.instances, function (e) {
+               if(self.currentWorkspace.id == e.values.workspaceId){
+                    self.$el.append(e.instance.el);
+                    e.instance.render({resetTemplate: true});
+               } 
             });
-            
         }, 
+
+        publishCurrentWorkspace: function (self,evt,args) {
+            $.publish(wmJs.Data.Topics.currentWorkspaceResponse,
+                      {result: self.currentWorkspace, replyFor: args.replyTo});    
+        },
 
         /**
          * handles requests for configuration data 
@@ -267,8 +247,8 @@ wmJs.Views = wmJs.Views || {};
         },
 
         applyWorkspaceConfiguration: function () {
-            this.$el.css('width', this.WorkspaceConfig.data.width)
-                    .css('height', this.WorkspaceConfig.data.height);
+            this.$el.css('width', this.currentWorkspace.values.width)
+                    .css('height', this.currentWorkspace.values.height);
         }
 
     });

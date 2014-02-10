@@ -1,14 +1,35 @@
 <div class="btn-group launcher-group">
 	<button 
-		class='btn btn-default btn-launcher <%= factoryKey %> dropdown-toggle' 
+		class='btn btn-default btn-launcher <%= obj.factoryKey %> dropdown-toggle' 
 		data-toggle="dropdown">
-		<%= display %>
+		<%= obj.display %>
 		<span class="caret pull-right"></span>
 	</button>
   <ul class="dropdown-menu" role="menu">
-    <li><a href="#">(no instances running)</a></li>
+
+  	<% _.each(obj.instances, function(o) { %>
+  		<li>
+  			<a class='<%= o.id %> launcher-btn' href="#"><%= o.values.display %></a>
+			<div class="btn-group pull-right">
+	               <button type="button" 
+	               		   class="<%= o.id %> lbtn-max btn-window-action btn btn-link">
+	                    <span class="glyphicon glyphicon-plus"></span>
+	               </button>
+	               <button type="button" 
+	               		   class="<%= o.id %> lbtn-min btn-window-action btn btn-link">
+	                    <span class="glyphicon glyphicon-minus"></span>
+	               </button>
+	               <button type="button" 
+	               		   class="<%= o.id %> lbtn-close btn-window-action btn btn-link">
+	               	<span class="glyphicon glyphicon-remove-circle"></span>
+	               </button>
+	        </div>
+
+  		</li>
+	<% }); %>
+
     <li class="divider"></li>
-    <li><a href="#">New</a></li>
+    <li><a class='launcher new <%= obj.factoryKey %>' href="#">New</a></li>
   </ul>	
 </div>
 

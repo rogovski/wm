@@ -8,23 +8,24 @@ window.wmJs = {
     Routers: {},
     Factories: {},
     Persistence: {},
+    Exception: {},
     Data: {},
     init: function () {
         'use strict';
 
-        /*
-        var wm2 = new wmJs.Views.ApplicationManagerView({
-            appDataSource:      new wmJs.Persistence.InMemoryPersist(),
-            appFactory:         null,
-            appMessages:        null, 
+        var wm = new wmJs.Views.ApplicationManagerView({
+            appDataSource:      window.Stubs.testData3(),
+            appFactory:         wmJs.Factories.WindowedApplicationFactory,
+            appMessages:        wmJs.Data.Topics, 
+            el: '#app'
         });
-        */
-
+        
+        /*
         var wm = new wmJs.Views.ApplicationManagerView(
 
             window.Stubs.testData() //testData()
 
-        );
+        );*/
         wm.render();
     }
 };

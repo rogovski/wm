@@ -24,7 +24,7 @@
 				    defaults 	 = _.clone( WindowedApplicationDefaults ),
 				    id           = typeof(existingData.id) == 'undefined' ? 
 				    			   _.uniqueId( 'app' ) : existingData.id,
-				    values       = _.extend( defaults.values, existingData, { } );
+				    values       = _.extend( {}, defaults.values, existingData );
 
 				return {id: id, values: values};
 			}
@@ -60,7 +60,7 @@
 				    defaults 	 = _.clone( WindowedApplicationInstanceDefaults ),
 				    id           = typeof( existingData.id ) == 'undefined' ? 
 				    			   _.uniqueId( 'appInst' ) : existingData.id,
-				    values       = _.extend( defaults.values, existingData, { } );
+				    values       = _.extend( {}, defaults.values, existingData );
 
 				return {id: id, values: values};
 			}
@@ -83,16 +83,54 @@
 	wmJs.Data.Workspace = (function () {
 		return {
 			create: function ( existing_data ) {
+				console.log(existing_data);
 				var existingData = existing_data || {},
 				    defaults 	 = _.clone( WorkspaceDefaults ),
 				    id           = typeof( existingData.id ) == 'undefined' ? 
 				    			   _.uniqueId( 'workspace' ) : existingData.id,
-				    values       = _.extend( defaults.values, existingData, { } );
+				    values       = _.extend( {}, defaults.values, existingData );
 
 				return {id: id, values: values};
 			}
 		};
 	})();
+
+
+	wmJs.Data.Topics = {
+		visibilityChanged: "visibilityChanged",
+		workspaceChanged: "workspaceChanged",
+		worspaceSaved: "workspaceSaved",
+		viewInitialized: "viewInitialized",
+		workspaceLoaded: "workspaceLoaded",
+		workspaceWindowsLoaded: "workspaceWindowsLoaded",
+		workspaceRenderAll: "workspaceRenderAll",
+		windowConfigRequest: "windowConfigRequest",
+
+		// request to persisitence layer for all applications
+		applicationsRequest: 'applicationsRequest',
+
+		// request to persistence layer for all workspaces
+		workspacesRequest: 'workspacesRequest',
+
+		// request to persistence layer to get all application instances
+		applicationInstancesRequest: 'applicationInstancesRequest',
+
+
+		// reaponse from persisitence layer giving all applications
+		applicationsResponse: 'applicationsResponse',
+
+		// response from persistence layer giving all workspaces
+		workspacesResponse: 'workspacesResponse',
+
+		// response from persistence layer giving all application instances
+		applicationInstancesResponse: 'applicationInstancesResponse',
+
+		currentWorkspaceRequest: 'currentWorkspaceRequest',
+		currentWorkspaceResponse: 'currentWorkspaceResponse',
+
+		windowMinimizedNotification: 'windowMinimizedNotification'		
+	};
+
 
 })();
 

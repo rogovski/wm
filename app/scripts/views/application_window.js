@@ -21,7 +21,8 @@ wmJs.Views = wmJs.Views || {};
         window_events_base: {
             "click .btn-pin"		: "btnPinClickHandler",
             "click .btn-draggable" 	: "btnDragClickHandler",
-            "click .btn-close"		: "windowCloseHandler"    
+            "click .btn-close"		: "windowCloseHandler",
+            "click .btn-min"        : "windowMinHandler"
         },
 
         render: function (args) {
@@ -118,6 +119,11 @@ wmJs.Views = wmJs.Views || {};
               this.deactivate(this.$btnDraggable);
               this.config.draggable = false;
             }
+        },
+
+        windowMinHandler: function () {
+            this.$el.hide();
+            $.publish(wmJs.Data.Topics.windowMinimized, {id: this.cid});    
         },
 
         activate: function (sel) {

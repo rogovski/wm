@@ -15,7 +15,7 @@ wmJs.Views = wmJs.Views || {};
 
     });
 
-    WM.WindowedApplicationFactory
+    wmJs.Factories.WindowedApplicationFactory
       .registerApplication('window_timer', 'timer', '*',
       					   wmJs.Views.WindowExampleTimerView);
 })();

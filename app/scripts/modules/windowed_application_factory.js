@@ -1,6 +1,6 @@
-wmJs.Factories = wmJs.Factories || {}
-
 (function () {
+    'use strict';
+
     wmJs.Factories.WindowedApplicationFactory = (function () {
  
         // Storage for WindowedApplication types
@@ -15,7 +15,6 @@ wmJs.Factories = wmJs.Factories || {}
              */
             getWindowedApplication: function ( type, properties ) {
                 var WindowedApplication = types[type];
-
                 return (WindowedApplication ? new WindowedApplication.ctor(properties) : null);
             },
      
