@@ -7,6 +7,7 @@ wmJs.Views = wmJs.Views || {};
 
     var ApplicationWindowView = function (options) {
         this.config = options.config;
+        this.key = options.key;
         this.$parentView = $(options.parentView);
 
         //$.subscribe(...);
@@ -22,7 +23,8 @@ wmJs.Views = wmJs.Views || {};
             "click .btn-pin"		: "btnPinClickHandler",
             "click .btn-draggable" 	: "btnDragClickHandler",
             "click .btn-close"		: "windowCloseHandler",
-            "click .btn-min"        : "windowMinHandler"
+            "click .btn-min"        : "windowMinHandler",
+            "click .btn-max"        : "windowMaxHandler",
         },
 
         render: function (args) {
@@ -121,9 +123,36 @@ wmJs.Views = wmJs.Views || {};
             }
         },
 
+        /*********************************************************************/
+        /* WINDOW MINIMIZATION
+        /*********************************************************************/
+        /**
+         * event handler for local events
+         */         
         windowMinHandler: function () {
-            this.$el.hide();
-            $.publish(wmJs.Data.Topics.windowMinimized, {id: this.cid});    
+            $.publish(wmJs.Data.Topics.windowMinimizedNotification, {id: this.key});    
+        },
+        /**
+         * event handler for events via pub/sub
+         */   
+        handleExternalMinimizeNotification: function (self,evt,args) {
+            //TODO: be careful not to recurse
+        },
+
+        /*********************************************************************/
+        /* WINDOW MAXIMIZATION
+        /*********************************************************************/
+        /**
+         * event handler for local events
+         */        
+        windowMaxHandler: function () {
+            $.publish(wmJs.Data.Topics.windowMaximizedNotification, {id: this.key});    
+        },
+        /**
+         * event handler for events via pub/sub
+         */      
+        handleExternalMaximizeNotification: function (self,evt,args) {
+            //TODO: be careful not to recurse
         },
 
         activate: function (sel) {

@@ -128,7 +128,8 @@
 		currentWorkspaceRequest: 'currentWorkspaceRequest',
 		currentWorkspaceResponse: 'currentWorkspaceResponse',
 
-		windowMinimizedNotification: 'windowMinimizedNotification'		
+		windowMinimizedNotification: 'windowMinimizedNotification',
+		windowMaximizedNotification: 'windowMaximizedNotification'	
 	};
 
 

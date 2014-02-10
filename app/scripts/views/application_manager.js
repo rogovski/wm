@@ -195,10 +195,11 @@ wmJs.Views = wmJs.Views || {};
                 var app = _.filter(self.applications, function (a) {
                     return a.id == e.values.appId;
                 })[0];            
-
+                
                 e.instance = wmJs.Factories.WindowedApplicationFactory.getWindowedApplication(
                     app.values.factoryKey, {
                         parentView: self.el,
+                        key: e.id,
                         config:e.values
                     });
             });

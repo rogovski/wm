@@ -9,6 +9,7 @@ window.wmJs = {
     Factories: {},
     Persistence: {},
     Exception: {},
+    CssHooks: {},
     Data: {},
     init: function () {
         'use strict';

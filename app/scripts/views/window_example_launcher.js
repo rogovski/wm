@@ -40,7 +40,10 @@ wmJs.Views = wmJs.Views || {};
                          _.partial(this.getAppInstances,this));
 
             $.subscribe(wmJs.Data.Topics.windowMinimizedNotification,
-                         _.partial(this.handleWindowMinimize,this));                  
+                         _.partial(this.handleWindowMinimizeNotification,this));
+
+            $.subscribe(wmJs.Data.Topics.windowMaximizedNotification,
+                         _.partial(this.handleWindowMaximizeNotification,this));    
         },
 
         initialize: function () {
@@ -121,50 +124,44 @@ wmJs.Views = wmJs.Views || {};
             console.log(elem);
         },
 
+        /*********************************************************************/
+        /* WINDOW MINIMIZATION
+        /*********************************************************************/
+        /**
+         * event handler for local events
+         */            
         launcherButtonMinHandler: function (e) {
-            console.log(e);
+            var id = $(e.currentTarget).attr('class').split(' ')[0];
+            wmJs.CssHooks.LauncherInstance.minimize(
+                this.$launcherList, id);
+        },
+        /**
+         * event handler for events via pub/sub
+         */   
+        handleWindowMinimizeNotification: function (self,evt,args) {
+            wmJs.CssHooks.LauncherInstance.minimize(
+                self.$launcherList, args.id);
         },
 
+        /*********************************************************************/
+        /* WINDOW MAXIMIZATION
+        /*********************************************************************/ 
         launcherButtonMaxHandler: function (e) {
-            console.log(e);
+            var id = $(e.currentTarget).attr('class').split(' ')[0];
+            wmJs.CssHooks.LauncherInstance.maximize(
+                this.$launcherList, id);
+        },
+ 
+        handleWindowMaximizeNotification: function (self,evt,args) {
+            wmJs.CssHooks.LauncherInstance.maximize(
+                self.$launcherList, args.id);
         },
 
+        /*********************************************************************/
+        /* WINDOW Closing
+        /*********************************************************************/ 
         launcherButtonCloseHandler: function (e) {
             console.log(e);
-        },
-        
-        requestUniqueWindows: function () {
-            $.publish(WM.topics.windowConfigRequest, {
-                publishTo: 'launcher.getUniqueWindows', 
-                resource: 'WindowTypes', 
-                transform: function (obj) {
-                    return { result: obj() };
-                } 
-            });        	
-        },
-
-        receiveUniqueWindows: function (self,evt,args) {
-        	self.$launcherList = self.$windowcontent.find('.launcher-list');
-        	self.$launcherList.html('');
-
-        	args.result.forEach(function (e,i) {
-        		self.$launcherList.append(self.launcherButton(e));
-        	});
-            self.requestRunningInstances();
-        },
-
-        requestRunningInstances: function () {
-            $.publish(WM.topics.windowConfigRequest, {
-                publishTo: 'launcher.getRunningInstances', 
-                resource: 'WindowConfigList', 
-                transform: function (obj) {
-                    return { result: obj };
-                } 
-            });              
-        },
-
-        receiveRunningInstances: function (self,evt,args) {
-            console.log(args.result.data);           
         }
 
     });
