@@ -13,6 +13,9 @@
 
 	    	$.subscribe(wmJs.Data.Topics.workspacesRequest,
 	    				_.partial(this.get_all_workspaces,this));
+
+	    	$.subscribe(wmJs.Data.Topics.requestAppInstanceCreation,
+	    				_.partial(this.create_window, this));
 	    };	
 	     
 	    if(!_.isUndefined(this.initialize)){

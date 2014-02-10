@@ -19,18 +19,6 @@ wmJs.Views = wmJs.Views || {};
         template: JST['app/scripts/templates/application_manager.ejs'],
 
         registerSubscriptions: function () {
-            /*$.subscribe(WM.topics.viewInitialized,
-                        _.partial(this.workspaceInit,this));
-
-            $.subscribe(WM.topics.workspaceLoaded,
-                        _.partial(this.windowsInit,this));
-
-            $.subscribe(WM.topics.workspaceWindowsLoaded,
-                        _.partial(this.viewReady, this));
-
-            $.subscribe(WM.topics.windowConfigRequest,
-                        _.partial(this.handleWmDataRequest, this));
-*/
 
             $.subscribe(wmJs.Data.Topics.applicationsResponse,
                          _.partial(this.applicationsInit,this));
@@ -44,53 +32,16 @@ wmJs.Views = wmJs.Views || {};
             $.subscribe(wmJs.Data.Topics.currentWorkspaceRequest,
                          _.partial(this.publishCurrentWorkspace,this));
 
+            $.subscribe(wmJs.Data.Topics.appInstancePersistCreated,
+                         _.partial(this.handleInstanceCreatedNotification, this));
         },
 
-       /**
-        * using appDataSource get list of WindowedApplication
-        *          this.WindowedApplications <- list of WindowedApplication
-        *
-        * using appDataSource get list of Workspace
-        *          this.Workspaces <- list of Workspace
-        *
-        * using this.Workspaces get default workspace
-        *          this.CurrentWorkspace <- default workspace
-        *
-        * using appDataSource get all app instances, 
-        *       group all instance by workspace,
-        *       foreach workspace, group by appId
-        *       cache them in memory
-        *          this.appInstances <- all app instances (with grouping)
-        *
-        * using this.WindowedApplications register all applications with appFactory
-        *
-        * filter this.appInstances by this.CurrentWorkspace
-        *        var currentIntances <- filtered
-        *        foreach el in currentInstances
-        *            
-        */   
-
         /*
-         * ApplicationManagerView gets initialized with the following:
-         * WorkspaceConfig -height and width of #app
-         * WindowFactory -module for creating windows based off of key
-         * WindowConfigList -list of window properties, important
-         *                   that each objecy contains the factory key
-         *                   to be used by WindowFactory 
+         * @constructs
          */
         initialize: function (config) {
         	config                 || 
                 wmJs.Exception.ConfigPropertyMissing('initialize');
-
-            config.appDataSource   || 
-                wmJs.Exception.ConfigPropertyMissing('initialize:appDataSource');
-
-            config.appFactory      ||
-                wmJs.Exception.ConfigPropertyMissing('initialize:appFactory');
-
-            config.appMessages     ||
-                wmJs.Exception.ConfigPropertyMissing('initialize:appMessages'); 
-
 
             /**
              * appDataSource is meant to be one of the follwing:
@@ -103,77 +54,49 @@ wmJs.Views = wmJs.Views || {};
              * should do the same. all methods in AbstractPersistentBackend return
              * values via $.publish(...), so be sure to subscribe to the proper
              * topics.
-             */
-
-            this.registerSubscriptions();
-
-            return;
-            this.WorkspaceConfig = 
-                config.WorkspaceConfig ||
-                WM.Exception.ConfigPropertyMissing('WorkspaceConfig');
+             */                
+            config.appDataSource   || 
+                wmJs.Exception.ConfigPropertyMissing('initialize:appDataSource');
 
             /**
              * Window factory is a function that constructs a window
              * when given a lookup key and initialization arguments
              */
-            this.WindowFactory = 
-                config.WindowFactory ||
-                WM.Exception.ConfigPropertyMissing('WindowFactory');
+            config.appFactory      ||
+                wmJs.Exception.ConfigPropertyMissing('initialize:appFactory');
+
 
             /**
-             * WindowTypes is a function that returns the display name
-             * and factoryKey of all types registered in the factory
+             * pubsub messages used throughout the application 
              */
-            this.WindowTypes = 
-                config.WindowTypes ||
-                WM.Exception.ConfigPropertyMissing('WindowTypes');
+            config.appMessages     ||
+                wmJs.Exception.ConfigPropertyMissing('initialize:appMessages'); 
 
-            /**
-             * WindowConfigList is one of the follwing:
-             * - an in memory list of window configuration objects
-             * - a function that takes a workspace id and returns an
-             *   an element of an in memory list of workspace objects
-             * - an ajax get request that takes a workspace id and 
-             *   returns a list of window configuration objects from 
-             *   a provided url
-             */
-            this.WindowConfigList = 
-                config.WindowConfigList ||
-                WM.Exception.ConfigPropertyMissing('WindowConfigList');
 
-            /**
-             * id of the current workspace, needed only for ajax
-             * calls and generator functions
-             */
-            this.currentWorkspace = 
-                this.WorkspaceConfig.id ||
-                null;
-
-            /*
-             * register ApplicationManagerView's subscriptions
-             */
             this.registerSubscriptions();
         },
 
         render: function () {
-            $.publish(wmJs.Data.Topics.workspacesRequest, {replyTo: this.cid});            
+            $.publish(wmJs.Data.Topics.workspacesRequest, {
+                replyTo: this.cid
+            });            
         },
 
         /**
+         * first step of initialization pipeline
          * handle response from persistence layer for all workspaces
          */
         workspacesInit: function (self,evt,args) {
             if(_.isUndefined(args.replyFor) || args.replyFor != self.cid) return;
 
             self.workspaces       = args.result;
-            self.currentWorkspace = _.filter(self.workspaces, function (obj) {
-                return obj.values.isDefault === true;
-            })[0];
+            self.currentWorkspace = wmJs.Util.getDefaultWorkspace(self.workspaces);
 
             $.publish(wmJs.Data.Topics.applicationsRequest, {replyTo: self.cid});
         },
 
         /**
+         * second step of initialization pipeline
          * handle response from persistence layer for all applications
          */
         applicationsInit: function (self,evt,args) {
@@ -184,17 +107,16 @@ wmJs.Views = wmJs.Views || {};
         },
 
         /**
+         * third step of initialization pipeline
          * handle response from persistence layer for all app instances
          */
         appInstancesInit: function (self,evt,args) {
             if(_.isUndefined(args.replyFor) || args.replyFor != self.cid) return;
 
             self.instances = args.result;
-            _.each(self.instances, function (e) {
 
-                var app = _.filter(self.applications, function (a) {
-                    return a.id == e.values.appId;
-                })[0];            
+            _.each(self.instances, function (e) {
+                var app = wmJs.Util.getAppInfo(self.applications, e.values.appId);
                 
                 e.instance = wmJs.Factories.WindowedApplicationFactory.getWindowedApplication(
                     app.values.factoryKey, {
@@ -203,12 +125,13 @@ wmJs.Views = wmJs.Views || {};
                         config:e.values
                     });
             });
+
             self.viewReady();
         },
 
         /**
-         * final step in the pipeline. initialize all windows and 
-         * slice in templates
+         * final step of initialization pipeline. 
+         * initialize all windows and slice in templates
          */
         viewReady: function () {
             this.applyWorkspaceConfiguration();
@@ -223,30 +146,38 @@ wmJs.Views = wmJs.Views || {};
             });
         }, 
 
+        /**
+         * broadcast the workspace that the app mananger has in focus
+         */
         publishCurrentWorkspace: function (self,evt,args) {
             $.publish(wmJs.Data.Topics.currentWorkspaceResponse,
-                      {result: self.currentWorkspace, replyFor: args.replyTo});    
+                      {result: self.currentWorkspace, replyFor: args.replyTo});
         },
 
         /**
-         * handles requests for configuration data 
-         * @args {object}
-         * @args.publishTo {string} -contains topic to publish to after processing is complete
-         * @args.resource {string}  -key of requested resource
-         * @args.transform {function} -transformation to apply to reasource before returning to sender 
+         * subscription handler that is called when a new window gets allocated
          */
-        handleWmDataRequest: function (self,evt,args) {
-            var options = args || {};
+        handleInstanceCreatedNotification: function (self,evt,args) {
+            var newInst = args.result,
+                app = wmJs.Util.getAppInfo(self.applications, newInst.values.appId); 
 
-            if(options.publishTo && options.resource){
-                var res = self[options.resource] || null;
+            newInst.instance = wmJs.Factories.WindowedApplicationFactory.getWindowedApplication(
+                app.values.factoryKey, {
+                    parentView: self.el,
+                    key: newInst.id,
+                    config:newInst.values
+                });
 
-                $.publish(options.publishTo, 
-                    options.transform && _.isFunction(options.transform) 
-                        ? options.transform(res) : res);
-            }
+           if(self.currentWorkspace.id == newInst.values.workspaceId){
+                self.$el.append(newInst.instance.el);
+                newInst.instance.render({resetTemplate: true});
+           }
+           self.instances.push(newInst);
         },
 
+        /**
+         * set width and height of the currently rendered workspace
+         */
         applyWorkspaceConfiguration: function () {
             this.$el.css('width', this.currentWorkspace.values.width)
                     .css('height', this.currentWorkspace.values.height);

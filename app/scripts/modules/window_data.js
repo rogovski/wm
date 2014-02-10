@@ -47,8 +47,7 @@
 			width: 		 200,
 			left: 		 50,
 			top: 		 50,
-			state: 		 {},
-			instance:    null			
+			state: 		 {}	
 		}
 
 	};
@@ -129,9 +128,11 @@
 		currentWorkspaceResponse: 'currentWorkspaceResponse',
 
 		windowMinimizedNotification: 'windowMinimizedNotification',
-		windowMaximizedNotification: 'windowMaximizedNotification'	
-	};
+		windowMaximizedNotification: 'windowMaximizedNotification',
 
+		appInstancePersistCreated: 'appInstancePersistCreated',
+		requestAppInstanceCreation: 'requestAppInstanceCreation'	
+	};
 
 })();
 

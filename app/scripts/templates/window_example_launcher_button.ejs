@@ -1,6 +1,6 @@
 <div class="btn-group launcher-group">
 	<button 
-		class='btn btn-default btn-launcher <%= obj.factoryKey %> dropdown-toggle' 
+		class='btn btn-default btn-launcher <%= obj.appId %> dropdown-toggle' 
 		data-toggle="dropdown">
 		<%= obj.display %>
 		<span class="caret pull-right"></span>
@@ -29,7 +29,7 @@
 	<% }); %>
 
     <li class="divider"></li>
-    <li><a class='launcher new <%= obj.factoryKey %>' href="#">New</a></li>
+    <li><a class='<%= obj.appId %> lbtn-new' href="#">New</a></li>
   </ul>	
 </div>
 

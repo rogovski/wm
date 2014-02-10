@@ -23,7 +23,8 @@ wmJs.Views = wmJs.Views || {};
         	'click .launcher-btn' : 'laucherButtonClickHandler',
             'click .lbtn-max': 'launcherButtonMaxHandler',
             'click .lbtn-min': 'launcherButtonMinHandler',
-            'click .lbtn-close': 'launcherButtonCloseHandler'
+            'click .lbtn-close': 'launcherButtonCloseHandler',
+            'click .lbtn-new' : 'launcherButtonNewHandler'
         },
 
         registerSubscriptions: function () {
@@ -44,6 +45,9 @@ wmJs.Views = wmJs.Views || {};
 
             $.subscribe(wmJs.Data.Topics.windowMaximizedNotification,
                          _.partial(this.handleWindowMaximizeNotification,this));    
+
+            $.subscribe(wmJs.Data.Topics.appInstancePersistCreated,
+                         _.partial(this.handleInstanceCreatedNotification, this));
         },
 
         initialize: function () {
@@ -93,6 +97,7 @@ wmJs.Views = wmJs.Views || {};
          */
         getAppInstances: function (self,evt,args) {
             if(_.isUndefined(args.replyFor) || args.replyFor != self.cid) return;
+            
             self.instances = args.result;
             self.viewReady();
         },
@@ -107,13 +112,11 @@ wmJs.Views = wmJs.Views || {};
             var self = this;
 
             _.each(this.applications, function (e) {
-                var instances = _.filter(self.instances, function (i) {
-                   return i.values.appId == e.id; 
-                });
-                console.log(instances);
+                var instances = wmJs.Util.getInstancesByApp(self.instances, e.id);
+
                 self.$launcherList.append(self.launcherButton({
                     display: e.values.display,
-                    factoryKey: e.values.factoryKey,
+                    appId: e.id,
                     instances: instances
                 }));
             })
@@ -158,10 +161,29 @@ wmJs.Views = wmJs.Views || {};
         },
 
         /*********************************************************************/
-        /* WINDOW Closing
+        /* WINDOW CLOSING
         /*********************************************************************/ 
         launcherButtonCloseHandler: function (e) {
             console.log(e);
+        },
+
+        /*********************************************************************/
+        /* WINDOW ALLOCATION
+        /*********************************************************************/ 
+        launcherButtonNewHandler: function (e) {
+            var appId = $(e.currentTarget).attr('class').split(' ')[0];
+            $.publish(wmJs.Data.Topics.requestAppInstanceCreation, { 
+                data: {
+                    appId: appId, 
+                    workspaceId:this.currentWorkspace.id
+                }
+            });
+        },
+
+        handleInstanceCreatedNotification: function (self,evt,args) {
+            $.publish(wmJs.Data.Topics.applicationInstancesRequest, {
+                replyTo: self.cid
+            });
         }
 
     });

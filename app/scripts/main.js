@@ -11,6 +11,7 @@ window.wmJs = {
     Exception: {},
     CssHooks: {},
     Data: {},
+    Util: {},
     init: function () {
         'use strict';
 
@@ -20,13 +21,6 @@ window.wmJs = {
             appMessages:        wmJs.Data.Topics, 
             el: '#app'
         });
-        
-        /*
-        var wm = new wmJs.Views.ApplicationManagerView(
-
-            window.Stubs.testData() //testData()
-
-        );*/
         wm.render();
     }
 };

@@ -21,6 +21,9 @@
         <!-- endbuild -->        
         
         <link rel="stylesheet" href="bower_components/jquery-ui/themes/ui-lightness/jquery-ui.min.css">
+        
+        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+
     </head>
     <body>
         <!--[if lt IE 10]>
@@ -68,6 +71,7 @@
         <!-- build:js({.tmp,app}) scripts/main.js -->
         <script src="scripts/main.js"></script>
         <script src="scripts/modules/window_data.js"></script>
+        <script src="scripts/modules/window_util.js"></script>
         <script src="scripts/modules/window_exception.js"></script>
         <script src="scripts/modules/windowed_application_factory.js"></script>   
         <script src="scripts/modules/window_persist.js"></script>   
@@ -82,6 +86,7 @@
         <script src="scripts/views/window_example_form.js"></script>
         <script src="scripts/views/window_example_logger.js"></script>
         <script src="scripts/views/window_example_timer.js"></script>
+        <script src="scripts/views/window_example_map_display.js"></script>
         <!-- endbuild -->
 
         <script src="scripts/stubs/manager_initialization.js"></script>

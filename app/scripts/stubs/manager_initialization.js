@@ -121,6 +121,7 @@ window.Stubs.testData3 = function () {
         app3 = wmJs.Data.WindowedApplication.create({factoryKey: 'window_launcher', display: 'window launcher'}),
         app4 = wmJs.Data.WindowedApplication.create({factoryKey: 'window_logger', display: 'window logger'}),
         app5 = wmJs.Data.WindowedApplication.create({factoryKey: 'window_timer', display: 'timer'}),
+        app6 = wmJs.Data.WindowedApplication.create({factoryKey: 'window_map_display', display: 'map display'}),
 
         ws0  = wmJs.Data.Workspace.create({isDefault: true}),
         ws1  = wmJs.Data.Workspace.create({isDefault: false, display: 'todo'}),
@@ -161,7 +162,7 @@ window.Stubs.testData3 = function () {
             top: 320, 
             height: 340, 
             width:637, 
-            appId: app2.id,
+            appId: app6.id,     //app2.id,
             workspaceId: ws0.id
         }),
 
@@ -186,7 +187,7 @@ window.Stubs.testData3 = function () {
             ws0,ws1
         ],
         applications: [
-            app1,app2,app3,app4,app5
+            app1,app2,app3,app4,app5, app6
         ]
     });
     return db;

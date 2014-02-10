@@ -19,9 +19,13 @@
         /**********************************************************************
         /* WINDOWS
         /*********************************************************************/
-        create_window: function (data) {
-            var obj = wmJs.Data.WindowedApplicationInstance.create(data);
-            this._db.windows.push( { key: obj.id, value: obj } );
+        create_window: function (self, evt, args) {
+            if( _.isUndefined(args.data) ) return;
+
+            var obj = wmJs.Data.WindowedApplicationInstance.create(wmJs.Util.tryTile(self._db.windows,args.data));
+            self._db.windows.push( obj );
+            $.publish(wmJs.Data.Topics.appInstancePersistCreated,
+                        {result: obj});
         },
 
         set_window: function (id, data) {
@@ -37,7 +41,7 @@
 
         get_all_windows: function (self, evt, args) {
             $.publish(wmJs.Data.Topics.applicationInstancesResponse, 
-                      {result: self._db.windows, replyFor: args.replyTo});     
+                      {result: wmJs.Util.cloneInstanceList(self._db.windows), replyFor: args.replyTo});
         },
 
         remove_window: function () {
