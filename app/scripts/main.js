@@ -23,6 +23,9 @@ window.wmJs = {
             el: '#app'
         });
         */
+
+        var keyman = new wmJs.Views.KeyboardManagerView();
+        
         var wm = new wmJs.Views.ApplicationManagerView({
             appDataSource:      new wmJs.Persistence.LocalStoragePersist(),
             appFactory:         wmJs.Factories.WindowedApplicationFactory,

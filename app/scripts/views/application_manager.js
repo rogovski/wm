@@ -181,6 +181,10 @@ wmJs.Views = wmJs.Views || {};
         applyWorkspaceConfiguration: function () {
             this.$el.css('width', this.currentWorkspace.values.width)
                     .css('height', this.currentWorkspace.values.height);
+        },
+
+        handleKeyDown: function (e) {
+            console.log(e);
         }
 
     });

@@ -26,6 +26,7 @@ wmJs.Views = wmJs.Views || {};
             "click .btn-close"		: "windowCloseHandler",
             "click .btn-min"        : "windowMinHandler",
             "click .btn-max"        : "windowMaxHandler",
+            "click .window"         : "windowClickedHandler"
         },
 
         render: function (args) {
@@ -164,6 +165,9 @@ wmJs.Views = wmJs.Views || {};
             sel.addClass('btn-link').removeClass('btn-default');
         },
 
+        /*********************************************************************/
+        /* SAVING WINDOW STATE
+        /*********************************************************************/
         handleNotifyPersistLayer: function (self,evt,args) {
             if(_.isUndefined(args.currentWorkspace) || 
                 self.config.workspaceId != args.currentWorkspace) return;
@@ -172,6 +176,13 @@ wmJs.Views = wmJs.Views || {};
                 id: self.key, 
                 values: self.config
             });
+        },
+
+        /*********************************************************************/
+        /* CLICK AND KEYBOARD INTERACTION
+        /*********************************************************************/
+        windowClickedHandler: function (e) {
+            console.log(e.target);
         }          
 
     });
