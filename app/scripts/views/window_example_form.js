@@ -9,8 +9,17 @@ wmJs.Views = wmJs.Views || {};
 
         template: JST['app/scripts/templates/window_example_form.ejs'],
 
+        window_events: {
+            'keydown' : 'keydownHandler'
+        },
+
         window_render: function () {
         	this.$windowcontent.html(this.template());
+        },
+
+        keydownHandler: function (e) {
+            var v = $(e.target).val();
+            $.publish(wmJs.Data.Topics.logMessage, {msg: v});
         }
 
     });

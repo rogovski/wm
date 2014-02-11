@@ -144,7 +144,9 @@
 		instanceRequestDeallocation:'instanceRequestDeallocation',
 
 		persistHandleInstanceDeallocation:'persistHandleInstanceDeallocation',
-		persistInstanceDeallocationHandled:'persistInstanceDeallocationHandled'
+		persistInstanceDeallocationHandled:'persistInstanceDeallocationHandled',
+
+		logMessage: 'logMessage'
 
 	};
 
