@@ -24,7 +24,7 @@ window.wmJs = {
         });
         */
 
-        var keyman = new wmJs.Views.KeyboardManagerView();
+        var keyman = new wmJs.Views.BrowserEventManagerView();
         
         var wm = new wmJs.Views.ApplicationManagerView({
             appDataSource:      new wmJs.Persistence.LocalStoragePersist(),

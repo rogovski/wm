@@ -34,6 +34,9 @@ wmJs.Views = wmJs.Views || {};
 
             $.subscribe(wmJs.Data.Topics.appInstancePersistCreated,
                          _.partial(this.handleInstanceCreatedNotification, this));
+
+            $.subscribe(wmJs.Data.Topics.instanceRequestDeallocation,
+                         _.partial(this.handleInstanceDeleteNotification, this));
         },
 
         /*
@@ -173,6 +176,13 @@ wmJs.Views = wmJs.Views || {};
                 newInst.instance.render({resetTemplate: true});
            }
            self.instances.push(newInst);
+        },
+
+        /**
+         * subscription handler that is called when a window requests deallocation
+         */
+        handleInstanceDeleteNotification: function (self,evt,args) {
+            $.publish(wmJs.Data.Topics.persistHandleInstanceDeallocation, args);
         },
 
         /**

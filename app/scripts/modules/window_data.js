@@ -134,7 +134,18 @@
 
 
 		workspaceSaveNotifyPersistanceLayer: 'workspaceSaveNotifyPersistanceLayer',
-		requestSaveFromPersistanceLayer: 'requestSaveFromPersistanceLayer'
+		requestSaveFromPersistanceLayer: 'requestSaveFromPersistanceLayer',
+
+
+		//app instance focusing
+		appInstanceFocusChanged: 'appInstanceFocusChanged',
+
+		//request from instance to close itself
+		instanceRequestDeallocation:'instanceRequestDeallocation',
+
+		persistHandleInstanceDeallocation:'persistHandleInstanceDeallocation',
+		persistInstanceDeallocationHandled:'persistInstanceDeallocationHandled'
+
 	};
 
 })();

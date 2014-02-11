@@ -23,6 +23,25 @@
 
 		};		
 	})();
+
+	wmJs.CssHooks.WindowFocus = (function () {
+		var activeClass      = 'btn-default',
+		    inactiveClass    = 'btn-link';
+
+		return {
+			activate: function ($context) {
+                $context.css('z-index', 1)
+                        .animate({'background-color': '#244'}, 500, 'easeInOutQuart'); 
+			},
+			deactivate: function ($context) {
+                $context.css('z-index', 0)
+                        .animate({'background-color': '#222'}, 500, 'easeInOutQuart');				
+			},
+
+		};		
+	})();
+
+
 	wmJs.CssHooks.minimize = function ($elem) {
 		$elem.data('wmJsIsMinimized',true);
 		$elem.removeClass(activeClass).addClass(inactiveClass);

@@ -10,8 +10,6 @@ wmJs.Views = wmJs.Views || {};
         template: JST['app/scripts/templates/window_example_logger.ejs'],
 
         window_events: {
-            'click .btn1' : 'c1h',
-            'click .btn2' : 'c2h',
         },
 
         window_render: function () {

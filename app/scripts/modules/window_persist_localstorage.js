@@ -29,6 +29,22 @@
             _.each(this._cache.appIdPool, function (e) {
                 self._cache.applications.push({id: e, values: store.get(e)});
             });
+            console.log(this._cache.appInstances);
+        },
+
+        getUniqueId: function (prefix) {
+            var pool;
+            if      (prefix == 'appInst')   { pool = this._cache.appInstIdPool.slice(0); }
+            else if (prefix == 'app')       { pool = this._cache.appIdPool.slice(0); }
+            else if (prefix == 'workspace') { pool = this._cache.workspaceIdPool.slice(0); }
+            else                            { }
+
+            if(!pool) return pool;
+
+            pool = _.map(pool, function (e) {
+                return e.split('_')[1];
+            });
+            return prefix + '_' + (parseInt(_.max(pool)) + 1);
         },
 
         /**********************************************************************
@@ -39,10 +55,12 @@
 
             var obj = wmJs.Data.WindowedApplicationInstance.create(
                         wmJs.Util.tryTile(self._cache.appInstances,args.data));
-            
+            obj.id = self.getUniqueId('appInst');
+
             self._cache.appInstances.push( obj );
+
             $.publish(wmJs.Data.Topics.appInstancePersistCreated,
-                        {result: obj});
+                        {result: wmJs.Util.cloneInstance(obj)});
         },
 
         set_window: function (self, evt, args) {
@@ -51,6 +69,12 @@
             var item = _.findWhere( self._cache.appInstances, { id: args.id } );
             _.extend(item.values, args.values, {});   
 
+            var idPool = store.get('appInstIdPool');
+            if(!_.contains(idPool,item.id)){
+                idPool.push(item.id);
+            }
+            console.log(idPool);
+            store.set('appInstIdPool', idPool);
             store.set(item.id, item.values);
 
         },
@@ -66,8 +90,16 @@
                       {result: wmJs.Util.cloneInstanceList(self._cache.appInstances), replyFor: args.replyTo});
         },
 
-        remove_window: function () {
-            console.log('remove');
+        remove_window: function (self,evt,args) {
+            if( _.isUndefined(args) || _.isUndefined(args.id) ) return;
+
+            var idPool = _.without(store.get('appInstIdPool'), args.id);
+
+            console.log(idPool);
+
+            store.remove(args.id);
+            store.set('appInstIdPool',idPool);
+
         },
 
 

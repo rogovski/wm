@@ -13,7 +13,10 @@ wmJs.Views = wmJs.Views || {};
         Backbone.View.apply(this, [options]);
 
         $.subscribe(wmJs.Data.Topics.workspaceSaveNotifyPersistanceLayer,
-            _.partial(this.handleNotifyPersistLayer, this));        
+            _.partial(this.handleNotifyPersistLayer, this));
+
+        $.subscribe(wmJs.Data.Topics.appInstanceFocusChanged,
+            _.partial(this.handleWindowFocusChange, this));        
     };
 
     _.extend(ApplicationWindowView.prototype, Backbone.View.prototype, {
@@ -124,6 +127,13 @@ wmJs.Views = wmJs.Views || {};
               this.config.draggable = false;
             }
         },
+        /*********************************************************************/
+        /* WINDOW CLOSING
+        /*********************************************************************/        
+        windowCloseHandler: function (e) {
+            this.$windowcontainer.hide();
+            $.publish(wmJs.Data.Topics.instanceRequestDeallocation, {id: this.key});
+        },
 
         /*********************************************************************/
         /* WINDOW MINIMIZATION
@@ -182,8 +192,19 @@ wmJs.Views = wmJs.Views || {};
         /* CLICK AND KEYBOARD INTERACTION
         /*********************************************************************/
         windowClickedHandler: function (e) {
-            console.log(e.target);
-        }          
+            wmJs.CssHooks.WindowFocus.activate(this.$windowcontainer);
+
+            $.publish(wmJs.Data.Topics.appInstanceFocusChanged, {sender: this.cid});
+        },
+
+        handleWindowFocusChange: function (self,evt,args) {
+            if(_.isUndefined(args)        || 
+               _.isUndefined(args.sender) || 
+               args.sender == self.cid) 
+                    return;
+
+            wmJs.CssHooks.WindowFocus.deactivate(self.$windowcontainer);  
+        }
 
     });
 

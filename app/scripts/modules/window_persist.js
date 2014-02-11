@@ -20,6 +20,9 @@
 	    	$.subscribe(wmJs.Data.Topics.requestSaveFromPersistanceLayer,
 	    				_.partial(this.set_window, this));
 
+	    	$.subscribe(wmJs.Data.Topics.persistHandleInstanceDeallocation,
+	    				_.partial(this.remove_window, this));
+
 	    };	
 	     
 	    if(!_.isUndefined(this.initialize)){

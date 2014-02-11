@@ -41,15 +41,31 @@
 		var clonedInstances = [];
 
 		_.each(instances, function (inst) {
-			var clonedState = inst.state ? _.clone(inst.state) : {},
+			var clonedState = inst.values.state ? _.clone(inst.values.state) : {},
 			    clonedInst = _.clone(inst);
 
-			clonedInst.state = clonedState;
+			clonedInst.values.state = clonedState;
 			clonedInst.instance = null;
 
 			clonedInstances.push(clonedInst);
 		});
 		return clonedInstances;
+	};
+
+	/**
+	 * 1) make sure inst.instance is set to null 
+	 * 2) call clone on inst.state
+	 * TODO: delete previous function, and use _.map at call site
+	 */
+	wmJs.Util.cloneInstance = function (instance) {
+
+		var clonedState = instance.values.state ? _.clone(instance.values.state) : {},
+		    clonedInst = _.clone(instance);
+
+		clonedInst.values.state = clonedState;
+		clonedInst.instance = null;
+
+		return clonedInst;
 	};
 
 	/**
