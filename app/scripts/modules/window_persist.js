@@ -16,6 +16,10 @@
 
 	    	$.subscribe(wmJs.Data.Topics.requestAppInstanceCreation,
 	    				_.partial(this.create_window, this));
+
+	    	$.subscribe(wmJs.Data.Topics.requestSaveFromPersistanceLayer,
+	    				_.partial(this.set_window, this));
+
 	    };	
 	     
 	    if(!_.isUndefined(this.initialize)){

@@ -24,7 +24,8 @@ wmJs.Views = wmJs.Views || {};
             'click .lbtn-max': 'launcherButtonMaxHandler',
             'click .lbtn-min': 'launcherButtonMinHandler',
             'click .lbtn-close': 'launcherButtonCloseHandler',
-            'click .lbtn-new' : 'launcherButtonNewHandler'
+            'click .lbtn-new' : 'launcherButtonNewHandler',
+            'click .btn-save-workspace': 'saveWorkspaceHandler'
         },
 
         registerSubscriptions: function () {
@@ -56,7 +57,6 @@ wmJs.Views = wmJs.Views || {};
 
         window_render: function () {
         	this.$windowcontent.html(this.template());
-        	console.log('render');
             $.publish(wmJs.Data.Topics.workspacesRequest, {replyTo: this.cid});            
         },
 
@@ -66,7 +66,6 @@ wmJs.Views = wmJs.Views || {};
         getWorkspaces: function (self,evt,args) {
             if(_.isUndefined(args.replyFor) || args.replyFor != self.cid) return;
 
-            console.log(args);
             self.workspaces       = args.result;
             self.currentWorkspace = _.filter(self.workspaces, function (obj) {
                 return obj.values.isDefault === true;
@@ -184,7 +183,19 @@ wmJs.Views = wmJs.Views || {};
             $.publish(wmJs.Data.Topics.applicationInstancesRequest, {
                 replyTo: self.cid
             });
-        }
+        },
+
+        /*********************************************************************/
+        /* APPLICATION WORKSPACES
+        /*********************************************************************/ 
+        saveWorkspaceHandler: function () {
+            var self = this;
+            $.publish(wmJs.Data.Topics.workspaceSaveNotifyPersistanceLayer, {
+                currentWorkspace: self.currentWorkspace.id 
+            });    
+        },
+
+
 
     });
 

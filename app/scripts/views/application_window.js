@@ -10,9 +10,10 @@ wmJs.Views = wmJs.Views || {};
         this.key = options.key;
         this.$parentView = $(options.parentView);
 
-        //$.subscribe(...);
-
         Backbone.View.apply(this, [options]);
+
+        $.subscribe(wmJs.Data.Topics.workspaceSaveNotifyPersistanceLayer,
+            _.partial(this.handleNotifyPersistLayer, this));        
     };
 
     _.extend(ApplicationWindowView.prototype, Backbone.View.prototype, {
@@ -161,6 +162,16 @@ wmJs.Views = wmJs.Views || {};
 
         deactivate: function (sel) {
             sel.addClass('btn-link').removeClass('btn-default');
+        },
+
+        handleNotifyPersistLayer: function (self,evt,args) {
+            if(_.isUndefined(args.currentWorkspace) || 
+                self.config.workspaceId != args.currentWorkspace) return;
+
+            $.publish(wmJs.Data.Topics.requestSaveFromPersistanceLayer, {
+                id: self.key, 
+                values: self.config
+            });
         }          
 
     });

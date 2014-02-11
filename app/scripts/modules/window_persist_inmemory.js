@@ -22,7 +22,9 @@
         create_window: function (self, evt, args) {
             if( _.isUndefined(args.data) ) return;
 
-            var obj = wmJs.Data.WindowedApplicationInstance.create(wmJs.Util.tryTile(self._db.windows,args.data));
+            var obj = wmJs.Data.WindowedApplicationInstance.create(
+                        wmJs.Util.tryTile(self._db.windows,args.data));
+            
             self._db.windows.push( obj );
             $.publish(wmJs.Data.Topics.appInstancePersistCreated,
                         {result: obj});
