@@ -13,6 +13,11 @@
         },
 
         initialize: function () {
+            if(!store.enabled){
+                alert('LOCAL STORAGE IS NOT ENABLED');
+                throw new Error('LOCAL STORAGE IS NOT ENABLED');
+            }
+            
             this._cache.appInstIdPool = store.get('appInstIdPool') || {};
             this._cache.workspaceIdPool = store.get('workspaceIdPool') || {};
             this._cache.appIdPool = store.get('appIdPool') || {};

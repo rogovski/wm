@@ -29,6 +29,8 @@ wmJs.Views = wmJs.Views || {};
         },
 
         c2h: function () {
+            //jquery ui line 1157
+            // change 1178 and 1181 to positionAbs
             console.log("window page_Offset -> X: " + window.pageXOffset+" | Y: " + window.pageYOffset );
             console.log('windowcontainer top/left -> top: ', this.$windowcontainer.css('top'), ' | left: ', this.$windowcontainer.css('left'));
             console.log("windowcontainer offset -> top: " + this.$windowcontainer.offset().top+" | left: " + this.$windowcontainer.offset().left );

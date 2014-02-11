@@ -55,6 +55,7 @@ wmJs.Views = wmJs.Views || {};
                     drag: function (event, ui) {
                         self.config.left = ui.position.left;
                         self.config.top = ui.position.top;
+                        console.log(ui.position.top);
                     }
             });
             
