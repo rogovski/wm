@@ -53,9 +53,9 @@ wmJs.Views = wmJs.Views || {};
                     containment: self.$parentView, 
                     disabled: false,
                     drag: function (event, ui) {
-                        self.config.left = ui.position.left;
-                        self.config.top = ui.position.top;
-                        console.log(ui.position.top);
+                        self.config.left = ui.offset.left;
+                        self.config.top = ui.offset.top;
+                        //console.log(ui);
                     }
             });
             

@@ -38,7 +38,67 @@
                         .animate({'background-color': '#222'}, 500, 'easeInOutQuart');				
 			},
 
-		};		
+		};	
+	})();
+
+	wmJs.CssHooks.WorkspaceSelect = (function () {
+		var activeClass      = 'btn-default',
+		    inactiveClass    = 'btn-link';
+
+		return {
+			/* top: 30, left: 125 */
+			upperLeft: function () {
+				$('.ws-selected-elt').animate({
+					top: 30,
+					left: 125,
+				}, 200, 'easeInOutQuart')
+			},
+			isInUpperLeft: function () {
+				var pos = $('.ws-selected-elt').position();
+				if(pos.top == 30 && pos.left == 125) return true;
+				else return false;
+			},
+
+			/* top: 30, left: 300*/
+			upperRight: function () {
+				$('.ws-selected-elt').animate({
+					top: 30,
+					left: 300,
+				}, 200, 'easeInOutQuart')			
+			},
+			isInUpperRight: function () {
+				var pos = $('.ws-selected-elt').position();
+				if(pos.top == 30 && pos.left == 300) return true;
+				else return false;
+			},
+
+			/* top: 205, left: 125*/
+			lowerLeft: function () {
+				$('.ws-selected-elt').animate({
+					top: 205,
+					left: 125,
+				}, 200, 'easeInOutQuart')				
+			},
+			isInLowerLeft: function () {
+				var pos = $('.ws-selected-elt').position();
+				if(pos.top == 205 && pos.left == 125) return true;
+				else return false;
+			},
+
+			/* top: 205, left: 300*/
+			lowerRight: function () {
+				$('.ws-selected-elt').animate({
+					top: 205,
+					left: 300,
+				}, 200, 'easeInOutQuart')				
+			},
+			isInLowerRight: function () {
+				var pos = $('.ws-selected-elt').position();
+				if(pos.top == 205 && pos.left == 300) return true;
+				else return false;
+			}
+
+		};				
 	})();
 
 

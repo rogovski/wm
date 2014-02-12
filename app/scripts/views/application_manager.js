@@ -37,6 +37,9 @@ wmJs.Views = wmJs.Views || {};
 
             $.subscribe(wmJs.Data.Topics.instanceRequestDeallocation,
                          _.partial(this.handleInstanceDeleteNotification, this));
+
+            $.subscribe(wmJs.Data.Topics.workspaceChanged,
+                         _.partial(this.handleWorkspaceChangedNotification, this));
         },
 
         /*
@@ -121,12 +124,14 @@ wmJs.Views = wmJs.Views || {};
             _.each(self.instances, function (e) {
                 var app = wmJs.Util.getAppInfo(self.applications, e.values.appId);
                 
-                e.instance = wmJs.Factories.WindowedApplicationFactory.getWindowedApplication(
-                    app.values.factoryKey, {
-                        parentView: self.el,
-                        key: e.id,
-                        config:e.values
-                    });
+                if ( !e.instance ) {
+                    e.instance = wmJs.Factories.WindowedApplicationFactory.getWindowedApplication(
+                        app.values.factoryKey, {
+                            parentView: self.el,
+                            key: e.id,
+                            config:e.values
+                        });                    
+                }
             });
 
             self.viewReady();
@@ -191,6 +196,12 @@ wmJs.Views = wmJs.Views || {};
         applyWorkspaceConfiguration: function () {
             this.$el.css('width', this.currentWorkspace.values.width)
                     .css('height', this.currentWorkspace.values.height);
+        },
+
+        handleWorkspaceChangedNotification: function (self,evt,args) {
+            wmJs.Util.bringAffixedToWorkspace(self.instances, args.from, args.to);
+            self.viewReady();
+            console.log(args);
         },
 
         handleKeyDown: function (e) {

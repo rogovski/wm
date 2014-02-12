@@ -32,6 +32,15 @@
 	};
 
 	/**
+	 * lookup all application instances with given workspace id
+	 */
+	wmJs.Util.getInstancesByWorkspace = function (instances, workspaceid) {
+		return _.filter(instances, function (i) {
+			return i.values.workspaceId == workspaceid;
+		});
+	};
+
+	/**
 	 * clone all objects in 'instances' list, additionally, 
 	 * for each 'inst' in instances:
 	 * 1) make sure inst.instance is set to null 
@@ -87,6 +96,18 @@
 		}
 
 		return newInit;
+	};
+
+	/**
+	 * find the instances that are affixed 
+	 * bring them over to the next workspace
+	 */
+	wmJs.Util.bringAffixedToWorkspace = function (instances, oldWorkspaceId, newWorkspaceId) {
+
+		var currentWsList = wmJs.Util.getInstancesByWorkspace(instances, oldWorkspaceId),
+			affixedLs = _.filter(currentWsList, function (e) { return !e.values.affixed; });
+
+		_.each(affixedLs, function (e) { e.values.workspaceId = newWorkspaceId; });
 	};	
 
 })();

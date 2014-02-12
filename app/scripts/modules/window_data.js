@@ -97,6 +97,7 @@
 	wmJs.Data.Topics = {
 		visibilityChanged: "visibilityChanged",
 		workspaceChanged: "workspaceChanged",
+		
 		worspaceSaved: "workspaceSaved",
 		viewInitialized: "viewInitialized",
 		workspaceLoaded: "workspaceLoaded",
