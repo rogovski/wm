@@ -49,9 +49,6 @@ wmJs.Views = wmJs.Views || {};
 
             $.subscribe(wmJs.Data.Topics.appInstancePersistCreated,
                          _.partial(this.handleInstanceCreatedNotification, this));
-
-            $.subscribe(wmJs.Data.Topics.workspaceChanged,
-                         _.partial(this.handleWorkspaceChangedNotification, this));
         },
 
         initialize: function () {
@@ -72,7 +69,7 @@ wmJs.Views = wmJs.Views || {};
             self.workspaces       = args.result;
             self.currentWorkspace = _.filter(self.workspaces, function (obj) {
                 return obj.values.isDefault === true;
-            })[0];
+            })[0].id;
 
             $.publish(wmJs.Data.Topics.currentWorkspaceRequest, {replyTo: self.cid});
         },
@@ -80,7 +77,7 @@ wmJs.Views = wmJs.Views || {};
         getCurrentWorkspaces: function (self,evt,args) {
             if(_.isUndefined(args.replyFor) || args.replyFor != self.cid) return;
 
-            self.currentWorkspace = args.result;
+            self.currentWorkspace = args.result.id;
             $.publish(wmJs.Data.Topics.applicationsRequest, {replyTo: self.cid});     
         },
 
@@ -178,7 +175,7 @@ wmJs.Views = wmJs.Views || {};
             $.publish(wmJs.Data.Topics.requestAppInstanceCreation, { 
                 data: {
                     appId: appId, 
-                    workspaceId:this.currentWorkspace.id
+                    workspaceId:this.config.workspaceId
                 }
             });
         },
@@ -195,12 +192,8 @@ wmJs.Views = wmJs.Views || {};
         saveWorkspaceHandler: function () {
             var self = this;
             $.publish(wmJs.Data.Topics.workspaceSaveNotifyPersistanceLayer, {
-                currentWorkspace: self.currentWorkspace.id 
+                currentWorkspace: self.currentWorkspace
             });    
-        },
-        
-        handleWorkspaceChangedNotification: function (self,evt,args) {
-            
         }
 
 

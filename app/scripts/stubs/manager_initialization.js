@@ -1,6 +1,12 @@
 window.Stubs = window.Stubs || {}
 
 
+window.wschange1 = function (app) {
+    var b = store.get(app);
+    b.workspaceId = 'workspace_1';
+    store.set(app, b);
+};
+
 window.Stubs.storeData0 = function () {
     if(!store.enabled){
         console.log('local storage failure');

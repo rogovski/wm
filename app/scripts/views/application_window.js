@@ -9,6 +9,7 @@ wmJs.Views = wmJs.Views || {};
         this.config = options.config;
         this.key = options.key;
         this.$parentView = $(options.parentView);
+        this.currentWorkspace = this.config.workspaceId;
 
         Backbone.View.apply(this, [options]);
 
@@ -216,24 +217,21 @@ wmJs.Views = wmJs.Views || {};
         handleWorkspaceChangedNotification: function (self,evt,args) {
             if(_.isUndefined(args.from) || _.isUndefined(args.to)) return;
             
-            console.log('1',self.key);
             if(self.config.affixed) {
                 self.config.workspaceId = args.to;
+                self.$el.show();
                 return;
             }
 
-            console.log('2',self.key);
             if(self.config.workspaceId == args.from) {
                 self.$el.hide();
                 return;
             }
 
-            console.log('3',self.config.workspaceId);
             if(self.config.workspaceId == args.to){
                 self.$el.show();
                 return;
-            }
-            console.log('end',self.key);       
+            }  
         }
 
     });

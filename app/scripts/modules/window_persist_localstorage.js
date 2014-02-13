@@ -47,9 +47,9 @@
             if(!pool) return pool;
 
             pool = _.map(pool, function (e) {
-                return e.split('_')[1];
+                return parseInt(e.split('_')[1]);
             });
-            return prefix + '_' + (parseInt(_.max(pool)) + 1);
+            return prefix + '_' + (_.max(pool) + 1);
         },
 
         /**********************************************************************
@@ -63,9 +63,19 @@
             obj.id = self.getUniqueId('appInst');
 
             self._cache.appInstances.push( obj );
+            self._cache.appInstIdPool.push( obj.id );
+
+            var idPool = store.get('appInstIdPool');
+            idPool.push(obj.id);
+
+            store.set('appInstIdPool', idPool);
+            store.set(obj.id, obj.values);
 
             // TODO, add this immediately to store, it will
             // simplify things
+            console.log(store.get('appInstIdPool'));
+            console.log(store.get(obj.id));
+
             $.publish(wmJs.Data.Topics.appInstancePersistCreated,
                         {result: wmJs.Util.cloneInstance(obj)});
         },
@@ -80,9 +90,9 @@
 
             // TODO, once complete the TODO in create_window,
             // this check wont be necessary
-            if(!_.contains(idPool,item.id)){
-                idPool.push(item.id);
-            }
+            //if(!_.contains(idPool,item.id)){
+            //    idPool.push(item.id);
+            //}
             
             store.set('appInstIdPool', idPool);
             store.set(item.id, item.values);

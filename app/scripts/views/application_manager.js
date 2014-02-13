@@ -97,7 +97,7 @@ wmJs.Views = wmJs.Views || {};
 
             self.workspaces       = args.result;
             self.currentWorkspace = wmJs.Util.getDefaultWorkspace(self.workspaces);
-
+            console.log(self.currentWorkspace);
             $.publish(wmJs.Data.Topics.applicationsRequest, {replyTo: self.cid});
         },
 
@@ -118,7 +118,7 @@ wmJs.Views = wmJs.Views || {};
          */
         appInstancesInit: function (self,evt,args) {
             if(_.isUndefined(args.replyFor) || args.replyFor != self.cid) return;
-
+            console.log(args.result);
             self.instances = args.result;
 
             _.each(self.instances, function (e) {
@@ -184,9 +184,12 @@ wmJs.Views = wmJs.Views || {};
                     config:wmJs.Util.cloneInstance(newInst.values)
                 });
 
+            $(newInst.instance.el).hide();
+            self.$el.append(newInst.instance.el);
+            newInst.instance.render({resetTemplate: true});
+
            if(self.currentWorkspace.id == newInst.values.workspaceId){
-                self.$el.append(newInst.instance.el);
-                newInst.instance.render({resetTemplate: true});
+                $(newInst.instance.el).show();
            }
            self.instances.push(newInst);
         },
@@ -212,7 +215,11 @@ wmJs.Views = wmJs.Views || {};
             if(_.isUndefined(args) || _.isUndefined(args.from) || _.isUndefined(args.to)) 
                 return;
 
-            wmJs.Util.bringAffixedToWorkspace(self.instances, args.from, args.to);
+            var res = wmJs.Util.bringAffixedToWorkspace(self.instances, args.from, args.to);
+            
+            // change current workspace of manager
+            // TODO: update values property of current workspace
+            self.currentWorkspace.id = args.to;
         },
 
         handleKeyDown: function (e) {

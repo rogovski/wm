@@ -106,6 +106,7 @@
 			affixedLs = _.filter(currentWsList, function (e) { return e.values.affixed; });
 
 		_.each(affixedLs, function (e) { e.values.workspaceId = newWorkspaceId; });
+		return affixedLs;
 	};	
 
 })();
