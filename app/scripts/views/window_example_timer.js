@@ -11,9 +11,12 @@ wmJs.Views = wmJs.Views || {};
 
         window_render: function () {
         	this.$windowcontent.html(this.template());
-            var clock = this.$windowcontent.find('.wmjs-flip-clock').FlipClock({
-                clockFace: 'TwentyFourHourClock'
-            });
+            ;
+            var clock = $(window).FlipClock ? 
+                        this.$windowcontent.find('.wmjs-flip-clock').FlipClock({
+                            clockFace: 'TwentyFourHourClock'
+                        }) : null;
+
         }
 
     });

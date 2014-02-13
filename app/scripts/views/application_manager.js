@@ -129,8 +129,9 @@ wmJs.Views = wmJs.Views || {};
                         app.values.factoryKey, {
                             parentView: self.el,
                             key: e.id,
-                            config:e.values
-                        });                    
+                            //values should only be updated by the view that owns them  
+                            config:wmJs.Util.cloneInstance(e.values)
+                        });                  
                 }
             });
 
@@ -173,7 +174,8 @@ wmJs.Views = wmJs.Views || {};
                 app.values.factoryKey, {
                     parentView: self.el,
                     key: newInst.id,
-                    config:newInst.values
+                    //values should only be updated by the view that owns them  
+                    config:wmJs.Util.cloneInstance(newInst.values)
                 });
 
            if(self.currentWorkspace.id == newInst.values.workspaceId){
@@ -200,7 +202,7 @@ wmJs.Views = wmJs.Views || {};
 
         handleWorkspaceChangedNotification: function (self,evt,args) {
             wmJs.Util.bringAffixedToWorkspace(self.instances, args.from, args.to);
-            self.viewReady();
+            //self.viewReady();
             console.log(args);
         },
 

@@ -16,7 +16,10 @@ wmJs.Views = wmJs.Views || {};
             _.partial(this.handleNotifyPersistLayer, this));
 
         $.subscribe(wmJs.Data.Topics.appInstanceFocusChanged,
-            _.partial(this.handleWindowFocusChange, this));        
+            _.partial(this.handleWindowFocusChange, this));
+
+        $.subscribe(wmJs.Data.Topics.workspaceChanged,
+            _.partial(this.handleWorkspaceChangedNotification, this));   
     };
 
     _.extend(ApplicationWindowView.prototype, Backbone.View.prototype, {
@@ -205,6 +208,28 @@ wmJs.Views = wmJs.Views || {};
                     return;
 
             wmJs.CssHooks.WindowFocus.deactivate(self.$windowcontainer);  
+        },
+
+        /*********************************************************************/
+        /* WORKSPACE STATE
+        /*********************************************************************/
+        handleWorkspaceChangedNotification: function (self,evt,args) {
+            if(_.isUndefined(args.from) || _.isUndefined(args.to)) return;
+            
+            if(self.config.affixed) {
+                self.config.workspaceId = args.to;
+                return;
+            }
+            
+            if(self.config.workspaceId == args.from) {
+                self.$windowcontainer.hide();
+                return;
+            }
+
+            if(self.config.workspaceId == args.to){
+                self.$windowcontainer.show();
+                return;
+            }       
         }
 
     });

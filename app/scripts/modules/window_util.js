@@ -68,10 +68,8 @@
 	 */
 	wmJs.Util.cloneInstance = function (instance) {
 
-		var clonedState = instance.values.state ? _.clone(instance.values.state) : {},
-		    clonedInst = _.clone(instance);
+		var clonedInst = _.clone(instance);
 
-		clonedInst.values.state = clonedState;
 		clonedInst.instance = null;
 
 		return clonedInst;
@@ -105,7 +103,7 @@
 	wmJs.Util.bringAffixedToWorkspace = function (instances, oldWorkspaceId, newWorkspaceId) {
 
 		var currentWsList = wmJs.Util.getInstancesByWorkspace(instances, oldWorkspaceId),
-			affixedLs = _.filter(currentWsList, function (e) { return !e.values.affixed; });
+			affixedLs = _.filter(currentWsList, function (e) { return e.values.affixed; });
 
 		_.each(affixedLs, function (e) { e.values.workspaceId = newWorkspaceId; });
 	};	
