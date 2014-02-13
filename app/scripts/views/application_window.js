@@ -183,8 +183,8 @@ wmJs.Views = wmJs.Views || {};
         /* SAVING WINDOW STATE
         /*********************************************************************/
         handleNotifyPersistLayer: function (self,evt,args) {
-            if(_.isUndefined(args.currentWorkspace) || 
-                self.config.workspaceId != args.currentWorkspace) return;
+            //if(_.isUndefined(args.currentWorkspace) || 
+            //    self.config.workspaceId != args.currentWorkspace) return;
 
             $.publish(wmJs.Data.Topics.requestSaveFromPersistanceLayer, {
                 id: self.key, 
@@ -207,7 +207,7 @@ wmJs.Views = wmJs.Views || {};
                args.sender == self.cid) 
                     return;
 
-            wmJs.CssHooks.WindowFocus.deactivate(self.$windowcontainer);  
+            wmJs.CssHooks.WindowFocus.deactivate(self.$windowcontainer);
         },
 
         /*********************************************************************/
@@ -216,20 +216,24 @@ wmJs.Views = wmJs.Views || {};
         handleWorkspaceChangedNotification: function (self,evt,args) {
             if(_.isUndefined(args.from) || _.isUndefined(args.to)) return;
             
+            console.log('1',self.key);
             if(self.config.affixed) {
                 self.config.workspaceId = args.to;
                 return;
             }
-            
+
+            console.log('2',self.key);
             if(self.config.workspaceId == args.from) {
-                self.$windowcontainer.hide();
+                self.$el.hide();
                 return;
             }
 
+            console.log('3',self.config.workspaceId);
             if(self.config.workspaceId == args.to){
-                self.$windowcontainer.show();
+                self.$el.show();
                 return;
-            }       
+            }
+            console.log('end',self.key);       
         }
 
     });

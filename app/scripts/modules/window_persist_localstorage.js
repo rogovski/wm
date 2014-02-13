@@ -64,6 +64,8 @@
 
             self._cache.appInstances.push( obj );
 
+            // TODO, add this immediately to store, it will
+            // simplify things
             $.publish(wmJs.Data.Topics.appInstancePersistCreated,
                         {result: wmJs.Util.cloneInstance(obj)});
         },
@@ -75,10 +77,13 @@
             _.extend(item.values, args.values, {});   
 
             var idPool = store.get('appInstIdPool');
+
+            // TODO, once complete the TODO in create_window,
+            // this check wont be necessary
             if(!_.contains(idPool,item.id)){
                 idPool.push(item.id);
             }
-            console.log(idPool);
+            
             store.set('appInstIdPool', idPool);
             store.set(item.id, item.values);
 

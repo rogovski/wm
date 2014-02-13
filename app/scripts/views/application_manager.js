@@ -140,7 +140,10 @@ wmJs.Views = wmJs.Views || {};
 
         /**
          * final step of initialization pipeline. 
-         * initialize all windows and slice in templates
+         * initialize all windows and slice in templates.
+         * this should only be called once throughout the lifetime of the
+         * application. ALL INSTANCES, whether in the current workspace or not,
+         * SHOULD BE IN THE DOM.
          */
         viewReady: function () {
             this.applyWorkspaceConfiguration();
@@ -148,10 +151,13 @@ wmJs.Views = wmJs.Views || {};
 
             var self = this;
             _.each(this.instances, function (e) {
-               if(self.currentWorkspace.id == e.values.workspaceId){
-                    self.$el.append(e.instance.el);
-                    e.instance.render({resetTemplate: true});
-               } 
+                $(e.instance.el).hide();
+                self.$el.append(e.instance.el);
+                e.instance.render({resetTemplate: true});
+
+                if(self.currentWorkspace.id == e.values.workspaceId){
+                    $(e.instance.el).show();
+                } 
             });
         }, 
 
@@ -190,6 +196,8 @@ wmJs.Views = wmJs.Views || {};
          */
         handleInstanceDeleteNotification: function (self,evt,args) {
             $.publish(wmJs.Data.Topics.persistHandleInstanceDeallocation, args);
+            // since appmanager controls the view instance, we have to
+            // set it to null as well.
         },
 
         /**
@@ -201,9 +209,10 @@ wmJs.Views = wmJs.Views || {};
         },
 
         handleWorkspaceChangedNotification: function (self,evt,args) {
+            if(_.isUndefined(args) || _.isUndefined(args.from) || _.isUndefined(args.to)) 
+                return;
+
             wmJs.Util.bringAffixedToWorkspace(self.instances, args.from, args.to);
-            //self.viewReady();
-            console.log(args);
         },
 
         handleKeyDown: function (e) {

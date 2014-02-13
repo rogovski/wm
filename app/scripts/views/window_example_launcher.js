@@ -49,6 +49,9 @@ wmJs.Views = wmJs.Views || {};
 
             $.subscribe(wmJs.Data.Topics.appInstancePersistCreated,
                          _.partial(this.handleInstanceCreatedNotification, this));
+
+            $.subscribe(wmJs.Data.Topics.workspaceChanged,
+                         _.partial(this.handleWorkspaceChangedNotification, this));
         },
 
         initialize: function () {
@@ -103,7 +106,8 @@ wmJs.Views = wmJs.Views || {};
 
         /**
          * final step in the pipeline. initialize all windows and 
-         * slice in templates
+         * slice in templates. NOTE: same as appmanager. all instances
+         * should be in launcher list
          */
         viewReady: function () {
             this.$launcherList = this.$windowcontent.find('.launcher-list');
@@ -194,7 +198,10 @@ wmJs.Views = wmJs.Views || {};
                 currentWorkspace: self.currentWorkspace.id 
             });    
         },
-
+        
+        handleWorkspaceChangedNotification: function (self,evt,args) {
+            
+        }
 
 
     });
