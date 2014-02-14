@@ -71,11 +71,6 @@
             store.set('appInstIdPool', idPool);
             store.set(obj.id, obj.values);
 
-            // TODO, add this immediately to store, it will
-            // simplify things
-            console.log(store.get('appInstIdPool'));
-            console.log(store.get(obj.id));
-
             $.publish(wmJs.Data.Topics.appInstancePersistCreated,
                         {result: wmJs.Util.cloneInstance(obj)});
         },
@@ -87,12 +82,6 @@
             _.extend(item.values, args.values, {});   
 
             var idPool = store.get('appInstIdPool');
-
-            // TODO, once complete the TODO in create_window,
-            // this check wont be necessary
-            //if(!_.contains(idPool,item.id)){
-            //    idPool.push(item.id);
-            //}
             
             store.set('appInstIdPool', idPool);
             store.set(item.id, item.values);
@@ -148,6 +137,30 @@
         /* APPLICATIONS
         /*********************************************************************/        
         get_all_applications: function (self, evt, args) {
+            if(_.isUndefined(args) || _.isUndefined(args.replyTo)) return;
+
+            if(!_.isUndefined(args.applications)) {
+
+                var factoryKeyApps = _.map(self._cache.applications, function (e) { 
+                        return _.pick(e,'values').values.factoryKey; 
+                    }),
+
+                    factoryKeysArgs = _.map(args.applications, function (e) { 
+                        return e.factoryKey; 
+                    });
+
+                _.each(_.difference(factoryKeyApps, factoryKeysArgs), function (e) {
+                    var newObj = _.findWhere(args.applications, {factoryKey: e}),
+                        newId  = self.getUniqueId('app');
+
+                        self._cache.applications.push({ id: newId, values: newObj });
+                        self._cache.appIdPool.push(newId);
+
+                        store.set(newId, newObj);
+                        store.set('appIdPool', self._cache.appIdPool);
+                });
+            }
+
             $.publish(wmJs.Data.Topics.applicationsResponse, 
                       {result: self._cache.applications, replyFor: args.replyTo});   
         }

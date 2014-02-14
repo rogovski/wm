@@ -19,7 +19,7 @@
             },
      
             /**
-             * return key and display of all registered Applications     
+             * return key and display of all registered Applications
              */
              registeredApplicationsInfo: function () {
                  return  _.map(types, function (obj) { 

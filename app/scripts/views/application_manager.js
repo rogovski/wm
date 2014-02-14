@@ -97,8 +97,17 @@ wmJs.Views = wmJs.Views || {};
 
             self.workspaces       = args.result;
             self.currentWorkspace = wmJs.Util.getDefaultWorkspace(self.workspaces);
-            console.log(self.currentWorkspace);
-            $.publish(wmJs.Data.Topics.applicationsRequest, {replyTo: self.cid});
+            
+            // before publishing request to persistence layer (for stored application info),
+            // get list of registered applications from config.appFactory. new applications
+            // might be registered that the persistance layer is not aware of
+            var infoFromFactory = wmJs.Factories.WindowedApplicationFactory
+                                      .registeredApplicationsInfo();
+
+            $.publish(wmJs.Data.Topics.applicationsRequest, {
+                replyTo: self.cid,
+                applications: infoFromFactory
+            });
         },
 
         /**
