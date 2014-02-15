@@ -148,17 +148,19 @@
                     factoryKeysArgs = _.map(args.applications, function (e) { 
                         return e.factoryKey; 
                     });
-
+                
+                /******************************************************************//*
                 _.each(_.difference(factoryKeyApps, factoryKeysArgs), function (e) {
                     var newObj = _.findWhere(args.applications, {factoryKey: e}),
                         newId  = self.getUniqueId('app');
-
+                        
                         self._cache.applications.push({ id: newId, values: newObj });
                         self._cache.appIdPool.push(newId);
 
                         store.set(newId, newObj);
                         store.set('appIdPool', self._cache.appIdPool);
                 });
+                *//*******************************************************************/
             }
 
             $.publish(wmJs.Data.Topics.applicationsResponse, 

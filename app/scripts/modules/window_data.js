@@ -45,7 +45,7 @@
 			visible: 	 true,
 			height: 	 200,
 			width: 		 200,
-			left: 		 50,
+			left: 		 400,
 			top: 		 50,
 			state: 		 {}	
 		}

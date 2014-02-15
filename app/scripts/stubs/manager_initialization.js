@@ -113,7 +113,7 @@ window.Stubs.storeData1 = function () {
         console.log('local storage failure');
     }
     //appIdPool
-    store.set('appIdPool', ['app_1','app_2','app_3','app_4','app_5','app_6']);
+    store.set('appIdPool', ['app_1','app_2','app_3','app_4','app_5','app_6','app_7']);
 
     //workspaceIdPool
     store.set('workspaceIdPool', ['workspace_1','workspace_2','workspace_3','workspace_4']);
@@ -139,6 +139,8 @@ window.Stubs.storeData1 = function () {
     var app6 = wmJs.Data.WindowedApplication.create({factoryKey: 'window_map_display', display: 'map display'});
     store.set('app_6', app6.values);
 
+    var app7 = wmJs.Data.WindowedApplication.create({factoryKey: 'window_table', display: 'table'});
+    store.set('app_7', app7.values);
 
     var workspace1  = wmJs.Data.Workspace.create({isDefault: true, display: '1'});
     store.set('workspace_1', workspace1.values);
