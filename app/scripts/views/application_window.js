@@ -56,6 +56,7 @@ wmJs.Views = wmJs.Views || {};
             self.$windowcontainer.draggable({ 
                     containment: self.$parentView, 
                     disabled: false,
+                    isWmjs: true,
                     drag: function (event, ui) {
                         self.config.left = ui.offset.left;
                         self.config.top = ui.offset.top;
