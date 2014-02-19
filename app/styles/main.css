@@ -1,8 +1,47 @@
-body {
-    background: #fafafa;
+
+.browsehappy {
+    margin: 0.2em 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.2em 0;
 }
 
-.hero-unit {
-    margin: 50px auto 0 auto;
-    width: 300px;
+/* Space out content a bit */
+body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+
+
+.blank-window {
+    width: 100%;
+}
+
+.window  {
+    height: auto;
+    width: auto;
+    left: 75px;
+    top: 50px;
+    opacity: 1 !important;
+    position: fixed;
+    padding: 2px;
+}
+
+.window-content {
+    min-height: 100px;
+    min-width: 50px;
+}
+
+.window > .row {
+    margin-right: 1%
+}
+
+.window > hr {
+    margin-top: 0px;
+}
+
+.btn-window-action {
+    padding: 1px 1px; /* try 1px 3px */
+    font-size: 11px;
 }
