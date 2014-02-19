@@ -23,7 +23,7 @@
 				var existingData = existing_data || {},
 				    defaults 	 = _.clone( WindowedApplicationDefaults ),
 				    id           = typeof(existingData.id) == 'undefined' ? 
-				    			   _.uniqueId( 'app' ) : existingData.id,
+				    			   _.uniqueId( 'app_' ) : existingData.id,
 				    values       = _.extend( {}, defaults.values, existingData );
 
 				return {id: id, values: values};
@@ -58,7 +58,7 @@
 				var existingData = existing_data || {},
 				    defaults 	 = _.clone( WindowedApplicationInstanceDefaults ),
 				    id           = typeof( existingData.id ) == 'undefined' ? 
-				    			   _.uniqueId( 'appInst' ) : existingData.id,
+				    			   _.uniqueId( 'appInst_' ) : existingData.id,
 				    values       = _.extend( {}, defaults.values, existingData );
 
 				return {id: id, values: values};
@@ -85,7 +85,7 @@
 				var existingData = existing_data || {},
 				    defaults 	 = _.clone( WorkspaceDefaults ),
 				    id           = typeof( existingData.id ) == 'undefined' ? 
-				    			   _.uniqueId( 'workspace' ) : existingData.id,
+				    			   _.uniqueId( 'workspace_' ) : existingData.id,
 				    values       = _.extend( {}, defaults.values, existingData );
 
 				return {id: id, values: values};

@@ -16,6 +16,14 @@
             this._db.applications = options.applications || {};
         },
 
+        removeItem: function (arr,item) {
+
+            var index = arr.indexOf(item);
+
+            if (index > -1) {
+                arr.splice(index, 1);
+            }            
+        }, 
         /**********************************************************************
         /* WINDOWS
         /*********************************************************************/
@@ -27,12 +35,14 @@
             
             self._db.windows.push( obj );
             $.publish(wmJs.Data.Topics.appInstancePersistCreated,
-                        {result: obj});
+                        {result: wmJs.Util.cloneInstance(obj)});
         },
 
-        set_window: function (id, data) {
-            var item = _.findWhere( this._db.windows, { id: id } );
-            _.extend(item.values, data, {});    
+        set_window: function (self, evt, args) {
+            if( _.isUndefined(args.id) || _.isUndefined(args.values) ) return;
+
+            var item = _.findWhere( self._db.windows, { id: args.id } );
+            _.extend(item.values, args.values, {});   
         },
 
         get_window: function (id) {
@@ -46,8 +56,12 @@
                       {result: wmJs.Util.cloneInstanceList(self._db.windows), replyFor: args.replyTo});
         },
 
-        remove_window: function () {
-            console.log('remove');
+        remove_window: function (self,evt,args) {
+            if( _.isUndefined(args) || _.isUndefined(args.id) ) return;
+            var item = _.findWhere( self._db.windows, { id: args.id } );
+            self._db.windows = _.without(self._db.windows, item);
+
+            console.log(self._db.windows);
         },
 
 
