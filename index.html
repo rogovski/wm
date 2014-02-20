@@ -1,11 +1,130 @@
-<html>
-<head>
-	<title>wm.js</title>
-</head>
-<body>
-	<p>wm.js</p>
-	<br />
-	<a href="app/inMemoryStorageLauncher.html">custom launcher</a>
 
-</body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>wm.js</title>
+    <link href='http://fonts.googleapis.com/css?family=Alegreya+Sans+SC' rel='stylesheet' type='text/css'>
+    <!-- Bootstrap core CSS -->
+    <link href="app/scripts/vendor/css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+    	.jumbotron {
+    		padding-top: 95px;
+    		padding-bottom: 16px;
+    	}
+    	.navbar {
+    		min-height: 85px;
+    	}
+    	.navbar-brand {
+    		font-size: 44px;
+    		line-height: 38px;
+    		font-family: 'Alegreya Sans SC', sans-serif;
+    	}
+        pre code {
+            overflow-x: scroll !important;
+            overflow-y: hidden;
+            white-space: pre; 
+            word-wrap: normal;
+        }    	
+        .navbar2 {
+        	min-height: 20px;
+        	background-color: rgb(34, 68, 68);
+        	top: 65px;
+        }
+        .navbar3 {
+        	min-height: 20px;
+        	background-color: rgb(34, 68, 112);
+        	top: 65px;
+        }        
+        .navbar4 {
+        	min-height: 20px;
+        	background-color: rgb(152, 206, 273);
+        	top: 65px;
+        }         
+    </style>
+
+    <!-- Custom styles for this template 
+    <link href="jumbotron.css" rel="stylesheet">-->
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">wm.js</a>
+        </div>
+    </div>
+    <div class="navbar3 navbar navbar-fixed-top" role="navigation">
+    </div>
+    <!-- Main jumbotron for a primary marketing message or call to action  -->
+    <div class="jumbotron">
+    	<img src="app/scripts/vendor/css/images/wmjsbanner.png" class="img-responsive" alt="Responsive image">
+    </div>
+
+    <div class="container">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="container">
+          <h2>Creating A Custom Window</h2>
+
+		<pre class="prettyprint">
+			<code class="language-js">
+    wmJs.Views = wmJs.Views || {};
+
+    (function () {
+        'use strict';
+    
+    	/**
+    	 * a comment
+    	 */
+        wmJs.Views.CustomWindow = wmJs.ApplicationWindowView.extend({
+    
+            template: JST['app/scripts/templates/window_blank.ejs'],
+    
+            window_render: function () {
+            	this.$windowcontent.html(this.template());
+            }
+    
+        });
+    
+        wmJs.Factories.WindowedApplicationFactory
+          .registerApplication('custom_window', 'custom window', '*',
+          					   wmJs.Views.CustomWindow);
+    })();
+			</code>
+		</pre>
+
+          <p><a class="btn btn-default" href="app/inMemoryStorageLauncher.html" role="button">View details &raquo;</a></p>
+        </div>
+      </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; Company 2014</p>
+      </footer>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="app/scripts/vendor/js/bootstrap.min.js"></script>
+    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+  </body>
 </html>
