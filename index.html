@@ -49,6 +49,9 @@
         	background-color: white;
         	margin-top: 24px;
         }
+        .navbar-header button > span {
+            background-color: #222;
+        }        
         .navbar-bottom {
         	min-height: 10px;
         	background-color: rgb(162, 154, 136);
@@ -84,6 +87,7 @@
 			top: 14%;
 			background-color: red;
 		}
+
     </style>
 
     <!-- Custom styles for this template 
@@ -115,9 +119,10 @@
 	        </div>
 			<div class="collapse navbar-collapse">
           		<ul class="nav navbar-nav pull-right">
-            		<li><a href="#">Home</a></li>
             		<li><a href="#about">About</a></li>
-            		<li><a href="#contact">Contact</a></li>
+            		<li><a href="#examples">Examples</a></li>
+                    <li><a href="#usage">Usage</a></li>
+            		<li><a href="#issues">Issues</a></li>
           		</ul>
         	</div>	        
     	</div>
@@ -138,11 +143,17 @@
     <div class="container">
 
       <!-- Example row of columns -->
-      <div class="row">
+      <div id="about" class="row">
+        <div class="container">
+          <h2>About</h2>
+          <p>
+          </p>
+        </div>
+      </div>
+
+      <div id="examples" class="row">
         <div class="container">
           <h2>Examples</h2>
-
-
           <p><a class="btn btn-default" href="app/inMemoryStorageLauncher.html" role="button">View details &raquo;</a></p>
         </div>
       </div>
