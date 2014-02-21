@@ -1,0 +1,101 @@
+body {
+    background-color: #eee !important;
+}
+.jumbotron {
+	padding-top: 95px;
+	padding-bottom: 16px;
+    margin-bottom: 0px;
+}
+.navbar {
+	min-height: 85px;
+	border-bottom: 3px solid rgb(162, 154, 136);
+}
+.navbar-brand {
+	font-size: 44px;
+	line-height: 43px;
+	color: white;
+}
+pre code {
+    overflow-x: scroll !important;
+    overflow-y: hidden;
+    white-space: pre; 
+    word-wrap: normal;
+}
+
+.navbar-style {
+	background-color: rgb(34, 68, 68);
+}
+.navbar-nav {
+	margin-top: 15px;
+	font-size: 17px;      
+}
+.navbar-nav a {
+	color: white;
+}
+.navbar-header button {
+	background-color: white;
+	margin-top: 24px;
+}
+.navbar-header button > span {
+    background-color: #222;
+}        
+.navbar-bottom {
+	min-height: 10px;
+	background-color: rgb(162, 154, 136);
+	width: 100%;
+	z-index: 1031;
+	margin-top: 10px;
+}
+.navbar3 {
+	min-height: 20px;
+	background-color: rgb(34, 68, 112);
+	top: 65px;
+}        
+.navbar4 {
+	min-height: 20px;
+	background-color: rgb(152, 206, 273);
+	top: 65px;
+}  
+.navbar-brand:hover,
+.navbar-brand:focus {
+  color: rgb(152, 206, 273);
+  background-color: transparent;
+}
+.navbar-nav > li > a:hover,
+.navbar-nav > li > a:focus {
+  color: rgb(152, 206, 273);
+  background-color: transparent;
+}               
+.window-contents-1 {
+	position: relative;
+	width: 33.1%;
+	height: 28%;
+	left: 46.2%;
+	top: 14%;
+}
+.navbar-brand, .navbar-nav, .wmjs-content h2, .wmjs-content h4, .wmjs-content p {
+    font-family: 'Oswald', sans-serif;  
+}
+h2, h4 {
+    text-align: center;
+}
+.example-btn {
+    display: block;
+    width: 40%;
+    height: 200px;
+    height: auto;
+    background-color: rgb(162, 154, 136);
+    border: 1px solid #222;
+      -webkit-border-radius: 5px;
+         -moz-border-radius: 5px;
+          -ms-border-radius: 5px;
+           -o-border-radius: 5px;
+              border-radius: 5px;            
+}
+.example-btn-container {
+    position: relative;
+    padding-left: 34%;
+}
+.content-divider {
+    border-top: 1px solid #222;
+}

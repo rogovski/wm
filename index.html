@@ -12,109 +12,7 @@
     <link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
     <!-- Bootstrap core CSS -->
     <link href="app/scripts/vendor/css/bootstrap.min.css" rel="stylesheet">
-    <style type="text/css">
-        body {
-            background-color: #eee;
-        }
-    	.jumbotron {
-    		padding-top: 95px;
-    		padding-bottom: 16px;
-            margin-bottom: 0px;
-    	}
-    	.navbar {
-    		min-height: 85px;
-    		border-bottom: 3px solid rgb(162, 154, 136);
-    	}
-    	.navbar-brand {
-    		font-size: 44px;
-    		line-height: 43px;
-    		color: white;
-    	}
-        pre code {
-            overflow-x: scroll !important;
-            overflow-y: hidden;
-            white-space: pre; 
-            word-wrap: normal;
-        }
-    	
-        .navbar-style {
-        	background-color: rgb(34, 68, 68);
-        }
-        .navbar-nav {
-        	margin-top: 15px;
-    		font-size: 17px;      
-        }
-        .navbar-nav a {
-        	color: white;
-        }
-        .navbar-header button {
-        	background-color: white;
-        	margin-top: 24px;
-        }
-        .navbar-header button > span {
-            background-color: #222;
-        }        
-        .navbar-bottom {
-        	min-height: 10px;
-        	background-color: rgb(162, 154, 136);
-        	width: 100%;
-        	z-index: 1031;
-        	margin-top: 10px;
-        }
-        .navbar3 {
-        	min-height: 20px;
-        	background-color: rgb(34, 68, 112);
-        	top: 65px;
-        }        
-        .navbar4 {
-        	min-height: 20px;
-        	background-color: rgb(152, 206, 273);
-        	top: 65px;
-        }  
-		.navbar-brand:hover,
-		.navbar-brand:focus {
-		  color: rgb(152, 206, 273);
-		  background-color: transparent;
-		}
-		.navbar-nav > li > a:hover,
-		.navbar-nav > li > a:focus {
-		  color: rgb(152, 206, 273);
-		  background-color: transparent;
-		}               
-		.window-contents-1 {
-			position: relative;
-			width: 33.1%;
-			height: 28%;
-			left: 46.2%;
-			top: 14%;
-		}
-        .navbar-brand, .navbar-nav, .wmjs-content h2, .wmjs-content h4, .wmjs-content p {
-            font-family: 'Oswald', sans-serif;  
-        }
-        h2, h4 {
-            text-align: center;
-        }
-        .example-btn {
-            display: block;
-            width: 40%;
-            height: 200px;
-            height: auto;
-            background-color: rgb(162, 154, 136);
-            border: 1px solid #222;
-              -webkit-border-radius: 5px;
-                 -moz-border-radius: 5px;
-                  -ms-border-radius: 5px;
-                   -o-border-radius: 5px;
-                      border-radius: 5px;            
-        }
-        .example-btn-container {
-            position: relative;
-            padding-left: 34%;
-        }
-        .content-divider {
-            border-top: 1px solid #222;
-        }
-    </style>
+    <link rel="stylesheet" href="app/styles/gh_pages.css">
 
     <!-- Custom styles for this template 
     <link href="jumbotron.css" rel="stylesheet">-->
@@ -170,7 +68,7 @@
         <div class="container">
           <h2>About</h2>
           <p style="text-align: center;">
-            Why not?
+            Will you find a use for wm.js? Who Knows?! This industry I currently work in - Laboratory information management software (call it the LIMS industry for brevity) - tends to produce software that one might call ‘enterprise,’ it is purposed-designed computer software used to satisfy the needs of an organization rather than individual users [<a href="http://en.wikipedia.org/wiki/Enterprise_software">1</a>]. How does this relate to the usefulness of a window manager for web browsers? Here's my reasoning: ... nevermind. This is just space filler.  
           </p>
         </div>
       </div>
@@ -183,7 +81,7 @@
             <div class="col-md-6">
                 <h4>storing window information using local storage</h4>
                 <div class="example-btn-container">
-                    <a class="example-btn" href="app/inMemoryStorageLauncher.html" role="button">
+                    <a id="localStorageLink" class="example-btn" href="app/inMemoryStorageLauncher.html" role="button">
                         <img src="app/scripts/vendor/css/images/thumbsupicon.png" width="150px;"
                             class="img-responsive" alt="Responsive image">
                     </a>
@@ -252,5 +150,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="app/scripts/vendor/js/bootstrap.min.js"></script>
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+    <script src="app/scripts/vendor/js/store.min.js"></script>
+    <script src="app/localStorageDetector.js"></script>
   </body>
 </html>
