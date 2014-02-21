@@ -9,13 +9,17 @@
     <meta name="author" content="">
 
     <title>wm.js</title>
-    <link href='http://fonts.googleapis.com/css?family=Alegreya+Sans+SC' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
     <!-- Bootstrap core CSS -->
     <link href="app/scripts/vendor/css/bootstrap.min.css" rel="stylesheet">
     <style type="text/css">
+        body {
+            background-color: #eee;
+        }
     	.jumbotron {
     		padding-top: 95px;
     		padding-bottom: 16px;
+            margin-bottom: 0px;
     	}
     	.navbar {
     		min-height: 85px;
@@ -23,8 +27,7 @@
     	}
     	.navbar-brand {
     		font-size: 44px;
-    		line-height: 53px;
-    		font-family: 'Alegreya Sans SC', sans-serif;
+    		line-height: 43px;
     		color: white;
     	}
         pre code {
@@ -39,8 +42,7 @@
         }
         .navbar-nav {
         	margin-top: 15px;
-    		font-size: 17px;
-    		font-family: 'Alegreya Sans SC', sans-serif;        
+    		font-size: 17px;      
         }
         .navbar-nav a {
         	color: white;
@@ -85,9 +87,33 @@
 			height: 28%;
 			left: 46.2%;
 			top: 14%;
-			background-color: red;
 		}
-
+        .navbar-brand, .navbar-nav, .wmjs-content h2, .wmjs-content h4, .wmjs-content p {
+            font-family: 'Oswald', sans-serif;  
+        }
+        h2, h4 {
+            text-align: center;
+        }
+        .example-btn {
+            display: block;
+            width: 40%;
+            height: 200px;
+            height: auto;
+            background-color: rgb(162, 154, 136);
+            border: 1px solid #222;
+              -webkit-border-radius: 5px;
+                 -moz-border-radius: 5px;
+                  -ms-border-radius: 5px;
+                   -o-border-radius: 5px;
+                      border-radius: 5px;            
+        }
+        .example-btn-container {
+            position: relative;
+            padding-left: 34%;
+        }
+        .content-divider {
+            border-top: 1px solid #222;
+        }
     </style>
 
     <!-- Custom styles for this template 
@@ -138,28 +164,47 @@
 	    </div>    	
     </div>
 
-
-
-    <div class="container">
-
+      <hr class="content-divider" />
       <!-- Example row of columns -->
-      <div id="about" class="row">
+      <div id="about" class="row wmjs-content">
         <div class="container">
           <h2>About</h2>
-          <p>
+          <p style="text-align: center;">
+            Why not?
           </p>
         </div>
       </div>
 
-      <div id="examples" class="row">
+      <hr class="content-divider" />
+      <div id="examples" class="row wmjs-content">
         <div class="container">
           <h2>Examples</h2>
-          <p><a class="btn btn-default" href="app/inMemoryStorageLauncher.html" role="button">View details &raquo;</a></p>
+          <div class="row">
+            <div class="col-md-6">
+                <h4>storing window information using local storage</h4>
+                <div class="example-btn-container">
+                    <a class="example-btn" href="app/inMemoryStorageLauncher.html" role="button">
+                        <img src="app/scripts/vendor/css/images/thumbsupicon.png" width="150px;"
+                            class="img-responsive" alt="Responsive image">
+                    </a>
+                </div>
+
+            </div>
+            <div class="col-md-6">
+                <h4>storing window information using arrays</h4>
+                <div class="example-btn-container">
+                    <a class="example-btn" href="app/inMemoryStorageLauncher.html" role="button">
+                        <img src="app/scripts/vendor/css/images/thumbsupicon.png" width="150px;"
+                            class="img-responsive" alt="Responsive image">
+                    </a>
+                </div>              
+            </div>
+          </div>
         </div>
       </div>
 
-
-      <div class="row">
+      <hr class="content-divider" />
+      <div class="row wmjs-content">
         <div class="container">
           <h2>Creating A Custom Window</h2>
 
@@ -199,7 +244,6 @@
       <footer>
         <p>&copy; Company 2014</p>
       </footer>
-    </div> <!-- /container -->
 
 
     <!-- Bootstrap core JavaScript
