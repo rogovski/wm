@@ -3,6 +3,11 @@
 ### User
 represents a user of the system
 ```hs
+data User = User {
+    id :: Int
+  , username :: String
+  , password :: String
+  }
             user
 
                 id
