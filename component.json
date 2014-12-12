@@ -1,0 +1,15 @@
+{
+  "name": "wm",
+  "repo": "rogovski/wm",
+  "description": "wm lib.",
+  "version": "0.0.0",
+  "main": "dist/wm.min.js",
+  "keywords": [
+    "math",
+    "statistics",
+    "probability"
+  ],
+  "scripts": [
+    "dist/wm.min.js"
+  ]
+}
