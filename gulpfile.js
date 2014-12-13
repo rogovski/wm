@@ -104,7 +104,8 @@ gulp.task('jst', function () {
 
 
 // The default task (called when you run `gulp`)
-gulp.task('default', ['jst', 'bundle', 'minify']);
+// gulp.task('default', ['jst', 'bundle', 'minify']);
+gulp.task('default', ['jst', 'bundle']);
 
 // The watch task (to automatically rebuild when the source code changes)
 gulp.task('watch', ['bundle', 'minify'], function () {

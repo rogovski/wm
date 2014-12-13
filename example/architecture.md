@@ -30,6 +30,17 @@ return a reference of it to the user (if the user selects 'new session', the man
 will first create a new session and store it internally). from that point on (untill 'logout'),
 the user will interact with this session object
 
+loadSessionManager - this should be called once on page load. there is ONE session manager.
+                     it should update itself to reflect all new user connections/creations/deletions.
+                     its server-side/persistent counterpart should be a key value store under a lock.
+                     meant to represent the global system state. returns a handle to the global system
+                     state.
+
+createUser
+
+authenticateUser
+
+
 ```hs
 data SessionManager = SessionManager {
     sessions :: [Session]
