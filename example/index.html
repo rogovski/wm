@@ -6,11 +6,24 @@
     <script src="../node_modules/underscore/underscore-min.js"></script>
     <script src="templates.js"></script>
     <script src="../dist/wm.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+
+    <link rel="stylesheet" type="text/css" href="css/controls/prompt.css">
+    <link rel="stylesheet" type="text/css" href="css/controls/previous.css">
+    <link rel="stylesheet" type="text/css" href="css/prompts/userLoginOrCreateNew.css">
+    <link rel="stylesheet" type="text/css" href="css/prompts/userLogin.css">
+    <link rel="stylesheet" type="text/css" href="css/prompts/spinner.css">
+
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+
 </head>
 <body>
     <div id="app"></div>
     <script>
         wm.$(function () {
+
             var cli = new wm.ui.client.Client({el: '#app'});
             cli.render();
         });

@@ -1,0 +1,10 @@
+.prompt {
+    position: absolute;
+    background-color: #fff;
+}
+
+.prompt-content {
+    width: 300px;
+    padding: 25px;
+    background-color: #282828 !important;
+}

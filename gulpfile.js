@@ -108,6 +108,10 @@ gulp.task('jst', function () {
 gulp.task('default', ['jst', 'bundle']);
 
 // The watch task (to automatically rebuild when the source code changes)
-gulp.task('watch', ['bundle', 'minify'], function () {
-  gulp.watch(['index.js', 'lib/**/*.js'], ['bundle', 'minify']);
+// gulp.task('watch', ['bundle', 'minify'], function () {
+//   gulp.watch(['index.js', 'lib/**/*.js'], ['bundle', 'minify']);
+// });
+
+gulp.task('watch', ['jst', 'bundle'], function () {
+  gulp.watch(['index.js', 'lib/**/*.js', './lib/templates/**/*.html'], ['jst', 'bundle']);
 });
