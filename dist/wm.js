@@ -28573,9 +28573,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	function _createNewUser(userCreateForm) {
+	    console.log('TODO: create request');
+
+	    $.publish('client.userCreate.response');
 
 	}
-
+	exports.createNewUser = _createNewUser;
 
 /***/ },
 /* 11 */
@@ -28724,11 +28727,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    initialize: function ( options ) {
 	        // TODO: need to find the best way to specify what backend we are using
 
-	        $.subscribe('session.manager.load',     this.handleSessionManagerLoad.bind(this));
+	        $.subscribe('session.manager.load',      this.handleSessionManagerLoad.bind(this));
 
-	        $.subscribe('client.userLoginOrCreate', this.handleUserLoginOrCreate.bind(this));
-	        $.subscribe('client.userLogin',         this.handleUserLogin.bind(this));
-	        $.subscribe('client.userCreate',        this.handleUserCreate.bind(this));
+	        $.subscribe('client.userLoginOrCreate',  this.handleUserLoginOrCreate.bind(this));
+	        $.subscribe('client.userLogin',          this.handleUserLogin.bind(this));
+	        $.subscribe('client.userCreate',         this.handleUserCreate.bind(this));
+	        $.subscribe('client.userCreateSubmit',   this.handleUserCreateSubmit.bind(this));
 	    },
 
 
@@ -28791,6 +28795,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    handleUserCreate: function () {
 	        this.setCurrentPrompt(this.userCreate);
+	    },
+
+	    handleUserCreateSubmit: function (e,args) {
+	        this.spin.setMessage('attempting to create user');
+
+	        this.handleSpinner();
+
+	        sessionManager.createNewUser(args.model);
 	    }
 
 	});
@@ -29091,7 +29103,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    template: JST['prompts/userCreateNew.html'],
 
-	    previous_events: {},
+	    previous_events: {
+	        'click .user-create-submit': 'handleUserCreateSubmit'
+	    },
 
 	    initialize: function () {
 	        this.model = user.emptyUserCreateForm();
@@ -29109,6 +29123,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.center();
 
 	        this.delegateEvents();
+	    },
+
+
+	    handleUserCreateSubmit: function () {
+	        console.log('handleUserCreateSubmit');
+
+	        this.loadModel();
+
+	        var validationResult = this.model.validate();
+
+	        if(this.model.isValid()) {
+	            $.publish('client.userCreateSubmit', {
+	                model: this.model
+	            });
+	        }
+	        else {
+	            this.displayInvalid(validationResult);
+	        }
+	    },
+
+
+	    displayInvalid: function (validationResult) {
+	        console.log(validationResult);
 	    },
 
 
