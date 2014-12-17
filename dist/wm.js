@@ -2,7 +2,7 @@
  * wm.js
  *
  * @version 0.0.0
- * @date    2014-12-16
+ * @date    2014-12-17
  *
  * @license
  * Copyright (C) 2014 Michael Rogowski <michaeljrogowski@gmail.com>
@@ -138,13 +138,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    //////////////////////////////////////////////////////
 	    wm.session         = {};
 	    wm.session.manager = __webpack_require__(12);
-	    wm.session.user    = __webpack_require__(14);
+	    wm.session.user    = __webpack_require__(13);
 
 	    wm.backend        = {};
-	    wm.backend.memory = __webpack_require__(15);
+	    wm.backend.memory = __webpack_require__(14);
 
 	    wm.ui        = {};
-	    wm.ui.client = __webpack_require__(20);
+	    wm.ui.client = __webpack_require__(19);
 
 	    // return the new instance
 	    return wm;
@@ -29128,29 +29128,33 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// NOTE: all backend objects return RAW json
-	// all the modules in this ('session') folder
-	// are responsible for constructing User/Session/Authentication
-	// Backbone models out of the raw json data
-
+	/**
+	 * NOTE: all backend objects return RAW json
+	 * all the modules in this ('session') folder
+	 * are responsible for constructing User/Session/Authentication
+	 * Backbone models out of the raw json data
+	 **/
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(9),
 	    Backbone       = __webpack_require__(10),
-	    authentication = __webpack_require__(13);
+	    authentication = __webpack_require__(27);
 
 
-
-	// the return result of all clients who
-	// call a session manager function
+	/**
+	 * the return result of all clients who
+	 * call a session manager function
+	 **/
 	function _SessionManagerResult() {
 	    this.hasErrors = false;
 	    this.errors    = null;
 	    this.result    = null;
 	}
 
-	// create a new session manager result
-	// that represents an error
+	/**
+	 * create a new session manager result
+	 * that represents an error
+	 **/
 	function NewErrorResult( errors ) {
 	    var res = new _SessionManagerResult();
 
@@ -29160,8 +29164,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return res;
 	}
 
-	// create a new session manager result
-	// that represents a Success
+	/**
+	 * create a new session manager result
+	 * that represents a Success
+	 **/
 	function NewSuccessResult( result ) {
 	    var res = new _SessionManagerResult();
 
@@ -29170,9 +29176,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return res;
 	}
 
-
-	// check if a result object is a _SessionManagerResult
-	// should be used by callers
+	/**
+	 * check if a result object is a _SessionManagerResult
+	 * should be used by callers
+	 **/
 	function _IsSessionManagerResult( result ) {
 	    if(result instanceof _SessionManagerResult)
 	        return true;
@@ -29184,16 +29191,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/**
 	 * backbone model that stores session information,
-	 * one instance per page load
+	 * one instance per page load. this object is a proxy to
+	 * to some centralized data store. all users/sessions
+	 * could be accessed through it if a caller has the right credentials
 	 */
 	var _SessionManager = Backbone.Model.extend({
 
+
 	    defaults: {
-	        sessions: null
+	        managerInfo: null
 	    },
 
 	    backend: null,
 
+
+	    /**
+	     * this fetch is primarily to retrieve config information
+	     * from the backend
+	     **/
 	    fetch: function (options) {
 
 	        if(this.backend == null)
@@ -29204,14 +29219,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.backend.loadSessionManager({
 
 	            success: function ( response ) {
+	                // TODO: check to see if response has proper type
 	                // if( !self.backend.IsSessionManagerBackendResult(response) ) .. throw error ..
 
-	                self.set( { sessions: response.result } );
+	                self.set( { managerInfo: response.result } );
 
 	                options.success(NewSuccessResult( self ));
 	            },
 
 	            error: function ( response ) {
+	                // TODO: check to see if response has proper type
 	                // if( !self.backend.IsSessionManagerBackendResult(response) ) .. throw error ..
 
 	                options.error(NewErrorResult( response.errors ));
@@ -29221,7 +29238,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 
-	// single instance of the session manager
+	/**
+	 * single instance of the session manager
+	 **/
 	var manager = null;
 
 
@@ -29262,105 +29281,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	exports.loadSessionManager = _loadSessionManager;
 
-
-	// offload the process of creating a new user to the
-	// authentication manager. auth manager will in turn
-	// make the request with a specific options.backend
+	/**
+	 * offload the process of creating a new user to the
+	 * authentication manager. auth manager will in turn
+	 * make the request with a specific options.backend
+	 **/
 	function _createNewUser( userCreateForm ) {
-	    console.log('TODO: create request');
 
 	    authentication.createNewUser( userCreateForm, manager.backend );
 	}
 	exports.createNewUser = _createNewUser;
 
+	/**
+	 * offload the process of logging in a user to the
+	 * authentication manager. auth manager will in turn
+	 * make the request with a specific options.backend
+	 **/
+	function _loginUser( userLoginForm ) {
+
+	    authentication.loginUser( userLoginForm, manager.backend );
+	}
+	exports.loginUser = _loginUser;
+
+
+	function _loadUserSessions( user ) {
+
+	}
+	exports.loadUserSessions = _loadUserSessions;
+
 /***/ },
 /* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// NOTE: all backend objects return RAW json
-	// all the modules in this ('session') folder
-	// are responsible for constructing User/Session/Authentication
-	// Backbone models out of the raw json data
-
-	var _    = __webpack_require__(9),
-	    $    = __webpack_require__(2),
-	    user = __webpack_require__(14);
-
-	// need an AuthResult Object
-	// the return result of all clients who
-	// call a authentication manager function
-	function _AuthenticationManagerResult() {
-
-	    this.hasErrors   = false;
-	    this.errors      = null;
-	    this.errorState  = null;
-	    this.result      = null;
-	    this.input       = null;
-	}
-
-	// create a new authentication manager result
-	// that represents an error
-	function NewErrorResult( errors, state ) {
-	    var res = new _AuthenticationManagerResult();
-
-	    res.hasErrors = true;
-	    res.errors = errors;
-
-	    if(!_.isUndefined(state)) this.errorState = state;
-
-	    return res;
-	}
-
-	// create a new authentication manager result
-	// that represents a Success
-	function NewSuccessResult( result ) {
-	    var res = new _AuthenticationManagerResult();
-
-	    res.result = result;
-
-	    return res;
-	}
-
-	// check if a result object is a _AuthenticationManagerResult
-	// should be used by callers
-	function _IsAuthenticationManagerResult( result ) {
-	    if(result instanceof _AuthenticationManagerResult)
-	        return true;
-
-	    return false;
-	}
-	exports.IsAuthenticationManagerResult = _IsAuthenticationManagerResult;
-
-	// offload the process of creating a new user to the
-	// authentication manager. auth manager will in turn
-	// make the request with a specific options.backend
-	function _createNewUser( userCreateForm, backend ) {
-
-	    backend.createNewUser(userCreateForm.toJSON(), {
-
-	        success: function ( response ) {
-	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
-
-	            var user = user.emptyUser();
-
-	            user.set( response.result );
-
-	            $.publish( 'created.usercreate.authentication.manager',
-	                NewSuccessResult( user ) );
-	        },
-
-	        error: function ( response ) {
-	            $.publish( 'failed.usercreate.authentication.manager',
-	                NewErrorResult( response.errors, userCreateForm ) );
-	        }
-
-	    });
-
-	}
-	exports.createNewUser = _createNewUser;
-
-/***/ },
-/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $        = __webpack_require__(2),
@@ -29380,6 +29330,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	});
 
+	function _emptyUser() {
+	    return new _User();
+	}
+	exports.emptyUser = _emptyUser;
 
 	/**
 	 * object that gets populated with values
@@ -29452,6 +29406,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	});
 
+	function _emptyUserCreatePendingConfirm() {
+	    return new _UserCreatePendingConfirm();
+	}
+	exports.emptyUserCreatePendingConfirm = _emptyUserCreatePendingConfirm;
 
 	/**
 	 * object that gets populated with values
@@ -29461,21 +29419,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	    defaults: {
 	        username : null,
 	        password : null
+	    },
+
+	    validation: {
+	        username : {
+	            required: true,
+	            msg: 'Please enter a Username'
+	        },
+	        password: {
+	            required: true,
+	            msg: "Please enter a password"
+	        }
 	    }
 	});
 
+	function _emptyUserLoginForm() {
+	    return new _UserLoginForm();
+	}
+	exports.emptyUserLoginForm = _emptyUserLoginForm;
 
 /***/ },
-/* 15 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// export all memory backends from this module
 
 	var _           = __webpack_require__(9),
-	    authResult  = __webpack_require__(16),
-	    authMem     = __webpack_require__(17),
-	    manResult   = __webpack_require__(18),
-	    manMem      = __webpack_require__(19);
+	    authResult  = __webpack_require__(15),
+	    authMem     = __webpack_require__(16),
+	    manResult   = __webpack_require__(17),
+	    manMem      = __webpack_require__(18);
 
 
 	exports.NewSessionManagerErrorResult = manResult.NewErrorResult;
@@ -29486,11 +29459,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.loadSessionManager = manMem.loadSessionManager
 
+	exports.IsAuthenticationManagerBackendResult = authResult._IsAuthenticationManagerBackendResult;
+
 	exports.createNewUser = authMem.createNewUser;
 
+	exports.loginUser = authMem.loginUser;
+
+	exports.getAuthenticationState = authMem.getAuthenticationState;
+
+	exports.activatePendingUser = authMem.activatePendingUser;
 
 /***/ },
-/* 16 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -29544,11 +29524,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.IsAuthenticationManagerBackendResult = _IsAuthenticationManagerBackendResult;
 
 /***/ },
-/* 17 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var result = __webpack_require__(16),
+	var result = __webpack_require__(15),
 	    _      = __webpack_require__(9);
+
+
+	var pending_users = [
+	    { username: 'pend', password: 'temp', email: 'admin@wm.js', token: 'tok3' }
+	];
 
 
 	var users = [
@@ -29556,9 +29541,64 @@ return /******/ (function(modules) { // webpackBootstrap
 	    { username: 'joe', password: 'word', email: 'joe@wm.js', token: 'tok2'}
 	];
 
+	/**
+	 * this method only exists for the memory backend.
+	 * return all authentication state for debugging purposes
+	 **/
+	function _getAuthenticationState() {
+	    return {
+	        pending_users: pending_users,
+	        users: users
+	    };
+	}
+	exports.getAuthenticationState = _getAuthenticationState;
 
+
+	/**
+	 * this method only exists for the memory backend
+	 **/
+	function _activatePendingUser(token) {
+	    var user = _.findWhere(pending_users, { token: token });
+
+	    if(_.isUndefined( user )) {
+	        return result.NewErrorResult( ["users does not exist in pending queue"] );
+	    }
+
+	    var new_pending_users = _.reject(pending_users, function (u) {
+	        return u.token === token;
+	    });
+
+	    pending_users = new_pending_users;
+
+	    users.push(user);
+
+	    return 'ok'
+	}
+	exports.activatePendingUser = _activatePendingUser;
+
+
+	/**
+	 * specify that the call to create new user return
+	 * an error result. for debugging purposes.
+	 **/
+	var throwCreateUserError = true;
+
+	var createUserError = function (rawCreateUserForm, options) {
+	    options.error( result.NewErrorResult(
+	        ['auth manager user create fail']
+	    ) );
+	}
+
+	/**
+	 * put user form data into to pending activation queue
+	 **/
 	function _createNewUser( rawCreateUserForm, options ) {
 	    setTimeout(function () {
+
+	        if(throwCreateUserError) {
+	            createUserError( rawCreateUserForm, options );
+	            return;
+	        }
 
 	        var rawJsonNewUser = {
 	            username: rawCreateUserForm.username,
@@ -29567,22 +29607,66 @@ return /******/ (function(modules) { // webpackBootstrap
 	            token: 'tok'+_.uniqueId()
 	        };
 
-	        // TODO: if user exists, return error
+	        // TODO: if user exists (in both pending and users), return error
 
-	        users.push(rawJsonNewUser);
+	        pending_users.push(rawJsonNewUser);
 
 	        options.success( result.NewSuccessResult( {
 	            username: rawJsonNewUser.username,
-	            email: rawJsonNewUser.email,
-	            token: rawJsonNewUser.token
+	            email: rawJsonNewUser.email
 	        } ) );
 
 	    }, 1000);
 	}
 	exports.createNewUser = _createNewUser;
 
+	/**
+	 * specify that the call to login a user returns
+	 * an error result. for debugging purposes.
+	 **/
+	var throwLoginUserError = false;
+
+	var loginUserError = function ( rawUserLoginForm, options ) {
+	    options.error( result.NewErrorResult(
+	        ['auth manager user login fail']
+	    ) );
+	}
+
+	/**
+	 * login a user
+	 **/
+	function _loginUser( rawUserLoginForm, options ) {
+	    setTimeout(function () {
+
+	        if(throwLoginUserError) {
+	            loginUserError( rawUserLoginForm, options );
+	            return;
+	        }
+
+	        var user = _.findWhere( users, {
+	            username: rawUserLoginForm.username,
+	            password: rawUserLoginForm.password
+	        } );
+
+	        if( _.isUndefined(user) ) {
+	            options.error( result.NewErrorResult(
+	                ['invalid username/password']
+	            ) );
+	            return;
+	        }
+
+	        options.success( result.NewSuccessResult( {
+	            username: user.username,
+	            email: user.email,
+	            token: user.token
+	        } ) );
+
+	    }, 1000);
+	}
+	exports.loginUser = _loginUser;
+
 /***/ },
-/* 18 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -29636,15 +29720,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.IsSessionManagerBackendResult = _IsSessionManagerBackendResult;
 
 /***/ },
-/* 19 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var result = __webpack_require__(18);
+	var result = __webpack_require__(17);
 
 	// data store of sessions
 	var sessions = [
 	    { name: 'session1' }
 	];
+
+	var managerInfo = {
+	    type: 'memory'
+	};
 
 
 	/**
@@ -29652,25 +29740,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	 **/
 	function _loadSessionManager(options) {
 	    setTimeout(function () {
-	        options.success( result.NewSuccessResult( sessions ) );
+	        options.success( result.NewSuccessResult( managerInfo ) );
 	    }, 1000);
 	}
 	exports.loadSessionManager = _loadSessionManager;
 
 /***/ },
-/* 20 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                    = __webpack_require__(2),
 	    _                    = __webpack_require__(9),
 	    Backbone             = __webpack_require__(10),
-	    backend              = __webpack_require__(15),
+	    backend              = __webpack_require__(14),
 	    sessionManager       = __webpack_require__(12),
-	    spinner              = __webpack_require__(21),
+	    flashback            = __webpack_require__(20),
+	    spinner              = __webpack_require__(22),
 	    userLoginOrCreateNew = __webpack_require__(23),
 	    userLogin            = __webpack_require__(24),
 	    userCreate           = __webpack_require__(26),
-	    prompt               = __webpack_require__(22);
+	    prompt               = __webpack_require__(21);
 
 
 	var _Client = Backbone.View.extend({
@@ -29679,17 +29768,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    currentPrompt: null,
 
+	    currentUser: null,
+
 	    initialize: function ( options ) {
 	        // TODO: need to find the best way to specify what backend we are using
 
-	        $.subscribe(         'loaded.session.manager', this.handleSessionManagerLoad.bind(this));
-	        $.subscribe('created.newuser.session.manager', this.handleSessionManagerUserCreated.bind(this));
-	        $.subscribe( 'failed.newuser.session.manager', this.handleSessionManagerUserCreateFailure.bind(this));
+	        $.subscribe(                   'loaded.session.manager', this.handleSessionManagerLoad.bind(this));
+	        $.subscribe('created.usercreate.authentication.manager', this.handleAuthManagerUserCreated.bind(this));
+	        $.subscribe( 'failed.usercreate.authentication.manager', this.handleAuthManagerUserCreateFailure.bind(this));
+
+	        $.subscribe( 'success.userlogin.authentication.manager', this.handleAuthManagerUserLogin.bind(this));
+	        $.subscribe(  'failed.userlogin.authentication.manager', this.handleAuthManagerUserLoginFailure.bind(this));
 
 	        $.subscribe('userLoginOrCreate.client',  this.handleUserLoginOrCreate.bind(this));
 	        $.subscribe(        'userLogin.client',  this.handleUserLogin.bind(this));
+	        $.subscribe( 'submit.userLogin.client',  this.handleUserLoginSubmit.bind(this));
 	        $.subscribe(       'userCreate.client',  this.handleUserCreate.bind(this));
 	        $.subscribe('submit.userCreate.client',  this.handleUserCreateSubmit.bind(this));
+
+	        window.cli = this;
+	        window.mem = backend;
 	    },
 
 
@@ -29720,6 +29818,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        this.spin                 = spinner.create();
 
+	        this.redirectFlash        = flashback.create( {
+	            returnButton: true,
+	            countdown: 3
+	        } );
+
 	        this.userLoginOrCreateNew = userLoginOrCreateNew.create();
 
 	        this.userLogin            = userLogin.create( {
@@ -29737,24 +29840,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 
 	    handleSpinner: function ( e, args ) {
-	        this.setCurrentPrompt(this.spin);
+	        this.setCurrentPrompt(this.spin, args);
 	    },
 
 	    handleSessionManagerLoad: function ( e, args ) {
-	        console.log(args);
 	        this.handleUserLoginOrCreate();
 	    },
 
 	    handleUserLoginOrCreate: function ( e, args ) {
-	        this.setCurrentPrompt(this.userLoginOrCreateNew);
+	        this.setCurrentPrompt(this.userLoginOrCreateNew, args);
 	    },
 
 	    handleUserLogin: function ( e, args ) {
-	        this.setCurrentPrompt(this.userLogin);
+	        this.setCurrentPrompt(this.userLogin, args);
 	    },
 
 	    handleUserCreate: function ( e, args ) {
-	        this.setCurrentPrompt(this.userCreate);
+	        this.setCurrentPrompt(this.userCreate, args);
 	    },
 
 	    handleUserCreateSubmit: function (e,args) {
@@ -29765,87 +29867,193 @@ return /******/ (function(modules) { // webpackBootstrap
 	        sessionManager.createNewUser(args.model);
 	    },
 
-	    // if this get called, @args is an object that contains a model of
-	    // type User
-	    handleSessionManagerUserCreated: function (e,args) {
-	        new Error('not impl');
+	    // if this get called, @args is an object of type
+	    // _AuthenticationManagerResult whose .result field
+	    // contains a model of type UserCreatePendingConfirm
+	    handleAuthManagerUserCreated: function (e,args) {
+
+	        var successMessage = 'User successfully created. '              +
+	                             'A confirmation message has been sent to ' +
+	                             args.result.get('email');
+
+	        this.redirectFlash.setMainMessage( successMessage )
+	                          .setReturnMessage('return to login')
+	                          .flashbackTo('userLogin.client');
+
+	        this.setCurrentPrompt(this.redirectFlash);
 	    },
 
-	    // if this get called, @args is an object that contains a model of
-	    // type UserCreateForm e.g the orignal model dealt with in the
-	    // handleUserCreateSubmit method
-	    handleSessionManagerUserCreateFailure: function (e,args) {
-	        new Error('not impl');
+	    // if this get called, @args is an object of type
+	    // _AuthenticationManagerResult whose .errorState field
+	    // contains a model of type UserCreateForm (e.g the orignal
+	    // model dealt with in the handleUserCreateSubmit method)
+	    handleAuthManagerUserCreateFailure: function (e,args) {
+
+	        this.redirectFlash.setMainMessage( _.first(args.errors) )
+	                          .setReturnMessage('return to user creation.')
+	                          .flashbackTo('userCreate.client')
+	                          .withState( { model: args.errorState } );
+
+	        this.setCurrentPrompt(this.redirectFlash);
+
 	    },
+
+	    handleUserLoginSubmit: function (e,args) {
+	        this.spin.setMessage('attempting to login user');
+
+	        this.handleSpinner();
+
+	        sessionManager.loginUser(args.model);
+	    },
+
+	    handleAuthManagerUserLogin: function (e,args) {
+	        this.currentUser = args.result;
+
+	        this.spin.setMessage('checking for existing sessions');
+
+	        this.handleSpinner();
+
+	        sessionManager.loadUserSessions( this.currentUser );
+	    },
+
+	    handleAuthManagerUserLoginFailure: function (e,arg) {
+
+	        this.redirectFlash.setMainMessage( _.first(args.errors) )
+	                          .setReturnMessage('return to user login.')
+	                          .flashbackTo('userLogin.client')
+	                          .withState( { model: args.errorState } );
+
+	        this.setCurrentPrompt(this.redirectFlash);
+
+	    }
 
 	});
 	exports.Client = _Client;
 
 /***/ },
-/* 21 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(9),
 	    Backbone       = __webpack_require__(10),
-	    prompt         = __webpack_require__(22);
+	    prompt         = __webpack_require__(21);
 
 
-	var _Spinner = prompt.PromptView.extend({
+	var _Flashback = prompt.PromptView.extend({
 
-	    template: JST['prompts/spinner.html'],
+	    template: JST['prompts/flashback.html'],
 
 	    events_prompt: {
+	        'click .flashback-return-message': 'handleReturnToClick'
 	    },
 
-	    message: null,
+	    mainMessage: null,
+
+	    returnToMessage: null,
+
+	    flashbackToSignal: null,
+
+	    flashbackToState: null,
+
+	    countdown: null,
+
+	    hasReturnButton: true,
+
+	    timeoutRef: null,
+
+	    initialize: function (options) {
+
+	        if(!_.isUndefined(options)) {
+	            this.countdown = _.isUndefined(options.countdown) ? null: options.countdown;
+	            this.hasReturnButton = _.isUndefined(options.returnButton) ? true: options.returnButton;
+	        }
+
+	    },
 
 	    render: function () {
-	        this.render_prompt_with(this.template());
+	        this.render_prompt_with(this.template({
+	            hasReturnButton: this.hasReturnButton,
+	            hasCountdown: _.isNull(this.countdown),
+	            countdown: this.countdown
+	        }));
 
 	        this.center();
 
 	        this.delegateEvents();
+
+	        this.go();
 	    },
 
-	    setMessage: function (msg) {
-	        this.message = msg;
+	    setMainMessage: function (msg) {
+	        this.mainMessage = msg;
 	        return this;
 	    },
 
-	    // override the hide and show messages
-	    // in order to stop the spinner
-
-	    hide: function (args) {
-	        var fn = void 0;
-	        if(!_.isUndefined(args) && !_.isUndefined(args.onHidden))
-	            fn = args.onHidden;
-
-	        this.$el.find('.spinner-container').spin(false);
-	        this.$el.hide('fade', 400, fn);
+	    setReturnMessage: function (msg) {
+	        this.returnToMessage = msg;
+	        return this;
 	    },
 
-	    show: function (args) {
-	        var fn = void 0;
-	        if(!_.isUndefined(args) && !_.isUndefined(args.onHidden))
-	            fn = args.onHidden;
+	    flashbackTo: function ( publishSignal ) {
+	        this.flashbackToSignal = publishSignal;
+	        return this;
+	    },
 
-	        this.$el.find('.spinner-message').html(this.message);
-	        this.$el.find('.spinner-container').spin({ top: '40%' });
-	        this.$el.show('fade', 400, fn);
+	    withState: function ( state ) {
+	        this.flashbackToState = state;
+	        return this;
+	    },
+
+	    go: function () {
+
+	        if(!_.isNull(this.mainMessage)) {
+	            this.$el.find('.flashback-message-content').html(this.mainMessage);
+	        }
+
+	        if(!_.isNull(this.returnToMessage)) {
+	            this.$el.find('.flashback-return-message').html(this.returnToMessage)
+	        }
+
+	        if(!_.isNull(this.countdown)) {
+	            var self = this;
+
+	            this.timeoutRef = setTimeout(function () {
+	                $.publish(self.flashbackToSignal, self.flashbackToState);
+	            }, this.countdown * 1000);
+
+	        }
+	    },
+
+	    handleReturnToClick: function (e) {
+
+	        if(!_.isNull(this.timeoutRef)) {
+	            clearTimeout(this.timeoutRef);
+	        }
+
+	        $.publish(this.flashbackToSignal, this.flashbackToState);
+
+	        e.preventDefault();
+
+	        return false;
 	    }
 
 	});
 
 
 	function _create ( options ) {
-	    return new _Spinner( options );
+	    return new _Flashback( options );
 	}
 	exports.create = _create
 
 /***/ },
-/* 22 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * a box centered on the screen. serves as a base class for all
+	 * prompts. see 'prompt' sub directory
+	 **/
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(9),
@@ -29869,8 +30077,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        class: 'prompt'
 	    },
 
-	    events_prompt_base: {
-	    },
+	    events_prompt_base: { },
+
+	    basePromptTemplate: JST['controls/prompt.html'],
 
 	    events: function () {
 	        var derivedObj = this.events_prompt;
@@ -29879,8 +30088,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        return _.extend( {}, this.events_prompt_base, derivedObj );
 	    },
-
-	    basePromptTemplate: JST['controls/prompt.html'],
 
 	    render_prompt_with: function (tmpl) {
 	        this.$el.css('height', this.height).css('width', this.width);
@@ -29937,13 +30144,82 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 23 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(9),
 	    Backbone       = __webpack_require__(10),
-	    prompt         = __webpack_require__(22);
+	    prompt         = __webpack_require__(21);
+
+
+	var _Spinner = prompt.PromptView.extend({
+
+	    template: JST['prompts/spinner.html'],
+
+	    events_prompt: {
+	    },
+
+	    message: null,
+
+	    render: function () {
+	        this.render_prompt_with(this.template());
+
+	        this.center();
+
+	        this.delegateEvents();
+	    },
+
+	    setMessage: function (msg) {
+	        this.message = msg;
+	        return this;
+	    },
+
+	    // override the hide and show messages
+	    // in order to stop the spinner
+
+	    hide: function (args) {
+	        var fn = void 0;
+	        if(!_.isUndefined(args) && !_.isUndefined(args.onHidden))
+	            fn = args.onHidden;
+
+	        this.$el.find('.spinner-container').spin(false);
+	        this.$el.hide('fade', 400, fn);
+	    },
+
+	    show: function (args) {
+	        var fn = void 0;
+	        if(!_.isUndefined(args) && !_.isUndefined(args.onHidden))
+	            fn = args.onHidden;
+
+	        this.$el.find('.spinner-message').html(this.message);
+	        this.$el.find('.spinner-container').spin({ top: '40%' });
+	        this.$el.show('fade', 400, fn);
+	    }
+
+	});
+
+
+	function _create ( options ) {
+	    return new _Spinner( options );
+	}
+	exports.create = _create
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * a prompt to allow users to login or create a new user.
+	 * it is the first stage of the authentication/user creation
+	 * pipline
+	 **/
+
+
+	var $              = __webpack_require__(2),
+	    _              = __webpack_require__(9),
+	    Backbone       = __webpack_require__(10),
+	    prompt         = __webpack_require__(21);
 
 
 	var _UserLoginOrCreateNew = prompt.PromptView.extend({
@@ -29993,14 +30269,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(9),
 	    Backbone       = __webpack_require__(10),
-	    previous       = __webpack_require__(25);
+	    previous       = __webpack_require__(25),
+	    user           = __webpack_require__(13);
 
 
 	var _UserLogin = previous.PreviousView.extend({
 
 	    template: JST['prompts/userLogin.html'],
 
-	    previous_events: {},
+	    previous_events: {
+	        'click .user-login-submit': 'handleUserLoginSubmit'
+
+	        // TODO: forgot username/password link
+	        // 'click .user-login-reset-creds': 'handleCredentialReset'
+	    },
+
+	    initialize: function () {
+	        this.model = user.emptyUserLoginForm();
+
+	        Backbone.Validation.bind(this, {
+	            model: this.model
+	        });
+	    },
 
 	    render: function () {
 	        this.render_previous_with(this.template());
@@ -30008,6 +30298,56 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.center();
 
 	        this.delegateEvents();
+	    },
+
+	    setPromptOptions: function ( options ) {
+	        if(_.isUndefined( options )) return;
+
+	        if(_.isUndefined( options.model )) return;
+
+	        this.model.set( options.model.attributes );
+	        this.loadView();
+	    },
+
+	    handleUserLoginSubmit: function () {
+
+	        this.loadModel();
+
+	        var validationResult = this.model.validate();
+
+	        if(this.model.isValid()) {
+	            $.publish('submit.userLogin.client', {
+	                model: this.model
+	            });
+	        }
+	        else {
+	            this.displayInvalid(validationResult);
+	        }
+	    },
+
+	    /**
+	     * cycle through all input elements,
+	     * loading them into the model. assumes
+	     * input 'name' attribute is the same a
+	     * model attribute name
+	     **/
+	    loadModel: function () {
+	        var self = this;
+	        this.$el.find('input').each(function () {
+	            var $inp = $( this );
+	            self.model.set( $inp.prop('name'), $inp.val() );
+	        });
+	    },
+
+
+	    /**
+	     * load input elements from model values
+	     **/
+	    loadView: function () {
+	        var self = this;
+	        _.each(this.model.attributes, function (e,i) {
+	            self.$el.find('input[name="'+ i +'"]').val(e);
+	        });
 	    }
 
 	});
@@ -30025,7 +30365,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(9),
 	    Backbone       = __webpack_require__(10),
-	    prompt         = __webpack_require__(22);
+	    prompt         = __webpack_require__(21);
 
 
 	var _PreviousView = function (options) {
@@ -30077,7 +30417,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _              = __webpack_require__(9),
 	    Backbone       = __webpack_require__(10),
 	    previous       = __webpack_require__(25),
-	    user           = __webpack_require__(14);
+	    user           = __webpack_require__(13);
 
 
 	var _UserCreateNew = previous.PreviousView.extend({
@@ -30110,10 +30450,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if(_.isUndefined( options.model )) return;
 
 	        this.model.set( options.model.attributes );
+	        this.loadView();
 	    },
 
 	    handleUserCreateSubmit: function () {
-	        console.log('handleUserCreateSubmit');
 
 	        this.loadModel();
 
@@ -30154,8 +30494,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * load input elements from model values
 	     **/
 	    loadView: function () {
+	        var self = this;
 	        _.each(this.model.attributes, function (e,i) {
-	            this.$el.find('input[name="'+ i +'"]').val(e);
+	            self.$el.find('input[name="'+ i +'"]').val(e);
 	        });
 	    }
 
@@ -30166,6 +30507,117 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new _UserCreateNew( options );
 	}
 	exports.create = _create
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// NOTE: all backend objects return RAW json
+	// all the modules in this ('session') folder
+	// are responsible for constructing User/Session/Authentication
+	// Backbone models out of the raw json data
+
+	var _    = __webpack_require__(9),
+	    $    = __webpack_require__(2),
+	    user = __webpack_require__(13);
+
+	// need an AuthResult Object
+	// the return result of all clients who
+	// call a authentication manager function
+	function _AuthenticationManagerResult() {
+
+	    this.hasErrors   = false;
+	    this.errors      = null;
+	    this.errorState  = null;
+	    this.result      = null;
+	}
+
+	// create a new authentication manager result
+	// that represents an error
+	function NewErrorResult( errors, state ) {
+	    var res = new _AuthenticationManagerResult();
+
+	    res.hasErrors = true;
+	    res.errors = errors;
+
+	    if(!_.isUndefined(state)) res.errorState = state;
+
+	    return res;
+	}
+
+	// create a new authentication manager result
+	// that represents a Success
+	function NewSuccessResult( result ) {
+	    var res = new _AuthenticationManagerResult();
+
+	    res.result = result;
+
+	    return res;
+	}
+
+	// check if a result object is a _AuthenticationManagerResult
+	// should be used by callers
+	function _IsAuthenticationManagerResult( result ) {
+	    if(result instanceof _AuthenticationManagerResult)
+	        return true;
+
+	    return false;
+	}
+	exports.IsAuthenticationManagerResult = _IsAuthenticationManagerResult;
+
+	// attempt to create a new user with the specified backend
+	function _createNewUser( userCreateForm, backend ) {
+
+	    backend.createNewUser(userCreateForm.toJSON(), {
+
+	        success: function ( response ) {
+	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
+
+	            var pendingUser = user.emptyUserCreatePendingConfirm();
+
+	            pendingUser.set( response.result );
+
+	            $.publish( 'created.usercreate.authentication.manager',
+	                NewSuccessResult( pendingUser ) );
+	        },
+
+	        error: function ( response ) {
+	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
+
+	            $.publish( 'failed.usercreate.authentication.manager',
+	                NewErrorResult( response.errors, userCreateForm ) );
+	        }
+
+	    });
+
+	}
+	exports.createNewUser = _createNewUser;
+
+	// attempt to log in a user with the specified backend
+	function _loginUser( userLoginForm, backend ) {
+
+	    backend.loginUser( userLoginForm.toJSON(), {
+
+	        success: function ( response ) {
+	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
+
+	            var authuser = user.emptyUser();
+
+	            authuser.set( response.result );
+
+	            $.publish( 'success.userlogin.authentication.manager',
+	                NewSuccessResult( pendingUser ) );
+	        },
+
+	        error: function ( response ) {
+	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
+
+	            $.publish( 'failed.userlogin.authentication.manager',
+	                NewErrorResult( response.errors, userLoginForm ) );
+	        }
+	    });
+	}
+	exports.loginUser = _loginUser;
 
 /***/ }
 /******/ ])

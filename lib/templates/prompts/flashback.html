@@ -1,0 +1,19 @@
+<div class="option-row">
+    <div class="flashback-message-content"></div>
+</div>
+
+<div class="option-sep"></div>
+
+<div class="option-row">
+
+    <% if(hasReturnButton) { %>
+        <a class="flashback-return-message" href="#">return</a>
+    <% } %>
+
+    <% if(hasCountdown) { %>
+        <div class="flashback-countdown-message">
+            <span>&nbsp;Redirect in <%= countdown %> seconds.</span>
+        </div>
+    <% } %>
+
+</div>

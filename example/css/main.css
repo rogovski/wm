@@ -1,8 +1,16 @@
-
+/*
+    the only styles that belong in here are those used by more than
+    one template.
+*/
 
 .option-row > a {
     width: 100%;
 }
+
 .option-sep {
     height: 10px;
+}
+
+.centered-header {
+    text-align: 'center'
 }

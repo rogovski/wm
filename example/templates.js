@@ -25,6 +25,26 @@ __p += '<div class="prompt-content"></div>';
 }
 return __p
 }})();
+(function() {(window["JST"] = window["JST"] || {})["prompts/flashback.html"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<div class="option-row">\r\n    <div class="flashback-message-content"></div>\r\n</div>\r\n\r\n<div class="option-sep"></div>\r\n\r\n<div class="option-row">\r\n\r\n    ';
+ if(hasReturnButton) { ;
+__p += '\r\n        <a class="flashback-return-message" href="#">return</a>\r\n    ';
+ } ;
+__p += '\r\n\r\n    ';
+ if(hasCountdown) { ;
+__p += '\r\n        <div class="flashback-countdown-message">\r\n            <span>&nbsp;Redirect in ' +
+((__t = ( countdown )) == null ? '' : __t) +
+' seconds.</span>\r\n        </div>\r\n    ';
+ } ;
+__p += '\r\n\r\n</div>';
+
+}
+return __p
+}})();
 (function() {(window["JST"] = window["JST"] || {})["prompts/spinner.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
