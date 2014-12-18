@@ -144,7 +144,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    wm.backend.memory = __webpack_require__(22);
 
 	    wm.ui        = {};
-	    wm.ui.client = __webpack_require__(30);
+	    wm.ui.client = __webpack_require__(31);
 
 	    // return the new instance
 	    return wm;
@@ -30708,8 +30708,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.users = [
-	    { username: 'admin', password: 'pass', email: 'admin@wm.js', token: 'tok1'},
-	    { username: 'joe', password: 'word', email: 'joe@wm.js', token: 'tok2'}
+	    { uid: 0, username: 'admin', password: 'pass', email: 'admin@wm.js', token: 'tok1'},
+	    { uid: 1, username: 'joe', password: 'word', email: 'joe@wm.js', token: 'tok2'}
 	];
 
 /***/ },
@@ -30718,18 +30718,29 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var result       = __webpack_require__(28),
 	    managerInfo  = __webpack_require__(29),
+	    session      = __webpack_require__(30),
+	    user         = __webpack_require__(26),
 	    _            = __webpack_require__(10);
 
 
 	/**
 	 * options :: { success :: Function, error: Function }
 	 **/
-	function _loadSessionManager(options) {
+	function _loadSessionManager( options ) {
 	    setTimeout(function () {
 	        options.success( result.NewSuccessResult( managerInfo.managerInfo ) );
 	    }, 1000);
 	}
 	exports.loadSessionManager = _loadSessionManager;
+
+	/**
+	 * given a user, return a list of sessions
+	 * options :: { success :: Function, error: Function }
+	 **/
+	function _loadUserSessions( rawJsonUser, options ) {
+
+	}
+	exports.loadUserSessions = _loadUserSessions;
 
 /***/ },
 /* 28 */
@@ -30798,17 +30809,29 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
+	exports.session = [
+	    { sid: 0, display: 's_0', uid: 0 },
+	    { sid: 1, display: 's_0', uid: 0 },
+	    { sid: 2, display: 's_0', uid: 0 },
+	    { sid: 3, display: 's_0', uid: 1 },
+	    { sid: 4, display: 's_0', uid: 1 }
+	];
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var $                    = __webpack_require__(2),
 	    _                    = __webpack_require__(10),
 	    Backbone             = __webpack_require__(11),
 	    backend              = __webpack_require__(22),
 	    sessionManager       = __webpack_require__(13),
-	    flashback            = __webpack_require__(31),
-	    spinner              = __webpack_require__(33),
-	    userLoginOrCreateNew = __webpack_require__(34),
-	    userLogin            = __webpack_require__(35),
-	    userCreate           = __webpack_require__(37),
-	    prompt               = __webpack_require__(32);
+	    flashback            = __webpack_require__(32),
+	    spinner              = __webpack_require__(34),
+	    userLoginOrCreateNew = __webpack_require__(35),
+	    userLogin            = __webpack_require__(36),
+	    userCreate           = __webpack_require__(38),
+	    prompt               = __webpack_require__(33);
 
 
 	var _Client = Backbone.View.extend({
@@ -30958,9 +30981,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    handleAuthManagerUserLogin: function (e,args) {
 	        this.currentUser = args.result;
 
-	        this.spin.setMessage('checking for existing sessions');
-
-	        this.handleSpinner();
+	        this.spin.setMessage('checking for existing sessions').renderMessageOnly();
 
 	        sessionManager.loadUserSessions( this.currentUser );
 	    },
@@ -30980,13 +31001,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Client = _Client;
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(32);
+	    prompt         = __webpack_require__(33);
 
 
 	var _Flashback = prompt.PromptView.extend({
@@ -31096,7 +31117,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31193,13 +31214,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(32);
+	    prompt         = __webpack_require__(33);
 
 
 	var _Spinner = prompt.PromptView.extend({
@@ -31221,6 +31242,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    setMessage: function (msg) {
 	        this.message = msg;
+	        return this;
+	    },
+
+	    /**
+	     * useful when the spinner is already running
+	     * and the only thing we want to change is the message
+	     **/
+	    renderMessageOnly: function () {
+	        this.$el.find('.spinner-message').html(this.message);
 	        return this;
 	    },
 
@@ -31255,7 +31285,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31268,7 +31298,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(32);
+	    prompt         = __webpack_require__(33);
 
 
 	var _UserLoginOrCreateNew = prompt.PromptView.extend({
@@ -31312,13 +31342,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    previous       = __webpack_require__(36),
+	    previous       = __webpack_require__(37),
 	    user           = __webpack_require__(20);
 
 
@@ -31412,13 +31442,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(32);
+	    prompt         = __webpack_require__(33);
 
 
 	var _PreviousView = function (options) {
@@ -31463,13 +31493,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    previous       = __webpack_require__(36),
+	    previous       = __webpack_require__(37),
 	    user           = __webpack_require__(19);
 
 

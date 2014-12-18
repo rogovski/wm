@@ -7,6 +7,24 @@ __p += '';
 }
 return __p
 }})();
+(function() {(window["JST"] = window["JST"] || {})["controls/previous.html"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '\r\n<div class="previous-button-container">\r\n    <a href="#" class="btn-previous"><i class="fa fa-arrow-circle-left fa-3x"></i></a>\r\n</div>\r\n\r\n<div class="promp-content control-previous-content-container">\r\n\r\n</div>';
+
+}
+return __p
+}})();
+(function() {(window["JST"] = window["JST"] || {})["controls/prompt.html"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="prompt-content"></div>';
+
+}
+return __p
+}})();
 (function() {(window["JST"] = window["JST"] || {})["prompts/flashback.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
@@ -59,24 +77,6 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<div class="option-row">\r\n    <a href="#" class="btn btn-info btn-user-login">USER LOGIN</a>\r\n</div>\r\n\r\n<div class="option-sep"></div>\r\n\r\n<div class="option-row">\r\n    <a href="#" class="btn btn-info btn-user-create">CREATE NEW USER</a>\r\n</div>\r\n';
-
-}
-return __p
-}})();
-(function() {(window["JST"] = window["JST"] || {})["controls/previous.html"] = function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '\r\n<div class="previous-button-container">\r\n    <a href="#" class="btn-previous"><i class="fa fa-arrow-circle-left fa-3x"></i></a>\r\n</div>\r\n\r\n<div class="promp-content control-previous-content-container">\r\n\r\n</div>';
-
-}
-return __p
-}})();
-(function() {(window["JST"] = window["JST"] || {})["controls/prompt.html"] = function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<div class="prompt-content"></div>';
 
 }
 return __p
