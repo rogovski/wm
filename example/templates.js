@@ -7,6 +7,26 @@ __p += '';
 }
 return __p
 }})();
+(function() {(window["JST"] = window["JST"] || {})["controls/listbox.html"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<ul class="control-listbox-container"></ul>';
+
+}
+return __p
+}})();
+(function() {(window["JST"] = window["JST"] || {})["controls/listboxItem.html"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<span>' +
+((__t = ( display )) == null ? '' : __t) +
+'</span>';
+
+}
+return __p
+}})();
 (function() {(window["JST"] = window["JST"] || {})["controls/previous.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
@@ -41,6 +61,29 @@ __p += '\r\n        <div class="flashback-countdown-message">\r\n            <sp
 ' seconds.</span>\r\n        </div>\r\n    ';
  } ;
 __p += '\r\n\r\n</div>';
+
+}
+return __p
+}})();
+(function() {(window["JST"] = window["JST"] || {})["prompts/sessionRestore.html"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '\r\n<div class="option-row">\r\n    <div class="user-session-list-container"></div>\r\n</div>\r\n\r\n<div class="option-sep"></div>\r\n\r\n<div class="option-row">\r\n    <button class="btn btn-info user-session-restore-submit">OK</button>\r\n</div>';
+
+}
+return __p
+}})();
+(function() {(window["JST"] = window["JST"] || {})["prompts/sessionRestoreOrCreateNew.html"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+
+ if(hasExistingSessions) { ;
+__p += '\r\n    <div class="option-row">\r\n        <a href="#" class="btn btn-info btn-session-restore">RESTORE SESSION</a>\r\n    </div>\r\n\r\n    <div class="option-sep"></div>\r\n';
+ } ;
+__p += '\r\n\r\n\r\n<div class="option-row">\r\n    <a href="#" class="btn btn-info btn-session-create">CREATE NEW SESSION</a>\r\n</div>\r\n';
 
 }
 return __p

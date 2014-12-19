@@ -1,0 +1,19 @@
+.control-listbox-element {
+    height: 165px;
+    background-color: #fff;
+    padding: 1px 0 1px 0;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid;
+}
+
+.control-listbox-container {
+    padding-left: 0px;
+}
+
+.control-listbox-container li {
+    list-style: none;
+    padding: 3px 10px 3px 10px;
+    margin: 2px;
+    background-color: #222222;
+}
