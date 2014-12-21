@@ -141,10 +141,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    wm.session.manager = __webpack_require__(13);
 
 	    wm.backend        = {};
-	    wm.backend.memory = __webpack_require__(30);
+	    wm.backend.memory = __webpack_require__(14);
 
 	    wm.ui        = {};
-	    wm.ui.client = __webpack_require__(41);
+	    wm.ui.client = __webpack_require__(25);
 
 	    // return the new instance
 	    return wm;
@@ -30018,10 +30018,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $                    = __webpack_require__(2),
 	    _                    = __webpack_require__(10),
 	    Backbone             = __webpack_require__(11),
-	    SessionManagerResult = __webpack_require__(14),
-	    SessionManager       = __webpack_require__(15),
-	    authentication       = __webpack_require__(16),
-	    sessions             = __webpack_require__(22);
+	    SessionManagerResult = __webpack_require__(45),
+	    SessionManager       = __webpack_require__(46),
+	    authentication       = __webpack_require__(47),
+	    sessions             = __webpack_require__(51);
 
 
 	/**
@@ -30137,678 +30137,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	exports.loadActiveSessionProcessManager = _loadActiveSessionProcessManager;
 
+
+	function _renderActiveUserSession( userSessionState, $rootEl ) {
+
+	    sessions.renderActiveUserSession( userSessionState, $rootEl );
+	}
+	exports.renderActiveUserSession = _renderActiveUserSession;
+
 /***/ },
 /* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
-	 * the return result of all clients who
-	 * call a session manager function
-	 **/
-	function _SessionManagerResult() {
-	    this.hasErrors = false;
-	    this.errors    = null;
-	    this.result    = null;
-	}
-
-	/**
-	 * create a new session manager result
-	 * that represents an error
-	 **/
-	function _NewErrorResult( errors ) {
-	    var res = new _SessionManagerResult();
-
-	    res.hasErrors = true;
-	    res.errors = errors;
-
-	    return res;
-	}
-	exports.NewErrorResult = _NewErrorResult;
-
-	/**
-	 * create a new session manager result
-	 * that represents a Success
-	 **/
-	function _NewSuccessResult( result ) {
-	    var res = new _SessionManagerResult();
-
-	    res.result = result;
-
-	    return res;
-	}
-	exports.NewSuccessResult = _NewSuccessResult;
-
-	/**
-	 * check if a result object is a _SessionManagerResult
-	 * should be used by callers
-	 **/
-	function _IsSessionManagerResult( result ) {
-	    if(result instanceof _SessionManagerResult)
-	        return true;
-
-	    return false;
-	}
-	exports.IsSessionManagerResult = _IsSessionManagerResult;
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _        = __webpack_require__(10),
-	    Backbone = __webpack_require__(11);
-
-	/**
-	 * backbone model that stores session information,
-	 * one instance per page load. this object is a proxy to
-	 * to some centralized data store. all users/sessions
-	 * could be accessed through it if a caller has the right credentials
-	 */
-	var _SessionManager = Backbone.Model.extend({
-
-
-	    defaults: {
-	        managerInfo: null
-	    },
-
-	    backend: null
-
-	});
-	exports.SessionManager = _SessionManager;
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// NOTE: all backend objects return RAW json
-	// all the modules in this ('session') folder
-	// are responsible for constructing User/Session/Authentication
-	// Backbone models out of the raw json data
-
-	var _                        = __webpack_require__(10),
-	    $                        = __webpack_require__(2),
-	    AuthenticationResult     = __webpack_require__(17),
-	    User                     = __webpack_require__(18),
-	    UserCreateForm           = __webpack_require__(19),
-	    UserCreateLogin          = __webpack_require__(20),
-	    UserCreatePendingConfirm = __webpack_require__(21);
-
-
-	// attempt to create a new user with the specified backend
-	function _createNewUser( userCreateForm, backend ) {
-
-	    backend.createNewUser(userCreateForm.toJSON(), {
-
-	        success: function ( response ) {
-	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
-
-	            var pendingUser = UserCreatePendingConfirm.emptyUserCreatePendingConfirm();
-
-	            pendingUser.set( response.result );
-
-	            $.publish( 'created.usercreate.authentication.manager',
-	                AuthenticationResult.NewSuccessResult( pendingUser ) );
-	        },
-
-	        error: function ( response ) {
-	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
-
-	            $.publish( 'failed.usercreate.authentication.manager',
-	                AuthenticationResult.NewErrorResult( response.errors, userCreateForm ) );
-	        }
-
-	    });
-
-	}
-	exports.createNewUser = _createNewUser;
-
-	// attempt to log in a user with the specified backend
-	function _loginUser( userLoginForm, backend ) {
-
-	    backend.loginUser( userLoginForm.toJSON(), {
-
-	        success: function ( response ) {
-	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
-
-	            var authuser = User.emptyUser();
-
-	            authuser.set( response.result );
-
-	            $.publish( 'success.userlogin.authentication.manager',
-	                AuthenticationResult.NewSuccessResult( authuser ) );
-	        },
-
-	        error: function ( response ) {
-	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
-
-	            $.publish( 'failed.userlogin.authentication.manager',
-	                AuthenticationResult.NewErrorResult( response.errors, userLoginForm ) );
-	        }
-	    });
-	}
-	exports.loginUser = _loginUser;
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _        = __webpack_require__(10),
-	    Backbone = __webpack_require__(11);
-
-	// need an AuthResult Object
-	// the return result of all clients who
-	// call a authentication manager function
-	function _AuthenticationManagerResult() {
-
-	    this.hasErrors   = false;
-	    this.errors      = null;
-	    this.errorState  = null;
-	    this.result      = null;
-	}
-
-	// create a new authentication manager result
-	// that represents an error
-	function _NewErrorResult( errors, state ) {
-	    var res = new _AuthenticationManagerResult();
-
-	    res.hasErrors = true;
-	    res.errors = errors;
-
-	    if(!_.isUndefined(state)) res.errorState = state;
-
-	    return res;
-	}
-	exports.NewErrorResult = _NewErrorResult;
-
-	// create a new authentication manager result
-	// that represents a Success
-	function _NewSuccessResult( result ) {
-	    var res = new _AuthenticationManagerResult();
-
-	    res.result = result;
-
-	    return res;
-	}
-	exports.NewSuccessResult = _NewSuccessResult
-
-	// check if a result object is a _AuthenticationManagerResult
-	// should be used by callers
-	function _IsAuthenticationManagerResult( result ) {
-	    if(result instanceof _AuthenticationManagerResult)
-	        return true;
-
-	    return false;
-	}
-	exports.IsAuthenticationManagerResult = _IsAuthenticationManagerResult;
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _        = __webpack_require__(10),
-	    Backbone = __webpack_require__(11);
-
-	/**
-	 * user object used by the majority of the system.
-	 * populated after the user has been authenticated
-	 **/
-	var _User = Backbone.Model.extend({
-	    defaults: {
-	        username : null,
-	        email    : null,
-	        token    : null
-	    }
-	});
-	exports.User = _User;
-
-	function _emptyUser() {
-	    return new _User();
-	}
-	exports.emptyUser = _emptyUser;
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _        = __webpack_require__(10),
-	    Backbone = __webpack_require__(11);
-
-
-	/**
-	 * object that gets populated with values
-	 * from a 'create new' user form
-	 **/
-	var _UserCreateForm = Backbone.Model.extend({
-	    defaults: {
-	        username : null,
-	        password : null,
-	        passrep  : null,
-	        email    : null
-	    },
-
-	    validation: {
-	        username : {
-	            required: true,
-	            msg: 'Please enter a Username'
-	        },
-	        email: [
-	            {
-	                required: true,
-	                msg: 'Please enter an email address'
-	            },
-	            {
-	                pattern: 'email',
-	                msg: 'Please enter a valid email'
-	            }
-	        ],
-	        password: [
-	            {
-	                required: true,
-	                msg: "Please enter a password"
-	            },
-	            {
-	                fn: function(value) {
-	                    if(value != this.get('passrep')) {
-	                        return 'Passwords must match';
-	                    }
-	                }
-	            }
-	        ],
-	        passrep: {
-	            required: true,
-	            msg: "Please enter a password again"
-	        }
-	    }
-	});
-	exports.UserCreateForm = _UserCreateForm;
-
-	function _emptyUserCreateForm() {
-	    return new _UserCreateForm();
-	}
-	exports.emptyUserCreateForm = _emptyUserCreateForm;
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _        = __webpack_require__(10),
-	    Backbone = __webpack_require__(11);
-
-	/**
-	 * object that gets populated with values
-	 * from a 'login' user form
-	 **/
-	var _UserLoginForm = Backbone.Model.extend({
-	    defaults: {
-	        username : null,
-	        password : null
-	    },
-
-	    validation: {
-	        username : {
-	            required: true,
-	            msg: 'Please enter a Username'
-	        },
-	        password: {
-	            required: true,
-	            msg: "Please enter a password"
-	        }
-	    }
-	});
-	exports.UserLoginForm = _UserLoginForm;
-
-	function _emptyUserLoginForm() {
-	    return new _UserLoginForm();
-	}
-	exports.emptyUserLoginForm = _emptyUserLoginForm;
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _        = __webpack_require__(10),
-	    Backbone = __webpack_require__(11);
-
-	/**
-	 * object that represents a created user who has
-	 * not validated via email
-	 **/
-	var _UserCreatePendingConfirm = Backbone.Model.extend({
-	    defaults: {
-	        username : null,
-	        email    : null
-	    }
-	});
-	exports.UserCreatePendingConfirm = _UserCreatePendingConfirm
-
-	function _emptyUserCreatePendingConfirm() {
-	    return new _UserCreatePendingConfirm();
-	}
-	exports.emptyUserCreatePendingConfirm = _emptyUserCreatePendingConfirm;
-
-/***/ },
-/* 22 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * TODO: should probably rename this usersessionstate
-	 **/
-
-	var $                    = __webpack_require__(2),
-	    _                    = __webpack_require__(10),
-	    Backbone             = __webpack_require__(11),
-	    sessionModel         = __webpack_require__(23),
-	    userModel            = __webpack_require__(18),
-	    userSessionState     = __webpack_require__(27),
-	    SessionManagerResult = __webpack_require__(14),
-	    ProcessManagerModel  = __webpack_require__(24),
-	    ProcessManager       = __webpack_require__(29);
-
-	/**
-	 * options { backend, user, success, error }
-	 **/
-	userSessionState.UserSessionState.prototype.fetch = function( options ) {
-
-	    var self = this;
-
-	    options.backend.loadUserSessions( options.user.toJSON(), {
-
-	        success: function ( response ) {
-	            // TODO: check to see if response has proper type
-	            // if( !self.backend.IsSessionManagerBackendResult(response) ) .. throw error ..
-
-	            var sessionCollection = self.get('sessions'),
-
-	                sessionModelList  = _.map( response.result, function (s) {
-	                    var smodel = new sessionCollection.model();
-
-	                    smodel.set({ sid: s.sid, display: s.display });
-
-	                    return smodel;
-	                } );
-
-	            sessionCollection.reset( sessionModelList );
-
-	            self.set('user', options.user);
-
-	            options.success( SessionManagerResult.NewSuccessResult( self ) );
-	        },
-
-	        error: function ( response ) {
-	            // TODO: check to see if response has proper type
-	            // if( !self.backend.IsSessionManagerBackendResult(response) ) .. throw error ..
-
-	            options.error( SessionManagerResult.NewErrorResult( response.errors ) );
-	        }
-
-	    } );
-	};
-
-
-	/**
-	 * load all existing sessions for a user using the given backend
-	 **/
-	function _loadUserSessions( user, backend ) {
-
-	    var sessionState = new userSessionState.UserSessionState();
-
-	    sessionState.fetch({
-
-	        user: user,
-
-	        backend: backend,
-
-	        success: function ( response ) {
-	            $.publish( 'success.usersession.session.manager', response );
-	        },
-
-	        error: function ( response ) {
-	            $.publish( 'failed.usersession.session.manager', response );
-	        }
-
-	    })
-	}
-	exports.loadUserSessions = _loadUserSessions;
-
-
-	/**
-	 * given the active session index, lookup the model
-	 **/
-	userSessionState.UserSessionState.prototype.activeSession = function() {
-
-	    if(this.get('activeSessionIdx') == null)
-	        throw new Error("active session is null");
-
-	    return this.get('sessions').models[this.get('activeSessionIdx')];
-	};
-
-
-	/**
-	 * lookup the list of processes in the active session
-	 **/
-	function _loadActiveSessionProcessManager( userSessionState, backend ) {
-
-	    var activeSession  = userSessionState.activeSession();
-	        user           = userSessionState.get('user'),
-	        processManager = activeSession.get('procManager');
-
-	    processManager.fetch({
-
-	        user: user,
-
-	        activeSession: activeSession,
-
-	        backend: backend,
-
-	        success: function ( response ) {
-
-	            userSessionState.set( { procManager: response.result } );
-
-	            $.publish( 'success.activesession.session.manager',
-	                SessionManagerResult.NewSuccessResult( userSessionState ) );
-	        },
-
-	        error: function ( response ) {
-	            $.publish( 'failed.activesession.session.manager',
-	                SessionManagerResult.NewErrorResult( response.errors ) );
-	        }
-
-	    });
-	}
-	exports.loadActiveSessionProcessManager = _loadActiveSessionProcessManager;
-
-
-
-
-
-
-
-
-
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _              = __webpack_require__(10),
-	    Backbone       = __webpack_require__(11),
-	    ProcessManager = __webpack_require__(24);
-
-	/**
-	 * a single session of a single user
-	 **/
-	var _Session = Backbone.Model.extend({
-	    defaults: {
-	        sid        : null,
-	        display    : null,
-	        procManager: ProcessManager.emptyProcessManager()
-	    }
-	});
-	exports.Session = _Session;
-
-
-/***/ },
-/* 24 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _        = __webpack_require__(10),
-	    Backbone = __webpack_require__(11),
-	    ProcessCollection = __webpack_require__(25);
-
-	/**
-	 * a list of processes
-	 **/
-	var _ProcessManager = Backbone.Model.extend({
-	    defaults: {
-	        processes : new ProcessCollection.ProcessCollection()
-	    }
-	});
-	exports.ProcessManager = _ProcessManager;
-
-
-	function _emptyProcessManager() {
-	    return new _ProcessManager();
-	}
-	exports.emptyProcessManager = _emptyProcessManager;
-
-/***/ },
-/* 25 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _        = __webpack_require__(10),
-	    Backbone = __webpack_require__(11),
-	    Process  = __webpack_require__(26);
-
-	/**
-	 * all processes of a single session
-	 **/
-	var _ProcessCollection = Backbone.Collection.extend({
-	    model: Process.Process
-	});
-	exports.ProcessCollection = _ProcessCollection;
-
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _        = __webpack_require__(10),
-	    Backbone = __webpack_require__(11);
-
-	/**
-	 * a process of a session
-	 **/
-	var _Process = Backbone.Model.extend({
-	    defaults: {
-	        pid        : null,
-	        display    : null,
-	        program    : null,
-	        handle     : null
-	    }
-	});
-	exports.Process = _Process;
-
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _        = __webpack_require__(10),
-	    Backbone = __webpack_require__(11),
-	    SessionCollection = __webpack_require__(28);
-
-	/**
-	 * a single user, a list of that user's sessions, and
-	 * the user's active session (if any)
-	 **/
-	var _UserSessionState = Backbone.Model.extend({
-	    defaults: {
-	        user            : null,
-	        sessions        : new SessionCollection.SessionCollection(),
-	        activeSessionIdx: null
-	    }
-	});
-	exports.UserSessionState = _UserSessionState;
-
-
-	function _emptyUserSessionState() {
-	    return new _UserSessionState();
-	}
-	exports.emptyUserSessionState = _emptyUserSessionState;
-
-/***/ },
-/* 28 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _        = __webpack_require__(10),
-	    Backbone = __webpack_require__(11),
-	    Session  = __webpack_require__(23);
-
-	/**
-	 * all sessions of a single user
-	 **/
-	var _SessionCollection = Backbone.Collection.extend({
-	    model: Session.Session
-	});
-	exports.SessionCollection = _SessionCollection;
-
-/***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var $                    = __webpack_require__(2),
-	    _                    = __webpack_require__(10),
-	    Backbone             = __webpack_require__(11),
-	    ProcessManager       = __webpack_require__(24),
-	    SessionManagerResult = __webpack_require__(14);
-
-
-	/**
-	 * options { user, activeSession, backend, success, error }
-	 **/
-	ProcessManager.ProcessManager.prototype.fetch = function ( options ) {
-
-	    var self = this;
-
-	    options.backend.loadUserSessionProcesses(
-
-	        options.user.toJSON(),
-
-	        options.activeSession.toJSON(),
-
-	        {
-	            success: function ( response ) {
-	                var procCollection = self.get('processes'),
-
-	                    processModelList = _.map( response.result, function (p) {
-	                        var pmodel = new procCollection.model();
-
-	                        pmodel.set({ pid: p.pid, display: p.display, program: p.program });
-
-	                        return pmodel;
-	                    } );
-
-	                procCollection.reset( processModelList );
-
-	                options.success( SessionManagerResult.NewSuccessResult( self ) )
-	            },
-
-	            error: function ( response ) {
-
-	                options.error( SessionManagerResult.NewErrorResult( response.errors ) );
-
-	            }
-
-	        });
-
-	};
-
-/***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
 	// export all memory backends from this module
 
-	var authMem     = __webpack_require__(31),
-	    manMem      = __webpack_require__(35),
-	    procMem     = __webpack_require__(39);
+	var authMem     = __webpack_require__(15),
+	    manMem      = __webpack_require__(19),
+	    procMem     = __webpack_require__(23);
 
 	exports.loadSessionManager = manMem.loadSessionManager;
 
@@ -30825,12 +30169,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.loadUserSessionProcesses = procMem.loadUserSessionProcesses
 
 /***/ },
-/* 31 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var result       = __webpack_require__(32),
-	    pendingUsers = __webpack_require__(33),
-	    users        = __webpack_require__(34),
+	var result       = __webpack_require__(16),
+	    pendingUsers = __webpack_require__(17),
+	    users        = __webpack_require__(18),
 	    _            = __webpack_require__(10);
 
 
@@ -30959,7 +30303,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.loginUser = _loginUser;
 
 /***/ },
-/* 32 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31013,7 +30357,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.IsAuthenticationManagerBackendResult = _IsAuthenticationManagerBackendResult;
 
 /***/ },
-/* 33 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.pending_users = [
@@ -31022,7 +30366,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 34 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.users = [
@@ -31031,13 +30375,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	];
 
 /***/ },
-/* 35 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var result       = __webpack_require__(36),
-	    managerInfo  = __webpack_require__(37),
-	    session      = __webpack_require__(38),
-	    user         = __webpack_require__(34),
+	var result       = __webpack_require__(20),
+	    managerInfo  = __webpack_require__(21),
+	    session      = __webpack_require__(22),
+	    user         = __webpack_require__(18),
 	    _            = __webpack_require__(10);
 
 
@@ -31082,7 +30426,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 36 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31136,7 +30480,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.IsSessionManagerBackendResult = _IsSessionManagerBackendResult;
 
 /***/ },
-/* 37 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.managerInfo = {
@@ -31145,7 +30489,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 38 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.session = [
@@ -31174,15 +30518,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	*//*******************************************/
 
 /***/ },
-/* 39 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// note: should probably rename the parent directory 'query'
-	var result       = __webpack_require__(36),
-	    managerInfo  = __webpack_require__(37),
-	    session      = __webpack_require__(38),
-	    process      = __webpack_require__(40),
-	    user         = __webpack_require__(34),
+	var result       = __webpack_require__(20),
+	    managerInfo  = __webpack_require__(21),
+	    session      = __webpack_require__(22),
+	    process      = __webpack_require__(24),
+	    user         = __webpack_require__(18),
 	    _            = __webpack_require__(10);
 
 
@@ -31205,34 +30549,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.loadUserSessionProcesses = _loadUserSessionProcesses;
 
 /***/ },
-/* 40 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.process = [
-	    { pid: 0, sid: 0, display: 'p0', program: 'taskmanager' },
+	    { pid: 0, sid: 0, display: 'p0', program: 'helloworld' },
 
-	    { pid: 1, sid: 1, display: 'p1', program: 'taskmanager' },
+	    { pid: 1, sid: 1, display: 'p1', program: 'helloworld' },
 
-	    { pid: 2, sid: 2, display: 'p2', program: 'taskmanager' }
+	    { pid: 2, sid: 2, display: 'p2', program: 'helloworld' }
 	];
 
 /***/ },
-/* 41 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                         = __webpack_require__(2),
 	    _                         = __webpack_require__(10),
 	    Backbone                  = __webpack_require__(11),
-	    backend                   = __webpack_require__(30),
+	    backend                   = __webpack_require__(14),
 	    sessionManager            = __webpack_require__(13),
-	    flashback                 = __webpack_require__(42),
-	    spinner                   = __webpack_require__(44),
-	    userLoginOrCreateNew      = __webpack_require__(45),
-	    userLogin                 = __webpack_require__(46),
-	    userCreate                = __webpack_require__(48),
-	    sessionRestoreOrCreateNew = __webpack_require__(49),
-	    sessionRestore            = __webpack_require__(50),
-	    prompt                    = __webpack_require__(43);
+	    flashback                 = __webpack_require__(26),
+	    spinner                   = __webpack_require__(28),
+	    userLoginOrCreateNew      = __webpack_require__(29),
+	    userLogin                 = __webpack_require__(30),
+	    userCreate                = __webpack_require__(33),
+	    sessionRestoreOrCreateNew = __webpack_require__(35),
+	    sessionRestore            = __webpack_require__(36),
+	    prompt                    = __webpack_require__(27);
 
 
 	var _Client = Backbone.View.extend({
@@ -31440,7 +30784,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 
 	    handleUserSessionRestoreSubmit: function (e,args) {
-	        window.uss = args;
+	        this.spin.setMessage('restoring session');
+
+	        this.handleSpinner();
+
 	        sessionManager.loadActiveSessionProcessManager( args );
 	    },
 
@@ -31449,6 +30796,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 
 	    handleActiveSessionLoadSuccess: function (e,args) {
+	        this.currentPrompt.hide();
 	        console.log(args);
 
 	    },
@@ -31461,13 +30809,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Client = _Client;
 
 /***/ },
-/* 42 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(43);
+	    prompt         = __webpack_require__(27);
 
 
 	var _Flashback = prompt.PromptView.extend({
@@ -31577,7 +30925,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 43 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31679,13 +31027,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 44 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(43);
+	    prompt         = __webpack_require__(27);
 
 
 	var _Spinner = prompt.PromptView.extend({
@@ -31750,7 +31098,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 45 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31763,7 +31111,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(43);
+	    prompt         = __webpack_require__(27);
 
 
 	var _UserLoginOrCreateNew = prompt.PromptView.extend({
@@ -31807,14 +31155,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 46 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    previous       = __webpack_require__(47),
-	    user           = __webpack_require__(20);
+	    previous       = __webpack_require__(31),
+	    user           = __webpack_require__(32);
 
 
 	var _UserLogin = previous.PreviousView.extend({
@@ -31907,13 +31255,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 47 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(43);
+	    prompt         = __webpack_require__(27);
 
 
 	var _PreviousView = function (options) {
@@ -31958,14 +31306,49 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 48 */
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _        = __webpack_require__(10),
+	    Backbone = __webpack_require__(11);
+
+	/**
+	 * object that gets populated with values
+	 * from a 'login' user form
+	 **/
+	var _UserLoginForm = Backbone.Model.extend({
+	    defaults: {
+	        username : null,
+	        password : null
+	    },
+
+	    validation: {
+	        username : {
+	            required: true,
+	            msg: 'Please enter a Username'
+	        },
+	        password: {
+	            required: true,
+	            msg: "Please enter a password"
+	        }
+	    }
+	});
+	exports.UserLoginForm = _UserLoginForm;
+
+	function _emptyUserLoginForm() {
+	    return new _UserLoginForm();
+	}
+	exports.emptyUserLoginForm = _emptyUserLoginForm;
+
+/***/ },
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    previous       = __webpack_require__(47),
-	    user           = __webpack_require__(19);
+	    previous       = __webpack_require__(31),
+	    user           = __webpack_require__(34);
 
 
 	var _UserCreateNew = previous.PreviousView.extend({
@@ -32057,7 +31440,68 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 49 */
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _        = __webpack_require__(10),
+	    Backbone = __webpack_require__(11);
+
+
+	/**
+	 * object that gets populated with values
+	 * from a 'create new' user form
+	 **/
+	var _UserCreateForm = Backbone.Model.extend({
+	    defaults: {
+	        username : null,
+	        password : null,
+	        passrep  : null,
+	        email    : null
+	    },
+
+	    validation: {
+	        username : {
+	            required: true,
+	            msg: 'Please enter a Username'
+	        },
+	        email: [
+	            {
+	                required: true,
+	                msg: 'Please enter an email address'
+	            },
+	            {
+	                pattern: 'email',
+	                msg: 'Please enter a valid email'
+	            }
+	        ],
+	        password: [
+	            {
+	                required: true,
+	                msg: "Please enter a password"
+	            },
+	            {
+	                fn: function(value) {
+	                    if(value != this.get('passrep')) {
+	                        return 'Passwords must match';
+	                    }
+	                }
+	            }
+	        ],
+	        passrep: {
+	            required: true,
+	            msg: "Please enter a password again"
+	        }
+	    }
+	});
+	exports.UserCreateForm = _UserCreateForm;
+
+	function _emptyUserCreateForm() {
+	    return new _UserCreateForm();
+	}
+	exports.emptyUserCreateForm = _emptyUserCreateForm;
+
+/***/ },
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -32070,7 +31514,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(43);
+	    prompt         = __webpack_require__(27);
 
 
 	var _SessionRestoreOrCreateNew = prompt.PromptView.extend({
@@ -32119,15 +31563,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 50 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                = __webpack_require__(2),
 	    _                = __webpack_require__(10),
 	    Backbone         = __webpack_require__(11),
-	    listbox          = __webpack_require__(51),
-	    previous         = __webpack_require__(47),
-	    userSessionState = __webpack_require__(27);
+	    listbox          = __webpack_require__(37),
+	    previous         = __webpack_require__(31),
+	    userSessionState = __webpack_require__(39);
 
 
 	var _SessionRestore = previous.PreviousView.extend({
@@ -32205,13 +31649,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 51 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                = __webpack_require__(2),
 	    _                = __webpack_require__(10),
 	    Backbone         = __webpack_require__(11),
-	    ListItem         = __webpack_require__(52);
+	    ListItem         = __webpack_require__(38);
 
 	var _Listbox = Backbone.View.extend({
 
@@ -32301,7 +31745,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create;
 
 /***/ },
-/* 52 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                = __webpack_require__(2),
@@ -32377,6 +31821,743 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new _ListboxItem( options );
 	}
 	exports.create = _create;
+
+/***/ },
+/* 39 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _        = __webpack_require__(10),
+	    Backbone = __webpack_require__(11),
+	    SessionCollection = __webpack_require__(40);
+
+	/**
+	 * a single user, a list of that user's sessions, and
+	 * the user's active session (if any)
+	 **/
+	var _UserSessionState = Backbone.Model.extend({
+	    defaults: {
+	        user            : null,
+	        sessions        : new SessionCollection.SessionCollection(),
+	        activeSessionIdx: null
+	    }
+	});
+	exports.UserSessionState = _UserSessionState;
+
+
+	function _emptyUserSessionState() {
+	    return new _UserSessionState();
+	}
+	exports.emptyUserSessionState = _emptyUserSessionState;
+
+/***/ },
+/* 40 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _        = __webpack_require__(10),
+	    Backbone = __webpack_require__(11),
+	    Session  = __webpack_require__(41);
+
+	/**
+	 * all sessions of a single user
+	 **/
+	var _SessionCollection = Backbone.Collection.extend({
+	    model: Session.Session
+	});
+	exports.SessionCollection = _SessionCollection;
+
+/***/ },
+/* 41 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _              = __webpack_require__(10),
+	    Backbone       = __webpack_require__(11),
+	    ProcessManager = __webpack_require__(42);
+
+	/**
+	 * a single session of a single user
+	 **/
+	var _Session = Backbone.Model.extend({
+	    defaults: {
+	        sid        : null,
+	        display    : null,
+	        procManager: ProcessManager.emptyProcessManager()
+	    }
+	});
+	exports.Session = _Session;
+
+
+/***/ },
+/* 42 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _        = __webpack_require__(10),
+	    Backbone = __webpack_require__(11),
+	    ProcessCollection = __webpack_require__(43);
+
+	/**
+	 * a list of processes
+	 **/
+	var _ProcessManager = Backbone.Model.extend({
+	    defaults: {
+	        processes  : new ProcessCollection.ProcessCollection(),
+	        taskmanager: null
+	    }
+	});
+	exports.ProcessManager = _ProcessManager;
+
+
+	function _emptyProcessManager() {
+	    return new _ProcessManager();
+	}
+	exports.emptyProcessManager = _emptyProcessManager;
+
+/***/ },
+/* 43 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _        = __webpack_require__(10),
+	    Backbone = __webpack_require__(11),
+	    Process  = __webpack_require__(44);
+
+	/**
+	 * all processes of a single session
+	 **/
+	var _ProcessCollection = Backbone.Collection.extend({
+	    model: Process.Process
+	});
+	exports.ProcessCollection = _ProcessCollection;
+
+/***/ },
+/* 44 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _        = __webpack_require__(10),
+	    Backbone = __webpack_require__(11);
+
+	/**
+	 * a process of a session
+	 **/
+	var _Process = Backbone.Model.extend({
+	    defaults: {
+	        pid        : null,
+	        display    : null,
+	        program    : null,
+	        handle     : null
+	    }
+	});
+	exports.Process = _Process;
+
+
+/***/ },
+/* 45 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * the return result of all clients who
+	 * call a session manager function
+	 **/
+	function _SessionManagerResult() {
+	    this.hasErrors = false;
+	    this.errors    = null;
+	    this.result    = null;
+	}
+
+	/**
+	 * create a new session manager result
+	 * that represents an error
+	 **/
+	function _NewErrorResult( errors ) {
+	    var res = new _SessionManagerResult();
+
+	    res.hasErrors = true;
+	    res.errors = errors;
+
+	    return res;
+	}
+	exports.NewErrorResult = _NewErrorResult;
+
+	/**
+	 * create a new session manager result
+	 * that represents a Success
+	 **/
+	function _NewSuccessResult( result ) {
+	    var res = new _SessionManagerResult();
+
+	    res.result = result;
+
+	    return res;
+	}
+	exports.NewSuccessResult = _NewSuccessResult;
+
+	/**
+	 * check if a result object is a _SessionManagerResult
+	 * should be used by callers
+	 **/
+	function _IsSessionManagerResult( result ) {
+	    if(result instanceof _SessionManagerResult)
+	        return true;
+
+	    return false;
+	}
+	exports.IsSessionManagerResult = _IsSessionManagerResult;
+
+/***/ },
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _        = __webpack_require__(10),
+	    Backbone = __webpack_require__(11);
+
+	/**
+	 * backbone model that stores session information,
+	 * one instance per page load. this object is a proxy to
+	 * to some centralized data store. all users/sessions
+	 * could be accessed through it if a caller has the right credentials
+	 */
+	var _SessionManager = Backbone.Model.extend({
+
+
+	    defaults: {
+	        managerInfo: null
+	    },
+
+	    backend: null
+
+	});
+	exports.SessionManager = _SessionManager;
+
+/***/ },
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// NOTE: all backend objects return RAW json
+	// all the modules in this ('session') folder
+	// are responsible for constructing User/Session/Authentication
+	// Backbone models out of the raw json data
+
+	var _                        = __webpack_require__(10),
+	    $                        = __webpack_require__(2),
+	    AuthenticationResult     = __webpack_require__(48),
+	    User                     = __webpack_require__(49),
+	    UserCreateForm           = __webpack_require__(34),
+	    UserCreateLogin          = __webpack_require__(32),
+	    UserCreatePendingConfirm = __webpack_require__(50);
+
+
+	// attempt to create a new user with the specified backend
+	function _createNewUser( userCreateForm, backend ) {
+
+	    backend.createNewUser(userCreateForm.toJSON(), {
+
+	        success: function ( response ) {
+	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
+
+	            var pendingUser = UserCreatePendingConfirm.emptyUserCreatePendingConfirm();
+
+	            pendingUser.set( response.result );
+
+	            $.publish( 'created.usercreate.authentication.manager',
+	                AuthenticationResult.NewSuccessResult( pendingUser ) );
+	        },
+
+	        error: function ( response ) {
+	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
+
+	            $.publish( 'failed.usercreate.authentication.manager',
+	                AuthenticationResult.NewErrorResult( response.errors, userCreateForm ) );
+	        }
+
+	    });
+
+	}
+	exports.createNewUser = _createNewUser;
+
+	// attempt to log in a user with the specified backend
+	function _loginUser( userLoginForm, backend ) {
+
+	    backend.loginUser( userLoginForm.toJSON(), {
+
+	        success: function ( response ) {
+	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
+
+	            var authuser = User.emptyUser();
+
+	            authuser.set( response.result );
+
+	            $.publish( 'success.userlogin.authentication.manager',
+	                AuthenticationResult.NewSuccessResult( authuser ) );
+	        },
+
+	        error: function ( response ) {
+	            // if( !backend.IsAuthenticationManagerBackendResult(response) ) .. throw error ..
+
+	            $.publish( 'failed.userlogin.authentication.manager',
+	                AuthenticationResult.NewErrorResult( response.errors, userLoginForm ) );
+	        }
+	    });
+	}
+	exports.loginUser = _loginUser;
+
+/***/ },
+/* 48 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _        = __webpack_require__(10),
+	    Backbone = __webpack_require__(11);
+
+	// need an AuthResult Object
+	// the return result of all clients who
+	// call a authentication manager function
+	function _AuthenticationManagerResult() {
+
+	    this.hasErrors   = false;
+	    this.errors      = null;
+	    this.errorState  = null;
+	    this.result      = null;
+	}
+
+	// create a new authentication manager result
+	// that represents an error
+	function _NewErrorResult( errors, state ) {
+	    var res = new _AuthenticationManagerResult();
+
+	    res.hasErrors = true;
+	    res.errors = errors;
+
+	    if(!_.isUndefined(state)) res.errorState = state;
+
+	    return res;
+	}
+	exports.NewErrorResult = _NewErrorResult;
+
+	// create a new authentication manager result
+	// that represents a Success
+	function _NewSuccessResult( result ) {
+	    var res = new _AuthenticationManagerResult();
+
+	    res.result = result;
+
+	    return res;
+	}
+	exports.NewSuccessResult = _NewSuccessResult
+
+	// check if a result object is a _AuthenticationManagerResult
+	// should be used by callers
+	function _IsAuthenticationManagerResult( result ) {
+	    if(result instanceof _AuthenticationManagerResult)
+	        return true;
+
+	    return false;
+	}
+	exports.IsAuthenticationManagerResult = _IsAuthenticationManagerResult;
+
+/***/ },
+/* 49 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _        = __webpack_require__(10),
+	    Backbone = __webpack_require__(11);
+
+	/**
+	 * user object used by the majority of the system.
+	 * populated after the user has been authenticated
+	 **/
+	var _User = Backbone.Model.extend({
+	    defaults: {
+	        username : null,
+	        email    : null,
+	        token    : null
+	    }
+	});
+	exports.User = _User;
+
+	function _emptyUser() {
+	    return new _User();
+	}
+	exports.emptyUser = _emptyUser;
+
+/***/ },
+/* 50 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _        = __webpack_require__(10),
+	    Backbone = __webpack_require__(11);
+
+	/**
+	 * object that represents a created user who has
+	 * not validated via email
+	 **/
+	var _UserCreatePendingConfirm = Backbone.Model.extend({
+	    defaults: {
+	        username : null,
+	        email    : null
+	    }
+	});
+	exports.UserCreatePendingConfirm = _UserCreatePendingConfirm
+
+	function _emptyUserCreatePendingConfirm() {
+	    return new _UserCreatePendingConfirm();
+	}
+	exports.emptyUserCreatePendingConfirm = _emptyUserCreatePendingConfirm;
+
+/***/ },
+/* 51 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * TODO: should probably rename this usersessionstate
+	 **/
+
+	var $                    = __webpack_require__(2),
+	    _                    = __webpack_require__(10),
+	    Backbone             = __webpack_require__(11),
+	    sessionModel         = __webpack_require__(41),
+	    userModel            = __webpack_require__(49),
+	    userSessionState     = __webpack_require__(39),
+	    SessionManagerResult = __webpack_require__(45),
+	    ProcessManagerModel  = __webpack_require__(42),
+	    ProcessManager       = __webpack_require__(52);
+
+	/**
+	 * options { backend, user, success, error }
+	 **/
+	userSessionState.UserSessionState.prototype.fetch = function( options ) {
+
+	    var self = this;
+
+	    options.backend.loadUserSessions( options.user.toJSON(), {
+
+	        success: function ( response ) {
+	            // TODO: check to see if response has proper type
+	            // if( !self.backend.IsSessionManagerBackendResult(response) ) .. throw error ..
+
+	            var sessionCollection = self.get('sessions'),
+
+	                sessionModelList  = _.map( response.result, function (s) {
+	                    var smodel = new sessionCollection.model();
+
+	                    smodel.set({ sid: s.sid, display: s.display });
+
+	                    return smodel;
+	                } );
+
+	            sessionCollection.reset( sessionModelList );
+
+	            self.set('user', options.user);
+
+	            options.success( SessionManagerResult.NewSuccessResult( self ) );
+	        },
+
+	        error: function ( response ) {
+	            // TODO: check to see if response has proper type
+	            // if( !self.backend.IsSessionManagerBackendResult(response) ) .. throw error ..
+
+	            options.error( SessionManagerResult.NewErrorResult( response.errors ) );
+	        }
+
+	    } );
+	};
+
+
+	/**
+	 * load all existing sessions for a user using the given backend
+	 **/
+	function _loadUserSessions( user, backend ) {
+
+	    var sessionState = new userSessionState.UserSessionState();
+
+	    sessionState.fetch({
+
+	        user: user,
+
+	        backend: backend,
+
+	        success: function ( response ) {
+	            $.publish( 'success.usersession.session.manager', response );
+	        },
+
+	        error: function ( response ) {
+	            $.publish( 'failed.usersession.session.manager', response );
+	        }
+
+	    })
+	}
+	exports.loadUserSessions = _loadUserSessions;
+
+
+	/**
+	 * given the active session index, lookup the model
+	 **/
+	userSessionState.UserSessionState.prototype.activeSession = function() {
+
+	    if(this.get('activeSessionIdx') == null)
+	        throw new Error("active session is null");
+
+	    return this.get('sessions').models[this.get('activeSessionIdx')];
+	};
+
+
+	/**
+	 * lookup the list of processes in the active session
+	 **/
+	function _loadActiveSessionProcessManager( userSessionState, backend ) {
+
+	    var activeSession  = userSessionState.activeSession();
+	        user           = userSessionState.get('user'),
+	        processManager = activeSession.get('procManager');
+
+	    processManager.fetch({
+
+	        user: user,
+
+	        activeSession: activeSession,
+
+	        backend: backend,
+
+	        success: function ( response ) {
+
+	            activeSession.set( { procManager: response.result } );
+
+	            $.publish( 'success.activesession.session.manager',
+	                SessionManagerResult.NewSuccessResult( userSessionState ) );
+	        },
+
+	        error: function ( response ) {
+	            $.publish( 'failed.activesession.session.manager',
+	                SessionManagerResult.NewErrorResult( response.errors ) );
+	        }
+
+	    });
+	}
+	exports.loadActiveSessionProcessManager = _loadActiveSessionProcessManager;
+
+
+
+
+
+
+
+
+
+/***/ },
+/* 52 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $                    = __webpack_require__(2),
+	    _                    = __webpack_require__(10),
+	    Backbone             = __webpack_require__(11),
+	    ProcessManager       = __webpack_require__(42),
+	    SessionManagerResult = __webpack_require__(45),
+	    Program              = __webpack_require__(53);
+
+
+
+	/**
+	 * options { user, activeSession, backend, success, error }
+	 **/
+	ProcessManager.ProcessManager.prototype.fetch = function ( options ) {
+
+	    var self = this;
+
+	    options.backend.loadUserSessionProcesses(
+
+	        options.user.toJSON(),
+
+	        options.activeSession.toJSON(),
+
+	        {
+	            success: function ( response ) {
+	                var procCollection = self.get('processes'),
+
+	                    processModelList = _.map( response.result, function (p) {
+	                        var pmodel = new procCollection.model();
+
+	                        pmodel.set({ pid: p.pid, display: p.display, program: p.program });
+
+	                        return pmodel;
+	                    } );
+
+	                procCollection.reset( processModelList );
+
+	                self.set({ taskmanager: Program.newSessionTaskManager() });
+
+	                self.get('taskmanager').setSid(options.activeSession.get('sid'))
+	                                       .restoreProcesses(procCollection);
+
+	                options.success( SessionManagerResult.NewSuccessResult( self ) )
+	            },
+
+	            error: function ( response ) {
+
+	                options.error( SessionManagerResult.NewErrorResult( response.errors ) );
+
+	            }
+
+	        });
+
+	};
+
+/***/ },
+/* 53 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var taskmanager = __webpack_require__(54);
+
+	__webpack_require__(55);
+
+
+	// a program has the following states
+	// not loaded:
+	//   e.g. not associated with a process
+	// loaded but not executing
+	//   the program is in the list of processes for a session.
+	//   its handle is initialized.
+	//   it is not running
+	// executing
+	//   the program is in the list of processes for a session.
+	//   its handle is initialized.
+	//   it is running
+	// finished
+	//   the program is in the list of processes for a session.
+	//   its handle is initialized.
+	//   it has run and completed
+
+	function _newSessionTaskManager() {
+	    return new taskmanager.TaskManager();
+	}
+	exports.newSessionTaskManager = _newSessionTaskManager;
+
+/***/ },
+/* 54 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $ = __webpack_require__(2),
+	    _ = __webpack_require__(10);
+
+	var handles = {};
+
+	function _registerHandle(programName, options) {
+	    if(_.isUndefined(programName))
+	        throw new Error('attempt made to register program with no name')
+
+	    if(_.isUndefined(options))
+	        throw new Error('attempt made to register program: '+programName+' with no options');
+
+	    if(_.isUndefined(options.create))
+	        throw new Error('program: '+programName+' with no create options');
+
+	    if(_.isUndefined(options.destroy))
+	        throw new Error('program: '+programName+' with no destroy options');
+
+	    handles[programName] = {};
+	    handles[programName].create = options.create;
+	    handles[programName].destroy = options.destroy;
+	}
+	exports.registerHandle = _registerHandle;
+
+
+	function _TaskManager() {
+	    this.sid = null;
+
+	    var sessionPid = 0;
+
+	    this.newPid = function () {
+	        sessionPid++;
+	        return sessionPid;
+	    };
+
+	    this.setSid = function ( sid ) {
+	        this.sid = sid;
+	        return this;
+	    };
+
+	    this.restoreProcesses = function ( procCollection ) {
+	        if(_.isNull(this.sid))
+	            throw new Error('task manager sid is null');
+
+	        var self = this;
+
+	        _.each( procCollection.models, function ( pm ) {
+	            var pid = pm.get('pid'),
+	                program = pm.get('program');
+
+	            // TODO: check if handles[program] is defined
+
+	            pm.set({ handle: handles[program].create(pid, self.sid) });
+
+	            if(pid > sessionPid) sessionPid = pid;
+	        } );
+	    };
+
+	    this.createProcess = function ( programName ) {
+
+	        // return new ProcessModel
+	    };
+
+	    this.destroyProcess = function ( processModel ) {
+
+	        return processModel;
+	    };
+
+	}
+
+	exports.TaskManager = _TaskManager;
+
+/***/ },
+/* 55 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $          = __webpack_require__(2),
+	    _          = __webpack_require__(10),
+	    taskmanager = __webpack_require__(54);
+
+	var commands = {
+	    run: function (pid, sid) {
+	        return 'run.helloworld.'+pid+'.'+sid;
+	    },
+
+	    help: function (pid, sid) {
+	        return 'help.helloworld.'+pid+'.'+sid;
+	    }
+	};
+
+	function _HelloWorldHandle (pid, sid) {
+
+	    this.commands = [];
+
+	    this.run = function (e,args) {
+	        args.success('hello world');
+	    };
+
+	    this.help = function (e,args) {
+	        args.success(this.commands);
+	    };
+
+	    var self = this;
+
+	    _.each(commands, function (fn,name) {
+	        var command = fn(pid, sid);
+	        self.commands.push(name);
+	        $.subscribe(command, self[name].bind(self));
+	    });
+	}
+
+	function createHandle (pid, sid) {
+	    return new _HelloWorldHandle(pid, sid);
+	}
+
+	function destroyHandle (handle) {
+	    _.each(handle.commands, function (c) {
+	        $.unsubscribe(c);
+	    });
+
+	    return handle;
+	}
+
+	taskmanager.registerHandle('helloworld', {
+	    create: createHandle,
+	    destroy: destroyHandle
+	})
 
 /***/ }
 /******/ ])
