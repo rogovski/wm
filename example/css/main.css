@@ -3,6 +3,10 @@
     one template.
 */
 
+#app {
+    height: 100%;
+}
+
 .option-row > a {
     width: 100%;
 }

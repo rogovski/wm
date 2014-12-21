@@ -1,4 +1,4 @@
-(function() {(window["JST"] = window["JST"] || {})["client.html"] = function(obj) {
+(function() {(window["JST"] = window["JST"] || {})["ui/client.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -7,7 +7,7 @@ __p += '';
 }
 return __p
 }})();
-(function() {(window["JST"] = window["JST"] || {})["controls/listbox.html"] = function(obj) {
+(function() {(window["JST"] = window["JST"] || {})["ui/controls/listbox.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -16,7 +16,7 @@ __p += '<ul class="control-listbox-container"></ul>';
 }
 return __p
 }})();
-(function() {(window["JST"] = window["JST"] || {})["controls/listboxItem.html"] = function(obj) {
+(function() {(window["JST"] = window["JST"] || {})["ui/controls/listboxItem.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -27,7 +27,7 @@ __p += '<span>' +
 }
 return __p
 }})();
-(function() {(window["JST"] = window["JST"] || {})["controls/previous.html"] = function(obj) {
+(function() {(window["JST"] = window["JST"] || {})["ui/controls/previous.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -36,7 +36,7 @@ __p += '\r\n<div class="previous-button-container">\r\n    <a href="#" class="bt
 }
 return __p
 }})();
-(function() {(window["JST"] = window["JST"] || {})["controls/prompt.html"] = function(obj) {
+(function() {(window["JST"] = window["JST"] || {})["ui/controls/prompt.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -45,7 +45,7 @@ __p += '<div class="prompt-content"></div>';
 }
 return __p
 }})();
-(function() {(window["JST"] = window["JST"] || {})["prompts/flashback.html"] = function(obj) {
+(function() {(window["JST"] = window["JST"] || {})["ui/prompts/flashback.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -65,7 +65,7 @@ __p += '\r\n\r\n</div>';
 }
 return __p
 }})();
-(function() {(window["JST"] = window["JST"] || {})["prompts/sessionRestore.html"] = function(obj) {
+(function() {(window["JST"] = window["JST"] || {})["ui/prompts/sessionRestore.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -74,7 +74,7 @@ __p += '\r\n<div class="option-row">\r\n    <div class="user-session-list-contai
 }
 return __p
 }})();
-(function() {(window["JST"] = window["JST"] || {})["prompts/sessionRestoreOrCreateNew.html"] = function(obj) {
+(function() {(window["JST"] = window["JST"] || {})["ui/prompts/sessionRestoreOrCreateNew.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
@@ -88,7 +88,7 @@ __p += '\r\n\r\n\r\n<div class="option-row">\r\n    <a href="#" class="btn btn-i
 }
 return __p
 }})();
-(function() {(window["JST"] = window["JST"] || {})["prompts/spinner.html"] = function(obj) {
+(function() {(window["JST"] = window["JST"] || {})["ui/prompts/spinner.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -97,7 +97,7 @@ __p += '<div class="option-row">\r\n    <div class="spinner-container"></div>\r\
 }
 return __p
 }})();
-(function() {(window["JST"] = window["JST"] || {})["prompts/userCreateNew.html"] = function(obj) {
+(function() {(window["JST"] = window["JST"] || {})["ui/prompts/userCreateNew.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -106,7 +106,7 @@ __p += '\r\n\r\n<div class="option-row">\r\n    <input type="text" name="usernam
 }
 return __p
 }})();
-(function() {(window["JST"] = window["JST"] || {})["prompts/userLogin.html"] = function(obj) {
+(function() {(window["JST"] = window["JST"] || {})["ui/prompts/userLogin.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
@@ -115,7 +115,7 @@ __p += '\r\n\r\n<div class="option-row">\r\n    <input type="text" name="usernam
 }
 return __p
 }})();
-(function() {(window["JST"] = window["JST"] || {})["prompts/userLoginOrCreateNew.html"] = function(obj) {
+(function() {(window["JST"] = window["JST"] || {})["ui/prompts/userLoginOrCreateNew.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
