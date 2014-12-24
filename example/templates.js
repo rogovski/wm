@@ -124,3 +124,12 @@ __p += '<div class="option-row">\r\n    <a href="#" class="btn btn-info btn-user
 }
 return __p
 }})();
+(function() {(window["JST"] = window["JST"] || {})["program/window/programWindow.html"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="program-window-controls">\r\n    <div class="program-window-control-group">\r\n        <a href="#" class="btn-minimize">min</a>\r\n        <a href="#" class="btn-maximize">max</a>\r\n        <a href="#" class="btn-closr">clo</a>\r\n    </div>\r\n</div>\r\n<div class="program-window-content-container"></div>';
+
+}
+return __p
+}})();

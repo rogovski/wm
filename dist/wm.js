@@ -2,7 +2,7 @@
  * wm.js
  *
  * @version 0.0.0
- * @date    2014-12-23
+ * @date    2014-12-24
  *
  * @license
  * Copyright (C) 2014 Michael Rogowski <michaeljrogowski@gmail.com>
@@ -141,10 +141,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    wm.session.manager = __webpack_require__(13);
 
 	    wm.backend        = {};
-	    wm.backend.memory = __webpack_require__(33);
+	    wm.backend.memory = __webpack_require__(36);
 
 	    wm.ui        = {};
-	    wm.ui.client = __webpack_require__(44);
+	    wm.ui.client = __webpack_require__(48);
 
 	    // return the new instance
 	    return wm;
@@ -30021,8 +30021,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Backbone             = __webpack_require__(11),
 	    SessionManagerResult = __webpack_require__(14),
 	    SessionManager       = __webpack_require__(15),
-	    authentication       = __webpack_require__(16),
-	    sessions             = __webpack_require__(22);
+	    Authentication       = __webpack_require__(16),
+	    UserSession          = __webpack_require__(22);
 
 
 	/**
@@ -30107,7 +30107,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 **/
 	function _createNewUser( userCreateForm ) {
 
-	    authentication.createNewUser( userCreateForm, manager.backend );
+	    Authentication.createNewUser( userCreateForm, manager.backend );
 	}
 	exports.createNewUser = _createNewUser;
 
@@ -30118,7 +30118,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 **/
 	function _loginUser( userLoginForm ) {
 
-	    authentication.loginUser( userLoginForm, manager.backend );
+	    Authentication.loginUser( userLoginForm, manager.backend );
 	}
 	exports.loginUser = _loginUser;
 
@@ -30127,21 +30127,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	 **/
 	function _loadUserSessions( user ) {
 
-	    sessions.loadUserSessions( user, manager.backend );
+	    UserSession.loadUserSessions( user, manager.backend );
 	}
 	exports.loadUserSessions = _loadUserSessions;
 
 
 	function _loadActiveSessionProcessManager( userSessionState ) {
 
-	    sessions.loadActiveSessionProcessManager( userSessionState, manager.backend );
+	    UserSession.loadActiveSessionProcessManager( userSessionState, manager.backend );
 	}
 	exports.loadActiveSessionProcessManager = _loadActiveSessionProcessManager;
 
 
 	function _renderActiveUserSession( userSessionState, $rootEl ) {
 
-	    sessions.renderActiveUserSession( userSessionState, $rootEl );
+	    UserSession.renderActiveUserSession( userSessionState, $rootEl );
 	}
 	exports.renderActiveUserSession = _renderActiveUserSession;
 
@@ -30504,17 +30504,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $                    = __webpack_require__(2),
 	    _                    = __webpack_require__(10),
 	    Backbone             = __webpack_require__(11),
-	    sessionModel         = __webpack_require__(23),
-	    userModel            = __webpack_require__(18),
-	    userSessionState     = __webpack_require__(27),
+	    SessionModel         = __webpack_require__(23),
+	    UserModel            = __webpack_require__(18),
+	    UserSessionState     = __webpack_require__(29),
 	    SessionManagerResult = __webpack_require__(14),
 	    ProcessManagerModel  = __webpack_require__(24),
-	    ProcessManager       = __webpack_require__(29);
+	    ProcessManager       = __webpack_require__(31);
+
 
 	/**
 	 * options { backend, user, success, error }
 	 **/
-	userSessionState.UserSessionState.prototype.fetch = function( options ) {
+	UserSessionState.UserSessionState.prototype.fetch = function( options ) {
 
 	    var self = this;
 
@@ -30554,11 +30555,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	/**
+	 * given the active session index, lookup the model
+	 **/
+	UserSessionState.UserSessionState.prototype.activeSession = function() {
+
+	    if(this.get('activeSessionIdx') == null)
+	        throw new Error("active session is null");
+
+	    return this.get('sessions').models[this.get('activeSessionIdx')];
+	};
+
+
+	/**
 	 * load all existing sessions for a user using the given backend
 	 **/
 	function _loadUserSessions( user, backend ) {
 
-	    var sessionState = new userSessionState.UserSessionState();
+	    var sessionState = new UserSessionState.UserSessionState();
 
 	    sessionState.fetch({
 
@@ -30580,18 +30593,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	/**
-	 * given the active session index, lookup the model
-	 **/
-	userSessionState.UserSessionState.prototype.activeSession = function() {
-
-	    if(this.get('activeSessionIdx') == null)
-	        throw new Error("active session is null");
-
-	    return this.get('sessions').models[this.get('activeSessionIdx')];
-	};
-
-
-	/**
 	 * lookup the list of processes in the active session
 	 **/
 	function _loadActiveSessionProcessManager( userSessionState, backend ) {
@@ -30600,7 +30601,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        user           = userSessionState.get('user'),
 	        processManager = activeSession.get('procManager');
 
-	    processManager /*.setParentSessionStateId( activeSession.get('sid') ) */ .fetch({
+	    processManager.fetch({
 
 	        user: user,
 
@@ -30668,7 +30669,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _ProcessManager = Backbone.Model.extend({
 	    defaults: {
 	        processes  : new ProcessCollection.ProcessCollection(),
-	        taskmanager: null
+	        sid        : null
 	    }
 	});
 	exports.ProcessManager = _ProcessManager;
@@ -30699,8 +30700,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _        = __webpack_require__(10),
-	    Backbone = __webpack_require__(11);
+	var _            = __webpack_require__(10),
+	    Backbone     = __webpack_require__(11),
+	    ProcessState = __webpack_require__(27);
 
 	/**
 	 * a process of a session
@@ -30708,9 +30710,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _Process = Backbone.Model.extend({
 	    defaults: {
 	        pid        : null,
+	        parentPid  : null,
+	        sid        : null,
 	        display    : null,
 	        program    : null,
-	        handle     : null
+	        handle     : null,
+	        state      : new ProcessState.ProcessState()
 	    }
 	});
 	exports.Process = _Process;
@@ -30720,9 +30725,51 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var _           = __webpack_require__(10),
+	    Backbone    = __webpack_require__(11),
+	    WindowState = __webpack_require__(28);
+
+	/**
+	 * a process of a session
+	 **/
+	var _ProcessState = Backbone.Model.extend({
+	    defaults: {
+	        status     : null,
+	        windowState: new WindowState.ProcessStateWindow()
+	    }
+	});
+	exports.ProcessState = _ProcessState;
+
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _           = __webpack_require__(10),
+	    Backbone    = __webpack_require__(11);
+
+	/**
+	 * a process of a session
+	 **/
+	var _ProcessStateWindow = Backbone.Model.extend({
+	    defaults: {
+	        hasWindowState: false,
+	        left          : null,
+	        top           : null,
+	        height        : null,
+	        width         : null
+	    }
+	});
+	exports.ProcessStateWindow = _ProcessStateWindow;
+
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var _        = __webpack_require__(10),
 	    Backbone = __webpack_require__(11),
-	    SessionCollection = __webpack_require__(28);
+	    SessionCollection = __webpack_require__(30);
 
 	/**
 	 * a single user, a list of that user's sessions, and
@@ -30744,7 +30791,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.emptyUserSessionState = _emptyUserSessionState;
 
 /***/ },
-/* 28 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _        = __webpack_require__(10),
@@ -30760,7 +30807,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.SessionCollection = _SessionCollection;
 
 /***/ },
-/* 29 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                    = __webpack_require__(2),
@@ -30768,13 +30815,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Backbone             = __webpack_require__(11),
 	    ProcessManager       = __webpack_require__(24),
 	    SessionManagerResult = __webpack_require__(14),
-	    Program              = __webpack_require__(30);
+	    ProcCollectionExt    = __webpack_require__(32),
+	    Program              = __webpack_require__(34);
 
 	/**
-	 * store the session id of the UserSessionState object
+	 * restore processes retrieved from a backend
 	 **/
-	ProcessManager.ProcessManager.prototype.setParentSessionStateId = function ( sid ) {
-	    this.parentSessionStateId = sid;
+	ProcessManager.ProcessManager.prototype.restoreProcessesHandles = function () {
+	    var procCollection   = this.get('processes'),
+	        sessionId        = this.get('sid');
+
+	    // todo: check if sid is null, throw exeption "call fetch before calling this method"
+	    _.each( procCollection.models, function (p,i) {
+	        var pid = p.get('pid'),
+	            program = p.get('program');
+
+	        p.set({ handle: Program.handles[program].create(pid, sessionId) });
+	    });
+
 	}
 
 	/**
@@ -30792,24 +30850,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        {
 	            success: function ( response ) {
-	                var procCollection = self.get('processes'),
 
-	                    processModelList = _.map( response.result, function (p) {
-	                        var pmodel = new procCollection.model();
+	                var procCollection   = self.get('processes'),
+	                    sessionId        = options.activeSession.get('sid');
 
-	                        pmodel.set({ pid: p.pid, display: p.display, program: p.program });
+	                procCollection.fromRawResult( sessionId, response.result );
 
-	                        return pmodel;
-	                    } );
+	                self.set({ sid: sessionId });
 
-	                procCollection.reset( processModelList );
+	                self.restoreProcessesHandles();
 
-	                self.set({ taskmanager: Program.newSessionTaskManager() });
-
-	                self.get('taskmanager').setSid(options.activeSession.get('sid'))
-	                                       .restoreProcesses(procCollection);
-
-	                options.success( SessionManagerResult.NewSuccessResult( self ) )
+	                options.success( SessionManagerResult.NewSuccessResult( self ) );
 	            },
 
 	            error: function ( response ) {
@@ -30822,13 +30873,94 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	};
 
+
+	ProcessManager.ProcessManager.prototype.setRootEl = function ( options ) {
+	    //options.$rootEl
+	}
+
+
+	ProcessManager.ProcessManager.prototype.lauch = function ( options ) {
+	    // use this.$rootEl if options.windowed is true
+	}
+
+
+	ProcessManager.ProcessManager.prototype.kill = function ( options ) {
+
+	}
+
 /***/ },
-/* 30 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var taskmanager = __webpack_require__(31);
+	var $                    = __webpack_require__(2),
+	    _                    = __webpack_require__(10),
+	    Backbone             = __webpack_require__(11),
+	    ProcessCollection    = __webpack_require__(25),
+	    ProcessExt    = __webpack_require__(33);
 
-	__webpack_require__(32);
+	ProcessCollection.ProcessCollection.prototype.fromRawResult = function ( sessionId, result ) {
+
+	    var self = this,
+	        processModelList = _.map( result, function (p) {
+
+	        var pmodel = new self.model();
+
+	        pmodel.set({
+	            pid      : p.pid,
+	            parentPid: p.parentPid,
+	            sid      : sessionId,
+	            display  : p.display,
+	            program  : p.program
+	        });
+
+	        pmodel.setState( p.state );
+
+	        return pmodel;
+	    } );
+
+	    self.reset( processModelList );
+	};
+
+
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $                    = __webpack_require__(2),
+	    _                    = __webpack_require__(10),
+	    Backbone             = __webpack_require__(11),
+	    Process              = __webpack_require__(26);
+
+	Process.Process.prototype.setState = function ( state ) {
+
+	    var st = this.get('state');
+
+	    st.set({ status: state.status });
+
+	    if(!_.isEmpty(state.windowState)) {
+	        var wst = st.get('windowState');
+	        wst.set(state.windowState);
+	    }
+	};
+
+
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var helloworld = __webpack_require__(35);
+
+
+	var handles = {};
+
+	handles[helloworld.name] = {
+	    create: helloworld.create,
+	    destroy: helloworld.destroy
+	};
+
+	exports.handles = handles;
 
 
 	// a program has the following states
@@ -30847,95 +30979,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	//   its handle is initialized.
 	//   it has run and completed
 
-	function _newSessionTaskManager() {
-	    return new taskmanager.TaskManager();
-	}
-	exports.newSessionTaskManager = _newSessionTaskManager;
+
 
 /***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var $ = __webpack_require__(2),
-	    _ = __webpack_require__(10);
-
-	var handles = {};
-
-	function _registerHandle(programName, options) {
-
-	    if(_.isUndefined(programName))
-	        throw new Error('attempt made to register program with no name')
-
-	    if(_.isUndefined(options))
-	        throw new Error('attempt made to register program: '+programName+' with no options');
-
-	    if(_.isUndefined(options.create))
-	        throw new Error('program: '+programName+' with no create options');
-
-	    if(_.isUndefined(options.destroy))
-	        throw new Error('program: '+programName+' with no destroy options');
-
-	    handles[programName] = {};
-	    handles[programName].create = options.create;
-	    handles[programName].destroy = options.destroy;
-	}
-	exports.registerHandle = _registerHandle;
-
-
-	function _TaskManager() {
-	    this.sid = null;
-
-	    var sessionPid = 0;
-
-	    this.newPid = function () {
-	        sessionPid++;
-	        return sessionPid;
-	    };
-
-	    this.setSid = function ( sid ) {
-	        this.sid = sid;
-	        return this;
-	    };
-
-	    this.restoreProcesses = function ( procCollection ) {
-	        if(_.isNull(this.sid))
-	            throw new Error('task manager sid is null');
-
-	        var self = this;
-
-	        _.each( procCollection.models, function ( pm ) {
-	            var pid = pm.get('pid'),
-	                program = pm.get('program');
-
-	            // TODO: check if handles[program] is defined
-
-	            pm.set({ handle: handles[program].create(pid, self.sid) });
-
-	            if(pid > sessionPid) sessionPid = pid;
-	        } );
-	    };
-
-	    this.createProcess = function ( programName ) {
-
-	        // return new ProcessModel
-	    };
-
-	    this.destroyProcess = function ( processModel ) {
-
-	        return processModel;
-	    };
-
-	}
-
-	exports.TaskManager = _TaskManager;
-
-/***/ },
-/* 32 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $          = __webpack_require__(2),
-	    _          = __webpack_require__(10),
-	    taskmanager = __webpack_require__(31);
+	    _          = __webpack_require__(10);
 
 	var commands = {
 	    run: function (pid, sid) {
@@ -30951,7 +31002,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    this.commands = [];
 
+	    this.window = null;
+
 	    this.run = function (e,args) {
+	        //args.windowed :: bool
+	        //args.callingProc :: int
 	        args.success('hello world');
 	    };
 
@@ -30968,9 +31023,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	}
 
+
 	function createHandle (pid, sid) {
 	    return new _HelloWorldHandle(pid, sid);
 	}
+	exports.create = createHandle;
+
 
 	function destroyHandle (handle) {
 	    _.each(handle.commands, function (c) {
@@ -30979,21 +31037,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return handle;
 	}
+	exports.destroy = destroyHandle;
 
-	taskmanager.registerHandle('helloworld', {
-	    create: createHandle,
-	    destroy: destroyHandle
-	})
+
+	exports.name = 'helloworld';
+
+
 
 /***/ },
-/* 33 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// export all memory backends from this module
 
-	var authMem     = __webpack_require__(34),
-	    manMem      = __webpack_require__(38),
-	    procMem     = __webpack_require__(42);
+	var authMem     = __webpack_require__(37),
+	    manMem      = __webpack_require__(41),
+	    procMem     = __webpack_require__(45);
 
 	exports.loadSessionManager = manMem.loadSessionManager;
 
@@ -31010,12 +31069,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.loadUserSessionProcesses = procMem.loadUserSessionProcesses
 
 /***/ },
-/* 34 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var result       = __webpack_require__(35),
-	    pendingUsers = __webpack_require__(36),
-	    users        = __webpack_require__(37),
+	var result       = __webpack_require__(38),
+	    pendingUsers = __webpack_require__(39),
+	    users        = __webpack_require__(40),
 	    _            = __webpack_require__(10);
 
 
@@ -31144,7 +31203,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.loginUser = _loginUser;
 
 /***/ },
-/* 35 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31198,7 +31257,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.IsAuthenticationManagerBackendResult = _IsAuthenticationManagerBackendResult;
 
 /***/ },
-/* 36 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.pending_users = [
@@ -31207,7 +31266,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 37 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.users = [
@@ -31216,13 +31275,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	];
 
 /***/ },
-/* 38 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var result       = __webpack_require__(39),
-	    managerInfo  = __webpack_require__(40),
-	    session      = __webpack_require__(41),
-	    user         = __webpack_require__(37),
+	var result       = __webpack_require__(42),
+	    managerInfo  = __webpack_require__(43),
+	    session      = __webpack_require__(44),
+	    user         = __webpack_require__(40),
 	    _            = __webpack_require__(10);
 
 
@@ -31267,7 +31326,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 39 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31321,7 +31380,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.IsSessionManagerBackendResult = _IsSessionManagerBackendResult;
 
 /***/ },
-/* 40 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.managerInfo = {
@@ -31330,7 +31389,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 41 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.session = [
@@ -31359,15 +31418,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	*//*******************************************/
 
 /***/ },
-/* 42 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// note: should probably rename the parent directory 'query'
-	var result       = __webpack_require__(39),
-	    managerInfo  = __webpack_require__(40),
-	    session      = __webpack_require__(41),
-	    process      = __webpack_require__(43),
-	    user         = __webpack_require__(37),
+	var result       = __webpack_require__(42),
+	    managerInfo  = __webpack_require__(43),
+	    session      = __webpack_require__(44),
+	    process      = __webpack_require__(46),
+	    processState = __webpack_require__(47),
+	    user         = __webpack_require__(40),
 	    _            = __webpack_require__(10);
 
 
@@ -31383,41 +31443,65 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return;
 	        }
 
-	        options.success( result.NewSuccessResult( procs ) );
+	        var queryResult = [];
+
+	        _.each(procs, function (p) {
+	            var state = _.findWhere(processState.processState, { pid: p.pid });
+	            queryResult.push(_.extend({}, p, {
+	                state: {
+	                    status: state.status,
+	                    windowState: state.windowState
+	                }
+	            }));
+	        });
+
+	        options.success( result.NewSuccessResult( queryResult ) );
 	    }, 1000);
 
 	}
 	exports.loadUserSessionProcesses = _loadUserSessionProcesses;
 
 /***/ },
-/* 43 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.process = [
-	    { pid: 0, sid: 0, display: 'p0', program: 'helloworld' },
+	    { pid: 0, parentPid: null, sid: 0, display: 'p0', program: 'helloworld' },
 
-	    { pid: 1, sid: 1, display: 'p1', program: 'helloworld' },
+	    { pid: 1, parentPid: null, sid: 1, display: 'p1', program: 'helloworld' },
 
-	    { pid: 2, sid: 2, display: 'p2', program: 'helloworld' }
+	    { pid: 2, parentPid: null, sid: 2, display: 'p2', program: 'helloworld' }
 	];
 
 /***/ },
-/* 44 */
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports.processState = [
+	    { pid: 0, status: 'loaded', windowState: {} },
+
+	    { pid: 1, status: 'loaded', windowState: {} },
+
+	    { pid: 2, status: 'loaded', windowState: {} }
+	];
+
+/***/ },
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                         = __webpack_require__(2),
 	    _                         = __webpack_require__(10),
 	    Backbone                  = __webpack_require__(11),
-	    backend                   = __webpack_require__(33),
+	    backend                   = __webpack_require__(36),
 	    sessionManager            = __webpack_require__(13),
-	    flashback                 = __webpack_require__(45),
-	    spinner                   = __webpack_require__(47),
-	    userLoginOrCreateNew      = __webpack_require__(48),
-	    userLogin                 = __webpack_require__(49),
-	    userCreate                = __webpack_require__(51),
-	    sessionRestoreOrCreateNew = __webpack_require__(52),
-	    sessionRestore            = __webpack_require__(53),
-	    prompt                    = __webpack_require__(46);
+	    flashback                 = __webpack_require__(49),
+	    spinner                   = __webpack_require__(51),
+	    userLoginOrCreateNew      = __webpack_require__(52),
+	    userLogin                 = __webpack_require__(53),
+	    userCreate                = __webpack_require__(55),
+	    sessionRestoreOrCreateNew = __webpack_require__(56),
+	    sessionRestore            = __webpack_require__(57),
+	    prompt                    = __webpack_require__(50);
 
 
 	var _Client = Backbone.View.extend({
@@ -31650,13 +31734,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Client = _Client;
 
 /***/ },
-/* 45 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(46);
+	    prompt         = __webpack_require__(50);
 
 
 	var _Flashback = prompt.PromptView.extend({
@@ -31766,7 +31850,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 46 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31868,13 +31952,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 47 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(46);
+	    prompt         = __webpack_require__(50);
 
 
 	var _Spinner = prompt.PromptView.extend({
@@ -31939,7 +32023,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 48 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31952,7 +32036,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(46);
+	    prompt         = __webpack_require__(50);
 
 
 	var _UserLoginOrCreateNew = prompt.PromptView.extend({
@@ -31996,13 +32080,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 49 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    previous       = __webpack_require__(50),
+	    previous       = __webpack_require__(54),
 	    user           = __webpack_require__(20);
 
 
@@ -32096,13 +32180,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 50 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(46);
+	    prompt         = __webpack_require__(50);
 
 
 	var _PreviousView = function (options) {
@@ -32147,13 +32231,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 51 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    previous       = __webpack_require__(50),
+	    previous       = __webpack_require__(54),
 	    user           = __webpack_require__(19);
 
 
@@ -32246,7 +32330,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 52 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -32259,7 +32343,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(46);
+	    prompt         = __webpack_require__(50);
 
 
 	var _SessionRestoreOrCreateNew = prompt.PromptView.extend({
@@ -32308,15 +32392,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 53 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                = __webpack_require__(2),
 	    _                = __webpack_require__(10),
 	    Backbone         = __webpack_require__(11),
-	    listbox          = __webpack_require__(54),
-	    previous         = __webpack_require__(50),
-	    userSessionState = __webpack_require__(27);
+	    listbox          = __webpack_require__(58),
+	    previous         = __webpack_require__(54),
+	    userSessionState = __webpack_require__(29);
 
 
 	var _SessionRestore = previous.PreviousView.extend({
@@ -32394,13 +32478,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 54 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                = __webpack_require__(2),
 	    _                = __webpack_require__(10),
 	    Backbone         = __webpack_require__(11),
-	    ListItem         = __webpack_require__(55);
+	    ListItem         = __webpack_require__(59);
 
 	var _Listbox = Backbone.View.extend({
 
@@ -32490,7 +32574,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create;
 
 /***/ },
-/* 55 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                = __webpack_require__(2),
