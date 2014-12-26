@@ -1,0 +1,47 @@
+.program-window {
+    position: absolute;
+    background-color: #282828;
+    -moz-box-shadow:    1px 1px 2px 2px #181818;
+    -webkit-box-shadow: 1px 1px 2px 2px #181818;
+    box-shadow:         1px 1px 2px 2px #181818;
+    border-radius: 3px;
+    min-height: 60px;
+    min-width: 60px;
+}
+
+.ui-resizable-se {
+    height: 10px;
+    width: 10px;
+    bottom: 6px;
+    right: 2px;
+    position: absolute;
+}
+
+.program-window-content-container {
+    background-color: rgb(52, 52, 52);
+    position: absolute;
+    overflow: hidden;
+}
+
+.program-window-control-group {
+    height: 20px;
+    padding-right: 3px;
+}
+
+.program-name-container {
+    padding-top: 3px;
+    padding-left: 5px;
+    cursor: pointer;
+}
+
+.program-name {
+    font-size: 10px;
+}
+
+.btn-close {
+    color: #e74c3c;
+}
+
+.btn-maximize {
+    color: #3498db;
+}

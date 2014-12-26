@@ -7,6 +7,24 @@ __p += '';
 }
 return __p
 }})();
+(function() {(window["JST"] = window["JST"] || {})["program/handle/window.html"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="program-window-controls">\r\n    <div class="program-window-control-group">\r\n        <div class="pull-left program-name-container">\r\n            <span class="program-name">hello</span>\r\n        </div>\r\n        <div class="pull-right">\r\n            <a href="#" class="btn-minimize"><i class="fa fa-minus-circle fa-1x"></i></a>\r\n            <a href="#" class="btn-maximize"><i class="fa fa-plus-circle fa-1x"></i></a>\r\n            <a href="#" class="btn-close"><i class="fa fa-times-circle fa-1x"></i></a>\r\n        </div>\r\n    </div>\r\n</div>\r\n<div class="program-window-content-container"></div>';
+
+}
+return __p
+}})();
+(function() {(window["JST"] = window["JST"] || {})["program/programs/helloworldWindow.html"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<p>yo</p>';
+
+}
+return __p
+}})();
 (function() {(window["JST"] = window["JST"] || {})["ui/controls/listbox.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
@@ -120,15 +138,6 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<div class="option-row">\r\n    <a href="#" class="btn btn-info btn-user-login">USER LOGIN</a>\r\n</div>\r\n\r\n<div class="option-sep"></div>\r\n\r\n<div class="option-row">\r\n    <a href="#" class="btn btn-info btn-user-create">CREATE NEW USER</a>\r\n</div>\r\n';
-
-}
-return __p
-}})();
-(function() {(window["JST"] = window["JST"] || {})["program/window/programWindow.html"] = function(obj) {
-obj || (obj = {});
-var __t, __p = '', __e = _.escape;
-with (obj) {
-__p += '<div class="program-window-controls">\r\n    <div class="program-window-control-group">\r\n        <a href="#" class="btn-minimize">min</a>\r\n        <a href="#" class="btn-maximize">max</a>\r\n        <a href="#" class="btn-closr">clo</a>\r\n    </div>\r\n</div>\r\n<div class="program-window-content-container"></div>';
 
 }
 return __p
