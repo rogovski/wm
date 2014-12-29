@@ -3,8 +3,13 @@
     one template.
 */
 
+body {
+    overflow: hidden;
+}
+
 #app {
     height: 100%;
+    overflow: hidden;
 }
 
 .option-row > a {

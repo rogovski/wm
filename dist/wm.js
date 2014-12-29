@@ -2,7 +2,7 @@
  * wm.js
  *
  * @version 0.0.0
- * @date    2014-12-26
+ * @date    2014-12-27
  *
  * @license
  * Copyright (C) 2014 Michael Rogowski <michaeljrogowski@gmail.com>
@@ -141,10 +141,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    wm.session.manager = __webpack_require__(13);
 
 	    wm.backend        = {};
-	    wm.backend.memory = __webpack_require__(39);
+	    wm.backend.memory = __webpack_require__(32);
 
 	    wm.ui        = {};
-	    wm.ui.client = __webpack_require__(52);
+	    wm.ui.client = __webpack_require__(51);
 
 	    // return the new instance
 	    return wm;
@@ -30838,8 +30838,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Backbone             = __webpack_require__(11),
 	    ProcessManager       = __webpack_require__(24),
 	    SessionManagerResult = __webpack_require__(14),
-	    ProcCollectionExt    = __webpack_require__(32),
-	    Program              = __webpack_require__(35);
+	    ProcCollectionExt    = __webpack_require__(63),
+	    Program              = __webpack_require__(38);
 
 	ProcessManager.ProcessManager.prototype.setRootEl = function ( $rootEl ) {
 
@@ -30848,22 +30848,50 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this;
 	}
 
-	// render windows from a previously inavtive session
+	// render taskbar object
+	ProcessManager.ProcessManager.prototype.renderTaskbarHandle = function () {
+	    var taskbar          = Program.createTaskbarView(),
+	        sessionId        = this.get('sid');
+
+	    taskbar.setSessionInfo({sid: sessionId});
+
+	    this.$rootEl.append(taskbar.el);
+
+	    taskbar.render();
+	}
+
+	// render windows from a previously inactive session. called once after user
+	// logs in
 	ProcessManager.ProcessManager.prototype.renderWindowedHandles = function () {
 
 	    var procCollection   = this.get('processes'),
 	        sessionId        = this.get('sid'),
 	        self = this;
 
-	    _.each( procCollection.models, function (p) {
-	        var state = p.get('state'),
-	            pid   = p.get('pid'),
-	            handle = p.get('handle');
+	    this.renderTaskbarHandle();
 
-	        if(state.get('status') == 'running' && state.get('windowState').get('hasWindowState')) {
+	    _.each( procCollection.models, function (p) {
+	        var state   = p.get('state'),
+	            pid     = p.get('pid'),
+	            handle  = p.get('handle'),
+	            program = p.get('program');
+
+	        if(state.get('status') == 'running' &&
+	                state.get('windowState').get('hasWindowState')) {
+
 	            handle.run(null, {
 	                $windowEl: self.$rootEl
 	            });
+
+	            // TODO: unified handle state. see elsewhere
+	            // this should look something like
+	            // $.publish('...', handle.state);
+	            $.publish('launch.taskbar.'+sessionId, {
+	                state  : state,
+	                pid    : pid,
+	                program: program
+	            });
+
 	        }
 
 	    } );
@@ -30885,7 +30913,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	/**
-	 * restore processes retrieved from a backend
+	 * restore processes retrieved from a backend. called once after user logs in
 	 **/
 	ProcessManager.ProcessManager.prototype.restoreProcessesHandles = function () {
 
@@ -30900,7 +30928,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            program     = p.get('program'),
 	            state       = p.get('state');
 
-	        // TODO: handleState needs its own type
+	        // TODO: handleState needs its own type, this way we can pass all
+	        // program information around in a unfied way to all 'system' programs
+	        // (e.g. the taskbar, fileexplorer)
 	        p.set({
 	            handle: Program
 	                        .handles[program]
@@ -30956,386 +30986,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $                    = __webpack_require__(2),
-	    _                    = __webpack_require__(10),
-	    Backbone             = __webpack_require__(11),
-	    ProcessCollection    = __webpack_require__(25),
-	    Process              = __webpack_require__(26),
-	    ProcessExt           = __webpack_require__(33),
-	    ProcessState         = __webpack_require__(27),
-	    ProcessStateOpts     = __webpack_require__(34);
-
-	ProcessCollection.ProcessCollection.prototype.fromRawResult = function ( sessionId, result ) {
-
-	    var self = this,
-	        procModelCollection = _.map( result, function (p) {
-	            var pmodel = new self.model();
-
-	            var state = new ProcessState.ProcessState({
-	                status: p.state.status,
-	                windowState: _.isEmpty(p.state.windowState) ?
-	                    ProcessStateOpts.emptyProcessWindow() :
-	                    ProcessStateOpts.processWindowInfo( p.state.windowState )
-	            });
-
-	            pmodel.set({
-	                pid      : p.pid,
-	                parentPid: p.parentPid,
-	                sid      : sessionId,
-	                display  : p.display,
-	                program  : p.program,
-	                state: state
-	            });
-
-	            return pmodel;
-	        });
-
-	    this.reset( procModelCollection );
-
-	};
-
-
-
-/***/ },
-/* 33 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var $                    = __webpack_require__(2),
-	    _                    = __webpack_require__(10),
-	    Backbone             = __webpack_require__(11),
-	    Process              = __webpack_require__(26),
-	    ProcessState         = __webpack_require__(34);
-
-
-
-/***/ },
-/* 34 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var $                    = __webpack_require__(2),
-	    _                    = __webpack_require__(10),
-	    Backbone             = __webpack_require__(11),
-	    ProcessState         = __webpack_require__(27),
-	    ProcessStateWindow   = __webpack_require__(28);
-
-	function _emptyProcessWindow() {
-	    return new ProcessStateWindow.ProcessStateWindow({ hasWindowState: false });
-	}
-	exports.emptyProcessWindow = _emptyProcessWindow;
-
-	function _processWindowInfo( info ) {
-	    return new ProcessStateWindow.ProcessStateWindow({
-	        hasWindowState: true,
-	        height: info.height,
-	        width: info.width,
-	        top: info.top,
-	        left: info.left
-	    });
-	}
-	exports.processWindowInfo = _processWindowInfo;
-
-/***/ },
-/* 35 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var helloworld = __webpack_require__(36);
-
-
-	var handles = {};
-
-	handles[helloworld.name] = {
-	    create: helloworld.create,
-	    destroy: helloworld.destroy
-	};
-
-	exports.handles = handles;
-
-
-	// a program has the following states
-	// not loaded:
-	//   e.g. not associated with a process
-	// loaded but not executing
-	//   the program is in the list of processes for a session.
-	//   its handle is initialized.
-	//   it is not running
-	// executing
-	//   the program is in the list of processes for a session.
-	//   its handle is initialized.
-	//   it is running
-	// finished
-	//   the program is in the list of processes for a session.
-	//   its handle is initialized.
-	//   it has run and completed
-
-
-
-/***/ },
-/* 36 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var $                = __webpack_require__(2),
-	    _                = __webpack_require__(10),
-	    HelloWorldWindow = __webpack_require__(37);
-
-	var commands = {
-	    run: function (pid, sid) {
-	        return 'run.helloworld.'+pid+'.'+sid;
-	    },
-
-	    help: function (pid, sid) {
-	        return 'help.helloworld.'+pid+'.'+sid;
-	    }
-	};
-
-	function _HelloWorldHandle (pid, parentPid, sid, state) {
-
-	    this.commands = [];
-
-	    this.windowObj = null;
-
-	    this.state = state;
-
-	    this.pid = pid;
-
-	    this.parentPid = parentPid;
-
-	    this.sid = sid;
-
-	    var self = this;
-
-	    _.each(commands, function (fn,name) {
-	        var command = fn(pid, sid);
-	        self.commands.push(name);
-	        $.subscribe(command, self[name].bind(self));
-	    });
-	}
-
-	_HelloWorldHandle.prototype.run = function (e,args) {
-	    if(_.isUndefined(args)) throw new Error('helloworld: args undefined');
-
-	    if(!_.isUndefined(args.$windowEl)) {
-
-	        if(this.windowObj == null) {
-	            this.windowObj = new HelloWorldWindow.HelloWorldWindow();
-	        }
-
-	        this.windowObj.$el.hide();
-
-	        // TODO: handle state needs own type
-	        this.windowObj.setWindowState(this.state.get('windowState'))
-	                      .setProcessInfo({pid: this.pid, parentPid: this.parentPid, sid: this.sid})
-	                      .applyWindowState()
-	                      .applyProcessInfo();
-
-	        args.$windowEl.append(this.windowObj.el);
-	        this.windowObj.render();
-
-	        this.windowObj.show()
-
-	        return;
-	    }
-
-	    args.success('hello world');
-	}
-
-	_HelloWorldHandle.prototype.help = function (e,args) {
-	    args.success(this.commands);
-	};
-
-	function createHandle (pid, parentPid, sid, state) {
-
-	    return new _HelloWorldHandle(pid, parentPid, sid, state);
-	}
-	exports.create = createHandle;
-
-
-	function destroyHandle (handle) {
-
-	    _.each(handle.commands, function (c) {
-	        $.unsubscribe(c);
-	    });
-
-	    return handle;
-	}
-	exports.destroy = destroyHandle;
-
-
-	exports.name = 'helloworld';
-
-
-
-/***/ },
-/* 37 */
-/***/ function(module, exports, __webpack_require__) {
-
-	
-	var $              = __webpack_require__(2),
-	    _              = __webpack_require__(10),
-	    Backbone       = __webpack_require__(11),
-	    Window         = __webpack_require__(38);
-
-
-	var _HelloWorldWindow = Window.WindowView.extend({
-
-	    template: JST['program/programs/helloworldWindow.html'],
-
-	    events_window: {
-
-	    },
-
-	    render: function () {
-	        this.render_window_with(this.template());
-
-	        this.delegateEvents();
-	    }
-
-	});
-	exports.HelloWorldWindow = _HelloWorldWindow;
-
-/***/ },
-/* 38 */
-/***/ function(module, exports, __webpack_require__) {
-
-	
-
-	var $              = __webpack_require__(2),
-	    _              = __webpack_require__(10),
-	    Backbone       = __webpack_require__(11);
-
-
-	var _WindowView = function (options) {
-	    // todo throw ex if window state notdef
-	    //               if sid not def
-	    //               if pid not def
-
-	    Backbone.View.apply(this, [options]);
-
-	    var self = this;
-	    this.$el.on('resize', function () {
-	        self.resizeContent();
-	    })
-	};
-
-
-	_.extend(_WindowView.prototype, Backbone.View.prototype, {
-
-	    attributes: {
-	        class: 'program-window'
-	    },
-
-	    events_window_base: { },
-
-	    baseWindowTemplate: JST['program/handle/window.html'],
-
-	    events: function () {
-
-	        return _.extend( {}, this.events_window_base, this.events_window );
-	    },
-
-	    render_window_with: function (tmpl) {
-	        this.$el.css('height', this.height).css('width', this.width);
-
-	        this.$el.html( this.baseWindowTemplate() );
-
-	        this.$el.find('.program-window-content-container').html(tmpl);
-
-	        this.$el.draggable().resizable();
-
-	        this.$el.find('.ui-resizable-se').html('<i class="fa fa-sort-desc fa-1x"></i>');
-
-	        this.resizeContent();
-
-	    },
-
-	    setWindowState: function (options) {
-	        this.width  = options.get('width');
-	        this.height = options.get('height');
-	        this.left   = options.get('left');
-	        this.top    = options.get('top');
-
-	        return this;
-	    },
-
-	    setProcessInfo: function (info) {
-	        this.sid        = info.sid;
-	        this.parentPid  = info.parentPid;
-	        this.pid        = info.pid;
-
-	        return this;
-	    },
-
-	    applyWindowState: function () {
-	        this.$el.css('height', this.height)
-	                .css('width', this.width)
-	                .css('left', this.left)
-	                .css('top', this.top);
-
-	        return this;
-	    },
-
-	    // generate subscription signals, subscribe to stuff
-	    applyProcessInfo: function () {
-
-	    },
-
-	    setModel: function (mdl) {
-	        this.model = mdl;
-	        return this;
-	    },
-
-	    center: function () {
-
-	        var left = (window.innerWidth / 2) - (this.$el.width() / 2);
-
-	        var top = (window.innerHeight / 2) - (this.$el.height() / 2);
-
-	        this.$el.css('left', left).css('top',top);
-	    },
-
-	    resizeContent: function () {
-	        this.$el.find('.program-window-content-container')
-	                .width(this.$el.width())
-	                .height(this.$el.height() - 30);
-
-	    },
-
-	    hide: function (args) {
-	        var fn = void 0;
-
-	        if(!_.isUndefined(args) && !_.isUndefined(args.onHidden))
-	            fn = args.onHidden;
-
-	        this.$el.stop().hide('fade', 400, fn);
-	    },
-
-	    show: function (args) {
-	        var fn = void 0;
-
-	        if(!_.isUndefined(args) && !_.isUndefined(args.onHidden))
-	            fn = args.onHidden;
-
-	        this.$el.stop().show('fade', 400, fn);
-	    }
-
-	});
-
-
-	_WindowView.extend = Backbone.View.extend;
-	exports.PromptView = _WindowView;
-
-	exports.WindowView = _WindowView;
-
-
-/***/ },
-/* 39 */
-/***/ function(module, exports, __webpack_require__) {
-
 	// export all memory backends from this module
 
-	var authMem     = __webpack_require__(40),
-	    manMem      = __webpack_require__(45),
-	    procMem     = __webpack_require__(49),
-	    stub        = __webpack_require__(44);
+	var authMem     = __webpack_require__(33),
+	    manMem      = __webpack_require__(44),
+	    procMem     = __webpack_require__(48),
+	    stub        = __webpack_require__(37);
 
 	exports.loadSessionManager = manMem.loadSessionManager;
 
@@ -31354,14 +31010,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.stub = stub.ussStub;
 
 /***/ },
-/* 40 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var result       = __webpack_require__(41),
-	    pendingUsers = __webpack_require__(42),
-	    users        = __webpack_require__(43),
+	var result       = __webpack_require__(34),
+	    pendingUsers = __webpack_require__(35),
+	    users        = __webpack_require__(36),
 	    _            = __webpack_require__(10),
-	    stub         = __webpack_require__(44);
+	    stub         = __webpack_require__(37);
 
 
 	/**
@@ -31489,7 +31145,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.loginUser = _loginUser;
 
 /***/ },
-/* 41 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31543,7 +31199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.IsAuthenticationManagerBackendResult = _IsAuthenticationManagerBackendResult;
 
 /***/ },
-/* 42 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.pending_users = [
@@ -31552,7 +31208,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 43 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.users = [
@@ -31561,7 +31217,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	];
 
 /***/ },
-/* 44 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                    = __webpack_require__(2),
@@ -31572,12 +31228,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    sc                    = __webpack_require__(30),
 	    s                    = __webpack_require__(23),
 
-	    hw                    = __webpack_require__(35),
+	    hw                    = __webpack_require__(38),
 	    pc                    = __webpack_require__(25),
 	    p                   = __webpack_require__(26),
 	    pm                    = __webpack_require__(24),
 	    ps                    = __webpack_require__(27),
-	    p2                    = __webpack_require__(34),
+	    p2                    = __webpack_require__(43),
 
 	    ProcessCollection    = __webpack_require__(25);
 
@@ -31596,15 +31252,397 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 45 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var result       = __webpack_require__(46),
-	    managerInfo  = __webpack_require__(47),
-	    session      = __webpack_require__(48),
-	    user         = __webpack_require__(43),
+	var taskbar    = __webpack_require__(39),
+	    helloworld = __webpack_require__(40);
+
+
+	function _createTaskbarView() {
+	    return new taskbar.TaskbarView();
+	}
+	exports.createTaskbarView = _createTaskbarView;
+
+
+	var handles = {};
+
+	handles[helloworld.name] = {
+	    create: helloworld.create,
+	    destroy: helloworld.destroy
+	};
+
+	exports.handles = handles;
+
+
+	// a program has the following states
+	// not loaded:
+	//   e.g. not associated with a process
+	// loaded but not executing
+	//   the program is in the list of processes for a session.
+	//   its handle is initialized.
+	//   it is not running
+	// executing
+	//   the program is in the list of processes for a session.
+	//   its handle is initialized.
+	//   it is running
+	// finished
+	//   the program is in the list of processes for a session.
+	//   its handle is initialized.
+	//   it has run and completed
+
+
+
+/***/ },
+/* 39 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $              = __webpack_require__(2),
+	    _              = __webpack_require__(10),
+	    Backbone       = __webpack_require__(11);
+
+	/**
+	 * this object need to be aware of programs (both with instances
+	 * running in the procman and not) that are 'pinned' to it
+	**/
+	var _TaskbarView = Backbone.View.extend({
+
+	    attributes: {
+	        class: 'program-taskbar'
+	    },
+
+	    events: {
+
+	    },
+
+	    template: JST['program/handle/taskbar.html'],
+
+	    // there should be some idea of 'pinned' programs here.
+	    // eg windows taskbar functionallity
+
+
+	    render: function () {
+	        this.$el.html(this.template());
+	    },
+
+	    /**
+	     * set the session id of the process manager that launched
+	     * the task bar.
+	     **/
+	    setSessionInfo: function ( info ) {
+	        this.sid = info.sid;
+
+	        $.subscribe('launch.taskbar.'+this.sid, this.programLaunch.bind(this));
+	    },
+
+	    /**
+	     * fired when a new task item should be rendered to the taskbar
+	     **/
+	    programLaunch: function (e,args) {
+	        console.log(args);
+	    }
+
+
+
+	});
+	exports.TaskbarView = _TaskbarView;
+
+/***/ },
+/* 40 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $                = __webpack_require__(2),
+	    _                = __webpack_require__(10),
+	    HelloWorldWindow = __webpack_require__(41);
+
+	var commands = {
+	    run: function (pid, sid) {
+	        return 'run.helloworld.'+pid+'.'+sid;
+	    },
+
+	    help: function (pid, sid) {
+	        return 'help.helloworld.'+pid+'.'+sid;
+	    }
+	};
+
+
+	var _name = 'helloworld';
+	exports.name = _name;
+
+
+	function _HelloWorldHandle (pid, parentPid, sid, state) {
+
+	    this.commands = [];
+
+	    this.windowObj = null;
+
+	    this.state = state;
+
+	    this.pid = pid;
+
+	    this.parentPid = parentPid;
+
+	    this.sid = sid;
+
+	    var self = this;
+
+	    _.each(commands, function (fn,name) {
+	        var command = fn(pid, sid);
+	        self.commands.push(name);
+	        $.subscribe(command, self[name].bind(self));
+	    });
+	}
+
+	_HelloWorldHandle.prototype.run = function (e,args) {
+	    if(_.isUndefined(args)) throw new Error('helloworld: args undefined');
+
+	    if(!_.isUndefined(args.$windowEl)) {
+
+	        if(this.windowObj == null) {
+	            this.windowObj = new HelloWorldWindow.HelloWorldWindow();
+	        }
+
+	        this.windowObj.$el.hide();
+
+	        // TODO: handle state needs own type
+	        this.windowObj.setWindowState(this.state.get('windowState'))
+	                      .setProcessInfo({pid: this.pid, parentPid: this.parentPid, sid: this.sid})
+	                      .applyWindowState()
+	                      .applyProcessInfo();
+
+	        args.$windowEl.append(this.windowObj.el);
+	        this.windowObj.render();
+
+	        this.windowObj.show()
+
+	        return;
+	    }
+
+	    args.success('hello world');
+	}
+
+	_HelloWorldHandle.prototype.help = function (e,args) {
+	    args.success(this.commands);
+	};
+
+	function createHandle (pid, parentPid, sid, state) {
+
+	    return new _HelloWorldHandle(pid, parentPid, sid, state);
+	}
+	exports.create = createHandle;
+
+
+	function destroyHandle (handle) {
+
+	    _.each(handle.commands, function (c) {
+	        $.unsubscribe(c);
+	    });
+
+	    return handle;
+	}
+	exports.destroy = destroyHandle;
+
+
+
+
+
+
+/***/ },
+/* 41 */
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	var $              = __webpack_require__(2),
+	    _              = __webpack_require__(10),
+	    Backbone       = __webpack_require__(11),
+	    Window         = __webpack_require__(42);
+
+
+	var _HelloWorldWindow = Window.WindowView.extend({
+
+	    template: JST['program/programs/helloworldWindow.html'],
+
+	    events_window: {
+
+	    },
+
+	    render: function () {
+	        this.render_window_with(this.template());
+
+	        this.delegateEvents();
+	    }
+
+	});
+	exports.HelloWorldWindow = _HelloWorldWindow;
+
+/***/ },
+/* 42 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $              = __webpack_require__(2),
+	    _              = __webpack_require__(10),
+	    Backbone       = __webpack_require__(11);
+
+
+	var _WindowView = function (options) {
+	    // todo throw ex if window state notdef
+	    //               if sid not def
+	    //               if pid not def
+
+	    Backbone.View.apply(this, [options]);
+
+	    var self = this;
+	    this.$el.on('resize', function () {
+	        self.resizeContent();
+	    })
+	};
+
+
+	_.extend(_WindowView.prototype, Backbone.View.prototype, {
+
+	    attributes: {
+	        class: 'program-window'
+	    },
+
+	    events_window_base: { },
+
+	    baseWindowTemplate: JST['program/handle/window.html'],
+
+	    events: function () {
+
+	        return _.extend( {}, this.events_window_base, this.events_window );
+	    },
+
+	    render_window_with: function (tmpl) {
+	        this.$el.css('height', this.height).css('width', this.width);
+
+	        this.$el.html( this.baseWindowTemplate() );
+
+	        this.$el.find('.program-window-content-container').html(tmpl);
+
+	        this.$el.draggable({ containment: 'parent' }).resizable();
+
+	        this.$el.find('.ui-resizable-se').html('<i class="fa fa-sort-desc fa-1x"></i>');
+
+	        this.resizeContent();
+
+	    },
+
+	    setWindowState: function (options) {
+	        this.width  = options.get('width');
+	        this.height = options.get('height');
+	        this.left   = options.get('left');
+	        this.top    = options.get('top');
+
+	        return this;
+	    },
+
+	    setProcessInfo: function (info) {
+	        this.sid        = info.sid;
+	        this.parentPid  = info.parentPid;
+	        this.pid        = info.pid;
+
+	        return this;
+	    },
+
+	    applyWindowState: function () {
+	        this.$el.css('height', this.height)
+	                .css('width', this.width)
+	                .css('left', this.left)
+	                .css('top', this.top);
+
+	        return this;
+	    },
+
+	    // generate subscription signals, subscribe to stuff
+	    applyProcessInfo: function () {
+
+	    },
+
+	    setModel: function (mdl) {
+	        this.model = mdl;
+	        return this;
+	    },
+
+	    center: function () {
+
+	        var left = (window.innerWidth / 2) - (this.$el.width() / 2);
+
+	        var top = (window.innerHeight / 2) - (this.$el.height() / 2);
+
+	        this.$el.css('left', left).css('top',top);
+	    },
+
+	    resizeContent: function () {
+	        this.$el.find('.program-window-content-container')
+	                .width(this.$el.width())
+	                .height(this.$el.height() - 30);
+
+	    },
+
+	    hide: function (args) {
+	        var fn = void 0;
+
+	        if(!_.isUndefined(args) && !_.isUndefined(args.onHidden))
+	            fn = args.onHidden;
+
+	        this.$el.stop().hide('fade', 400, fn);
+	    },
+
+	    show: function (args) {
+	        var fn = void 0;
+
+	        if(!_.isUndefined(args) && !_.isUndefined(args.onHidden))
+	            fn = args.onHidden;
+
+	        this.$el.stop().show('fade', 400, fn);
+	    }
+
+	});
+
+
+	_WindowView.extend = Backbone.View.extend;
+	exports.PromptView = _WindowView;
+
+	exports.WindowView = _WindowView;
+
+
+/***/ },
+/* 43 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $                    = __webpack_require__(2),
+	    _                    = __webpack_require__(10),
+	    Backbone             = __webpack_require__(11),
+	    ProcessState         = __webpack_require__(27),
+	    ProcessStateWindow   = __webpack_require__(28);
+
+	function _emptyProcessWindow() {
+	    return new ProcessStateWindow.ProcessStateWindow({ hasWindowState: false });
+	}
+	exports.emptyProcessWindow = _emptyProcessWindow;
+
+	function _processWindowInfo( info ) {
+	    return new ProcessStateWindow.ProcessStateWindow({
+	        hasWindowState: true,
+	        height: info.height,
+	        width: info.width,
+	        top: info.top,
+	        left: info.left
+	    });
+	}
+	exports.processWindowInfo = _processWindowInfo;
+
+/***/ },
+/* 44 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var result       = __webpack_require__(45),
+	    managerInfo  = __webpack_require__(46),
+	    session      = __webpack_require__(47),
+	    user         = __webpack_require__(36),
 	    _            = __webpack_require__(10),
-	    stub         = __webpack_require__(44);
+	    stub         = __webpack_require__(37);
 
 
 	/**
@@ -31648,7 +31686,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 46 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31702,7 +31740,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.IsSessionManagerBackendResult = _IsSessionManagerBackendResult;
 
 /***/ },
-/* 47 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.managerInfo = {
@@ -31711,7 +31749,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 48 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.session = [
@@ -31740,18 +31778,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	*//*******************************************/
 
 /***/ },
-/* 49 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// note: should probably rename the parent directory 'query'
-	var result       = __webpack_require__(46),
-	    managerInfo  = __webpack_require__(47),
-	    session      = __webpack_require__(48),
-	    process      = __webpack_require__(50),
-	    processState = __webpack_require__(51),
-	    user         = __webpack_require__(43),
+	var result       = __webpack_require__(45),
+	    managerInfo  = __webpack_require__(46),
+	    session      = __webpack_require__(47),
+	    process      = __webpack_require__(49),
+	    processState = __webpack_require__(50),
+	    user         = __webpack_require__(36),
 	    _            = __webpack_require__(10),
-	    stub         = __webpack_require__(44);
+	    stub         = __webpack_require__(37);
 
 
 	// user is a param here for authentication purposes
@@ -31785,7 +31823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.loadUserSessionProcesses = _loadUserSessionProcesses;
 
 /***/ },
-/* 50 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.process = [
@@ -31798,7 +31836,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	];
 
 /***/ },
-/* 51 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.processState = [
@@ -31811,22 +31849,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	];
 
 /***/ },
-/* 52 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                         = __webpack_require__(2),
 	    _                         = __webpack_require__(10),
 	    Backbone                  = __webpack_require__(11),
-	    backend                   = __webpack_require__(39),
+	    backend                   = __webpack_require__(32),
 	    sessionManager            = __webpack_require__(13),
-	    flashback                 = __webpack_require__(53),
-	    spinner                   = __webpack_require__(55),
-	    userLoginOrCreateNew      = __webpack_require__(56),
-	    userLogin                 = __webpack_require__(57),
-	    userCreate                = __webpack_require__(59),
-	    sessionRestoreOrCreateNew = __webpack_require__(60),
-	    sessionRestore            = __webpack_require__(61),
-	    prompt                    = __webpack_require__(54);
+	    flashback                 = __webpack_require__(52),
+	    spinner                   = __webpack_require__(54),
+	    userLoginOrCreateNew      = __webpack_require__(55),
+	    userLogin                 = __webpack_require__(56),
+	    userCreate                = __webpack_require__(58),
+	    sessionRestoreOrCreateNew = __webpack_require__(59),
+	    sessionRestore            = __webpack_require__(60),
+	    prompt                    = __webpack_require__(53);
 
 
 	var _Client = Backbone.View.extend({
@@ -32048,8 +32086,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    handleActiveSessionLoadSuccess: function (e,args) {
 	        this.currentPrompt.hide();
-	        console.log(args.result);
-	        localStorage.setItem('uss', args.result);
+
 	        sessionManager.renderActiveUserSession( args.result, this.$el );
 
 	    },
@@ -32062,13 +32099,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Client = _Client;
 
 /***/ },
-/* 53 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(54);
+	    prompt         = __webpack_require__(53);
 
 
 	var _Flashback = prompt.PromptView.extend({
@@ -32178,7 +32215,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 54 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -32280,13 +32317,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 55 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(54);
+	    prompt         = __webpack_require__(53);
 
 
 	var _Spinner = prompt.PromptView.extend({
@@ -32351,7 +32388,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 56 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -32364,7 +32401,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(54);
+	    prompt         = __webpack_require__(53);
 
 
 	var _UserLoginOrCreateNew = prompt.PromptView.extend({
@@ -32408,13 +32445,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 57 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    previous       = __webpack_require__(58),
+	    previous       = __webpack_require__(57),
 	    user           = __webpack_require__(20);
 
 
@@ -32508,13 +32545,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 58 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(54);
+	    prompt         = __webpack_require__(53);
 
 
 	var _PreviousView = function (options) {
@@ -32559,13 +32596,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 59 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    previous       = __webpack_require__(58),
+	    previous       = __webpack_require__(57),
 	    user           = __webpack_require__(19);
 
 
@@ -32658,7 +32695,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 60 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -32671,7 +32708,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $              = __webpack_require__(2),
 	    _              = __webpack_require__(10),
 	    Backbone       = __webpack_require__(11),
-	    prompt         = __webpack_require__(54);
+	    prompt         = __webpack_require__(53);
 
 
 	var _SessionRestoreOrCreateNew = prompt.PromptView.extend({
@@ -32720,14 +32757,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 61 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                = __webpack_require__(2),
 	    _                = __webpack_require__(10),
 	    Backbone         = __webpack_require__(11),
-	    listbox          = __webpack_require__(62),
-	    previous         = __webpack_require__(58),
+	    listbox          = __webpack_require__(61),
+	    previous         = __webpack_require__(57),
 	    userSessionState = __webpack_require__(29);
 
 
@@ -32806,13 +32843,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create
 
 /***/ },
-/* 62 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                = __webpack_require__(2),
 	    _                = __webpack_require__(10),
 	    Backbone         = __webpack_require__(11),
-	    ListItem         = __webpack_require__(63);
+	    ListItem         = __webpack_require__(62);
 
 	var _Listbox = Backbone.View.extend({
 
@@ -32902,7 +32939,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.create = _create;
 
 /***/ },
-/* 63 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $                = __webpack_require__(2),
@@ -32978,6 +33015,62 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new _ListboxItem( options );
 	}
 	exports.create = _create;
+
+/***/ },
+/* 63 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $                    = __webpack_require__(2),
+	    _                    = __webpack_require__(10),
+	    Backbone             = __webpack_require__(11),
+	    ProcessCollection    = __webpack_require__(25),
+	    Process              = __webpack_require__(26),
+	    ProcessExt           = __webpack_require__(64),
+	    ProcessState         = __webpack_require__(27),
+	    ProcessStateOpts     = __webpack_require__(43);
+
+	ProcessCollection.ProcessCollection.prototype.fromRawResult = function ( sessionId, result ) {
+
+	    var self = this,
+	        procModelCollection = _.map( result, function (p) {
+	            var pmodel = new self.model();
+
+	            var state = new ProcessState.ProcessState({
+	                status: p.state.status,
+	                windowState: _.isEmpty(p.state.windowState) ?
+	                    ProcessStateOpts.emptyProcessWindow() :
+	                    ProcessStateOpts.processWindowInfo( p.state.windowState )
+	            });
+
+	            pmodel.set({
+	                pid      : p.pid,
+	                parentPid: p.parentPid,
+	                sid      : sessionId,
+	                display  : p.display,
+	                program  : p.program,
+	                state: state
+	            });
+
+	            return pmodel;
+	        });
+
+	    this.reset( procModelCollection );
+
+	};
+
+
+
+/***/ },
+/* 64 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $                    = __webpack_require__(2),
+	    _                    = __webpack_require__(10),
+	    Backbone             = __webpack_require__(11),
+	    Process              = __webpack_require__(26),
+	    ProcessState         = __webpack_require__(43);
+
+
 
 /***/ }
 /******/ ])

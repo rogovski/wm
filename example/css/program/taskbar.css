@@ -1,0 +1,9 @@
+.program-taskbar {
+    position: absolute;
+    overflow: hidden;
+    width: 100%;
+    bottom: 0px;
+    height: 50px;
+    background-color: #343434;
+    box-shadow: 1px 1px 2px 2px #181818;
+}

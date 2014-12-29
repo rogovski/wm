@@ -7,6 +7,24 @@ __p += '';
 }
 return __p
 }})();
+(function() {(window["JST"] = window["JST"] || {})["program/handle/taskbar.html"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '<div class="taskbar-item-container"></div>';
+
+}
+return __p
+}})();
+(function() {(window["JST"] = window["JST"] || {})["program/handle/taskbarItem.html"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '';
+
+}
+return __p
+}})();
 (function() {(window["JST"] = window["JST"] || {})["program/handle/window.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
